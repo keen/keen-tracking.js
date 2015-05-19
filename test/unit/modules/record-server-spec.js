@@ -10,7 +10,7 @@ var mock = require('../helpers/mock-server-requests');
 
 // Keen.debug = true;
 
-describe('Keen.Client (server)', function() {
+describe('Keen.Client core methods (server)', function() {
 
   beforeEach(function(){
     this.client = new Keen.Client({

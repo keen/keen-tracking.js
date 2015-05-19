@@ -155,6 +155,7 @@ function getWindowProfile(){
 module.exports = getWindowProfile;
 },{}],9:[function(require,module,exports){
 var Emitter = require('component-emitter');
+var each = require('./utils/each');
 var root = this;
 var previousKeen = root.Keen;
 var Keen = {
@@ -198,13 +199,31 @@ Keen.Client.prototype.writeKey = function(str){
   this.config.writeKey = (str ? String(str) : null);
   return this;
 };
-Keen.Client.prototype.url = function(path){
+Keen.Client.prototype.url = function(path, data){
+  var url;
   if (!this.projectId()) {
     this.emit('error', 'Keen.Client is missing a projectId property');
     return;
   }
-  return this.config.protocol + '://' + this.config.host + '/projects/' + this.projectId() + path;
+  url = this.config.protocol + '://' + this.config.host + '/projects/' + this.projectId();
+  if (path) {
+    url += path;
+  }
+  if (data) {
+    url += '?' + serialize(data);
+  }
+  return url;
 };
+function serialize(data){
+  var query = [];
+  each(data, function(value, key){
+    if ('string' !== typeof value) {
+      value = JSON.stringify(value);
+    }
+    query.push(key + '=' + encodeURIComponent(value));
+  });
+  return query.join('&');
+}
 Emitter(Keen);
 Emitter(Keen.Client.prototype);
 Keen.log = function(message) {
@@ -217,7 +236,7 @@ Keen.noConflict = function(){
   return Keen;
 };
 module.exports = Keen;
-},{"component-emitter":15}],10:[function(require,module,exports){
+},{"./utils/each":12,"component-emitter":15}],10:[function(require,module,exports){
 var Keen = require('./index');
 var base64 = require('./utils/base64');
 var each = require('./utils/each');
@@ -237,8 +256,12 @@ function recordEvent(eventCollection, eventBody, callback){
     handleValidationError.call(self, 'Collection name must be a string.', cb);
     return;
   }
-  getRequestUrl = makeGetRequestUrl.call(this, url, data);
-  if (getRequestUrl) {
+  getRequestUrl = self.url('/events/' + encodeURIComponent(eventCollection), {
+    api_key  : this.writeKey(),
+    data     : base64.encode(JSON.stringify(data)),
+    modified : new Date().getTime()
+  });
+  if (getRequestUrl.length < getUrlMaxLength()) {
     switch (this.config.requestType) {
       case 'xhr':
         sendXhr.call(this, 'GET', getRequestUrl, null, null, cb);
@@ -314,25 +337,6 @@ function getUrlMaxLength(){
     }
   }
   return 16000;
-}
-function makeGetRequestUrl(url, data){
-  url += '?';
-  url += serializeParams({
-    api_key  : this.writeKey(),
-    data     : base64.encode( JSON.stringify(data) ),
-    modified : new Date().getTime()
-  });
-  return ( url.length < getUrlMaxLength() ) ? url : false;
-}
-function serializeParams(object){
-  var query = [];
-  each(object, function(value, key){
-    if ('string' !== typeof value) {
-      value = JSON.stringify(value);
-    }
-    query.push(key + '=' + encodeURIComponent(value));
-  });
-  return query.join('&');
 }
 function sendXhr(method, url, data, callback){
   var self = this;

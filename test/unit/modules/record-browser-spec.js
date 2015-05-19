@@ -4,7 +4,7 @@ var config = require('../helpers/client-config');
 
 // Keen.debug = true;
 
-describe('Keen.Client (browser)', function() {
+describe('Keen.Client core methods (browser)', function() {
 
   describe('#recordEvent', function() {
 
