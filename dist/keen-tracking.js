@@ -226,11 +226,10 @@ module.exports = {
   'recordEvents': recordEvents
 };
 function recordEvent(eventCollection, eventBody, callback){
-  var self = this, url, data, cb;
+  var self = this, url, data, cb, getRequestUrl;
   url = self.url('/events/' + encodeURIComponent(eventCollection));
   data = eventBody || {};
   cb = callback;
-  callback = null;
   if (!checkValidation.call(self, cb)) {
     return;
   }
@@ -238,10 +237,27 @@ function recordEvent(eventCollection, eventBody, callback){
     handleValidationError.call(self, 'Collection name must be a string.', cb);
     return;
   }
-  if (!sendEventData.call(this, url, data, cb)) {
+  getRequestUrl = makeGetRequestUrl.call(this, url, data);
+  if (getRequestUrl) {
+    switch (this.config.requestType) {
+      case 'xhr':
+        sendXhr.call(this, 'GET', getRequestUrl, null, null, cb);
+        break;
+      case 'beacon':
+        sendBeacon.call(this, getRequestUrl, cb);
+        break;
+      default:
+        sendJsonp.call(this, getRequestUrl, cb);
+        break;
+    }
+  }
+  else if (getXhr()) {
+    sendXhr.call(this, 'POST', url, data, cb);
+  }
+  else {
     handleValidationError.call(self, 'URL length exceeds current browser limit, and XHR is not supported.');
   }
-  cb = null;
+  callback = cb = null;
 }
 function recordEvents(eventsHash, callback){
   var self = this, url, cb;
@@ -251,12 +267,20 @@ function recordEvents(eventsHash, callback){
   if (!checkValidation.call(self, cb)) {
     return;
   }
+  if ('object' !== typeof eventsHash || eventsHash instanceof Array) {
+    handleValidationError.call(self, 'First argument must be an object', cb);
+    return;
+  }
   if (arguments.length > 2) {
     handleValidationError.call(self, 'Incorrect arguments provided to #addEvents method', cb);
     return;
   }
-  if (!sendEventData.call(this, url, data, cb)) {
+  if (getXhr()) {
+    sendXhr.call(this, 'POST', url, eventsHash, cb);
   }
+  else {
+  }
+  callback = cb = null;
 }
 function checkValidation(callback){
   var cb = callback;
@@ -310,34 +334,7 @@ function serializeParams(object){
   });
   return query.join('&');
 }
-function sendEventData(url, data, callback){
-  var cb = callback;
-  callback = null;
-  var getRequestUrl = makeGetRequestUrl.call(this, url, data);
-  console.log(getRequestUrl);
-  if (getRequestUrl) {
-    switch (this.config.requestType) {
-      case 'xhr':
-        sendXhr.call(this, 'GET', getRequestUrl, null, null, cb);
-        break;
-      case 'beacon':
-        sendBeacon.call(this, getRequestUrl, cb);
-        break;
-      default:
-        sendJsonp.call(this, getRequestUrl, cb);
-        break;
-    }
-  }
-  else if (getXhr()) {
-    sendXhr.call(this, 'POST', url, { 'Authorization': this.writeKey(), 'Content-Type': 'application/json' }, data, cb);
-  }
-  else {
-    return false;
-  }
-  cb = null;
-  return true;
-}
-function sendXhr(method, url, headers, data, callback){
+function sendXhr(method, url, data, callback){
   var self = this;
   var payload;
   var xhr = getXhr();
@@ -358,7 +355,8 @@ function sendXhr(method, url, headers, data, callback){
         if (cb && response) {
           cb.call(self, null, response);
         }
-      } else {
+      }
+      else {
         Keen.emit('error', 'HTTP request failed.');
         if (cb) {
           cb.call(self, xhr, null);
@@ -367,9 +365,8 @@ function sendXhr(method, url, headers, data, callback){
     }
   };
   xhr.open(method, url, true);
-  each(headers, function(value, key){
-    xhr.setRequestHeader(key, value);
-  });
+  xhr.setRequestHeader('Authorization', self.writeKey());
+  xhr.setRequestHeader('Content-Type', 'application/json');
   if (data) {
     payload = JSON.stringify(data);
   }
