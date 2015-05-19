@@ -22,10 +22,7 @@
   'use strict';
   var Keen = require('./');
   var extend = require('./utils/extend');
-  extend(Keen.Client.prototype, {
-    'recordEvent'  : require('./recordEvent'),
-    'recordEvents' : require('./recordEvents')
-  });
+  extend(Keen.Client.prototype, require('./record-browser'));
   extend(Keen.helpers, {
     'getBrowserProfile'  : require('./helpers/getBrowserProfile'),
     'getDatetimeIndex'   : require('./helpers/getDatetimeIndex'),
@@ -44,7 +41,7 @@
   return Keen;
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./":9,"./helpers/getBrowserProfile":2,"./helpers/getDatetimeIndex":3,"./helpers/getDomEventProfile":4,"./helpers/getDomNodePath":5,"./helpers/getScreenProfile":6,"./helpers/getUniqueId":7,"./helpers/getWindowProfile":8,"./recordEvent":10,"./recordEvents":11,"./utils/each":12,"./utils/extend":13,"./utils/parseParams":14}],2:[function(require,module,exports){
+},{"./":9,"./helpers/getBrowserProfile":2,"./helpers/getDatetimeIndex":3,"./helpers/getDomEventProfile":4,"./helpers/getDomNodePath":5,"./helpers/getScreenProfile":6,"./helpers/getUniqueId":7,"./helpers/getWindowProfile":8,"./record-browser":10,"./utils/each":12,"./utils/extend":13,"./utils/parseParams":14}],2:[function(require,module,exports){
 var getScreenProfile = require('./getScreenProfile'),
     getWindowProfile = require('./getWindowProfile');
 function getBrowserProfile(){
@@ -196,16 +193,6 @@ Keen.Client.prototype.projectId = function(str){
   this.config.projectId = (str ? String(str) : null);
   return this;
 };
-Keen.Client.prototype.masterKey = function(str){
-  if (!arguments.length) return this.config.masterKey;
-  this.config.masterKey = (str ? String(str) : null);
-  return this;
-};
-Keen.Client.prototype.readKey = function(str){
-  if (!arguments.length) return this.config.readKey;
-  this.config.readKey = (str ? String(str) : null);
-  return this;
-};
 Keen.Client.prototype.writeKey = function(str){
   if (!arguments.length) return this.config.writeKey;
   this.config.writeKey = (str ? String(str) : null);
@@ -231,13 +218,306 @@ Keen.noConflict = function(){
 };
 module.exports = Keen;
 },{"component-emitter":15}],10:[function(require,module,exports){
+var Keen = require('./index');
+var base64 = require('./utils/base64');
+var each = require('./utils/each');
+module.exports = {
+  'recordEvent': recordEvent,
+  'recordEvents': recordEvents
+};
 function recordEvent(eventCollection, eventBody, callback){
+  var self = this, url, data, cb;
+  url = self.url('/events/' + encodeURIComponent(eventCollection));
+  data = eventBody || {};
+  cb = callback;
+  callback = null;
+  if (!checkValidation.call(self, cb)) {
+    return;
+  }
+  if (!eventCollection || typeof eventCollection !== 'string') {
+    handleValidationError.call(self, 'Collection name must be a string.', cb);
+    return;
+  }
+  if (!sendEventData.call(this, url, data, cb)) {
+    handleValidationError.call(self, 'URL length exceeds current browser limit, and XHR is not supported.');
+  }
+  cb = null;
 }
-module.exports = recordEvent;
-},{}],11:[function(require,module,exports){
-function recordEvents(events, callback){
+function recordEvents(eventsHash, callback){
+  var self = this, url, cb;
+  url = self.url('/events');
+  cb = callback;
+  callback = null;
+  if (!checkValidation.call(self, cb)) {
+    return;
+  }
+  if (arguments.length > 2) {
+    handleValidationError.call(self, 'Incorrect arguments provided to #addEvents method', cb);
+    return;
+  }
+  if (!sendEventData.call(this, url, data, cb)) {
+  }
 }
-module.exports = recordEvents;
+function checkValidation(callback){
+  var cb = callback;
+  callback = null;
+  if (!Keen.enabled) {
+    handleValidationError.call(this, 'Keen.enabled is set to false.', cb);
+    return false;
+  }
+  if (!this.projectId()) {
+    handleValidationError.call(this, 'Keen.Client is missing a projectId property.', cb);
+    return false;
+  }
+  if (!this.writeKey()) {
+    handleValidationError.call(this, 'Keen.Client is missing a writeKey property.', cb);
+    return false;
+  }
+  return true;
+}
+function handleValidationError(message, cb){
+  var err = 'Event(s) not recorded: ' + message;
+  this.emit('error', err);
+  if (cb) {
+    cb.call(this, err, null);
+    cb = null;
+  }
+}
+function getUrlMaxLength(){
+  if ('undefined' !== typeof window) {
+    if (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > 0) {
+      return 2000;
+    }
+  }
+  return 16000;
+}
+function makeGetRequestUrl(url, data){
+  url += '?';
+  url += serializeParams({
+    api_key  : this.writeKey(),
+    data     : base64.encode( JSON.stringify(data) ),
+    modified : new Date().getTime()
+  });
+  return ( url.length < getUrlMaxLength() ) ? url : false;
+}
+function serializeParams(object){
+  var query = [];
+  each(object, function(value, key){
+    if ('string' !== typeof value) {
+      value = JSON.stringify(value);
+    }
+    query.push(key + '=' + encodeURIComponent(value));
+  });
+  return query.join('&');
+}
+function sendEventData(url, data, callback){
+  var cb = callback;
+  callback = null;
+  var getRequestUrl = makeGetRequestUrl.call(this, url, data);
+  console.log(getRequestUrl);
+  if (getRequestUrl) {
+    switch (this.config.requestType) {
+      case 'xhr':
+        sendXhr.call(this, 'GET', getRequestUrl, null, null, cb);
+        break;
+      case 'beacon':
+        sendBeacon.call(this, getRequestUrl, cb);
+        break;
+      default:
+        sendJsonp.call(this, getRequestUrl, cb);
+        break;
+    }
+  }
+  else if (getXhr()) {
+    sendXhr.call(this, 'POST', url, { 'Authorization': this.writeKey(), 'Content-Type': 'application/json' }, data, cb);
+  }
+  else {
+    return false;
+  }
+  cb = null;
+  return true;
+}
+function sendXhr(method, url, headers, data, callback){
+  var self = this;
+  var payload;
+  var xhr = getXhr();
+  var cb = callback;
+  callback = null;
+  xhr.onreadystatechange = function() {
+    var response;
+    if (xhr.readyState == 4) {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          response = JSON.parse(xhr.responseText);
+        } catch (e) {
+          Keen.emit('error', 'Could not parse HTTP response: ' + xhr.responseText);
+          if (cb) {
+            cb.call(self, xhr, null);
+          }
+        }
+        if (cb && response) {
+          cb.call(self, null, response);
+        }
+      } else {
+        Keen.emit('error', 'HTTP request failed.');
+        if (cb) {
+          cb.call(self, xhr, null);
+        }
+      }
+    }
+  };
+  xhr.open(method, url, true);
+  each(headers, function(value, key){
+    xhr.setRequestHeader(key, value);
+  });
+  if (data) {
+    payload = JSON.stringify(data);
+  }
+  if (method.toUpperCase() === 'GET') {
+    xhr.send();
+  }
+  if (method.toUpperCase() === 'POST') {
+    xhr.send(payload);
+  }
+}
+function getXhr() {
+  var root = 'undefined' == typeof window ? this : window;
+  if (root.XMLHttpRequest && ('file:' != root.location.protocol || !root.ActiveXObject)) {
+    return new XMLHttpRequest;
+  } else {
+    try { return new ActiveXObject('Microsoft.XMLHTTP'); } catch(e) {}
+    try { return new ActiveXObject('Msxml2.XMLHTTP.6.0'); } catch(e) {}
+    try { return new ActiveXObject('Msxml2.XMLHTTP.3.0'); } catch(e) {}
+    try { return new ActiveXObject('Msxml2.XMLHTTP'); } catch(e) {}
+  }
+  return false;
+};
+function sendJsonp(url, callback){
+  var self = this,
+      cb = callback,
+      timestamp = new Date().getTime(),
+      script = document.createElement('script'),
+      parent = document.getElementsByTagName('head')[0],
+      callbackName = 'keenJSONPCallback',
+      loaded = false;
+  callback = null;
+  callbackName += timestamp;
+  while (callbackName in window) {
+    callbackName += 'a';
+  }
+  window[callbackName] = function(response) {
+    if (loaded === true) return;
+    loaded = true;
+    if (cb) {
+      cb.call(self, null, response);
+    }
+    cleanup();
+  };
+  script.src = url + '&jsonp=' + callbackName;
+  parent.appendChild(script);
+  script.onreadystatechange = function() {
+    if (loaded === false && this.readyState === 'loaded') {
+      loaded = true;
+      handleError();
+      cleanup();
+    }
+  };
+  script.onerror = function() {
+    if (loaded === false) {
+      loaded = true;
+      handleError();
+      cleanup();
+    }
+  };
+  function handleError(){
+    if (cb) {
+      cb.call(self, 'An error occurred!', null);
+    }
+  }
+  function cleanup(){
+    window[callbackName] = undefined;
+    try {
+      delete window[callbackName];
+    } catch(e){};
+    parent.removeChild(script);
+  }
+}
+function sendBeacon(url, callback){
+  var self = this,
+      cb = callback,
+      img = document.createElement('img'),
+      loaded = false;
+  callback = null;
+  img.onload = function() {
+    loaded = true;
+    if ('naturalHeight' in this) {
+      if (this.naturalHeight + this.naturalWidth === 0) {
+        this.onerror();
+        return;
+      }
+    } else if (this.width + this.height === 0) {
+      this.onerror();
+      return;
+    }
+    if (cb) {
+      cb.call(self);
+    }
+  };
+  img.onerror = function() {
+    loaded = true;
+    if (cb) {
+      cb.call(self, 'An error occurred!', null);
+    }
+  };
+  img.src = url + '&c=clv1';
+}
+},{"./index":9,"./utils/base64":11,"./utils/each":12}],11:[function(require,module,exports){
+module.exports = {
+  map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+  encode: function (n) {
+    "use strict";
+    var o = "", i = 0, m = this.map, i1, i2, i3, e1, e2, e3, e4;
+    n = this.utf8.encode(n);
+    while (i < n.length) {
+      i1 = n.charCodeAt(i++); i2 = n.charCodeAt(i++); i3 = n.charCodeAt(i++);
+      e1 = (i1 >> 2); e2 = (((i1 & 3) << 4) | (i2 >> 4)); e3 = (isNaN(i2) ? 64 : ((i2 & 15) << 2) | (i3 >> 6));
+      e4 = (isNaN(i2) || isNaN(i3)) ? 64 : i3 & 63;
+      o = o + m.charAt(e1) + m.charAt(e2) + m.charAt(e3) + m.charAt(e4);
+    } return o;
+  },
+  decode: function (n) {
+    "use strict";
+    var o = "", i = 0, m = this.map, cc = String.fromCharCode, e1, e2, e3, e4, c1, c2, c3;
+    n = n.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+    while (i < n.length) {
+      e1 = m.indexOf(n.charAt(i++)); e2 = m.indexOf(n.charAt(i++));
+      e3 = m.indexOf(n.charAt(i++)); e4 = m.indexOf(n.charAt(i++));
+      c1 = (e1 << 2) | (e2 >> 4); c2 = ((e2 & 15) << 4) | (e3 >> 2);
+      c3 = ((e3 & 3) << 6) | e4;
+      o = o + (cc(c1) + ((e3 != 64) ? cc(c2) : "")) + (((e4 != 64) ? cc(c3) : ""));
+    } return this.utf8.decode(o);
+  },
+  utf8: {
+    encode: function (n) {
+      "use strict";
+      var o = "", i = 0, cc = String.fromCharCode, c;
+      while (i < n.length) {
+        c = n.charCodeAt(i++); o = o + ((c < 128) ? cc(c) : ((c > 127) && (c < 2048)) ?
+        (cc((c >> 6) | 192) + cc((c & 63) | 128)) : (cc((c >> 12) | 224) + cc(((c >> 6) & 63) | 128) + cc((c & 63) | 128)));
+        } return o;
+    },
+    decode: function (n) {
+      "use strict";
+      var o = "", i = 0, cc = String.fromCharCode, c2, c;
+      while (i < n.length) {
+        c = n.charCodeAt(i);
+        o = o + ((c < 128) ? [cc(c), i++][0] : ((c > 191) && (c < 224)) ?
+        [cc(((c & 31) << 6) | ((c2 = n.charCodeAt(i + 1)) & 63)), (i += 2)][0] :
+        [cc(((c & 15) << 12) | (((c2 = n.charCodeAt(i + 1)) & 63) << 6) | ((c3 = n.charCodeAt(i + 2)) & 63)), (i += 3)][0]);
+      } return o;
+    }
+  }
+};
 },{}],12:[function(require,module,exports){
 module.exports = function(o, cb, s){
   var n;
@@ -418,6 +698,6 @@ Emitter.prototype.listeners = function(event){
 Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
-},{}]},{},[1]);
+},{}]},{},[1])
 
 //# sourceMappingURL=keen-tracking.js.map
