@@ -156,6 +156,7 @@ module.exports = getWindowProfile;
 },{}],9:[function(require,module,exports){
 var Emitter = require('component-emitter');
 var each = require('./utils/each');
+var JSON2 = require('JSON2');
 var root = this;
 var previousKeen = root.Keen;
 var Keen = {
@@ -170,24 +171,26 @@ Keen.Client = function(cfg){
   Keen.emit('client', this);
 }
 Keen.Client.prototype.configure = function(cfg){
-  var config = cfg || {};
+  var config = cfg || {}, defaultProtocol;
   if (config['host']) {
     config['host'].replace(/.*?:\/\//g, '');
   }
-  if (config.protocol && config.protocol === 'auto') {
-    config['protocol'] = location.protocol.replace(/:/g, '');
+  defaultProtocol = 'https';
+  if ('undefined' !== typeof document && document.all) {
+    config['protocol'] = (document.location.protocol !== 'https:') ? 'http' : defaultProtocol;
   }
   this.config = {
     projectId   : config.projectId,
     writeKey    : config.writeKey,
     requestType : config.requestType || 'jsonp',
     host        : config['host']     || 'api.keen.io/3.0',
-    protocol    : config['protocol'] || 'https'
+    protocol    : config['protocol'] || defaultProtocol
   };
   if (Keen.debug) {
     this.on('error', Keen.log);
   }
   this.emit('ready');
+  return this;
 };
 Keen.Client.prototype.projectId = function(str){
   if (!arguments.length) return this.config.projectId;
@@ -218,7 +221,7 @@ function serialize(data){
   var query = [];
   each(data, function(value, key){
     if ('string' !== typeof value) {
-      value = JSON.stringify(value);
+      value = JSON2.stringify(value);
     }
     query.push(key + '=' + encodeURIComponent(value));
   });
@@ -236,10 +239,11 @@ Keen.noConflict = function(){
   return Keen;
 };
 module.exports = Keen;
-},{"./utils/each":12,"component-emitter":15}],10:[function(require,module,exports){
+},{"./utils/each":12,"JSON2":16,"component-emitter":18}],10:[function(require,module,exports){
 var Keen = require('./index');
 var base64 = require('./utils/base64');
 var each = require('./utils/each');
+var JSON2 = require('JSON2');
 module.exports = {
   'recordEvent': recordEvent,
   'recordEvents': recordEvents
@@ -258,7 +262,7 @@ function recordEvent(eventCollection, eventBody, callback){
   }
   getRequestUrl = self.url('/events/' + encodeURIComponent(eventCollection), {
     api_key  : this.writeKey(),
-    data     : base64.encode(JSON.stringify(data)),
+    data     : base64.encode(JSON2.stringify(data)),
     modified : new Date().getTime()
   });
   if (getRequestUrl.length < getUrlMaxLength()) {
@@ -270,7 +274,7 @@ function recordEvent(eventCollection, eventBody, callback){
         sendBeacon.call(this, getRequestUrl, cb);
         break;
       default:
-        sendJsonp.call(this, getRequestUrl, cb);
+        sendJSONp.call(this, getRequestUrl, cb);
         break;
     }
   }
@@ -349,7 +353,7 @@ function sendXhr(method, url, data, callback){
     if (xhr.readyState == 4) {
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
-          response = JSON.parse(xhr.responseText);
+          response = JSON2.parse(xhr.responseText);
         } catch (e) {
           Keen.emit('error', 'Could not parse HTTP response: ' + xhr.responseText);
           if (cb) {
@@ -370,9 +374,9 @@ function sendXhr(method, url, data, callback){
   };
   xhr.open(method, url, true);
   xhr.setRequestHeader('Authorization', self.writeKey());
-  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('Content-Type', 'application/JSON');
   if (data) {
-    payload = JSON.stringify(data);
+    payload = JSON2.stringify(data);
   }
   if (method.toUpperCase() === 'GET') {
     xhr.send();
@@ -393,7 +397,7 @@ function getXhr() {
   }
   return false;
 };
-function sendJsonp(url, callback){
+function sendJSONp(url, callback){
   var self = this,
       cb = callback,
       timestamp = new Date().getTime(),
@@ -414,7 +418,7 @@ function sendJsonp(url, callback){
     }
     cleanup();
   };
-  script.src = url + '&jsonp=' + callbackName;
+  script.src = url + '&JSONp=' + callbackName;
   parent.appendChild(script);
   script.onreadystatechange = function() {
     if (loaded === false && this.readyState === 'loaded') {
@@ -472,7 +476,7 @@ function sendBeacon(url, callback){
   };
   img.src = url + '&c=clv1';
 }
-},{"./index":9,"./utils/base64":11,"./utils/each":12}],11:[function(require,module,exports){
+},{"./index":9,"./utils/base64":11,"./utils/each":12,"JSON2":16}],11:[function(require,module,exports){
 module.exports = {
   map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
   encode: function (n) {
@@ -567,6 +571,419 @@ function parseParams(str){
 };
 module.exports = parseParams;
 },{}],15:[function(require,module,exports){
+/*jslint evil: true, regexp: true */
+/*members $ref, apply, call, decycle, hasOwnProperty, length, prototype, push,
+    retrocycle, stringify, test, toString
+*/
+(function (exports) {
+if (typeof exports.decycle !== 'function') {
+    exports.decycle = function decycle(object) {
+        'use strict';
+        var objects = [],  
+            paths = [];    
+        return (function derez(value, path) {
+            var i,         
+                name,      
+                nu;        
+            switch (typeof value) {
+            case 'object':
+                if (!value) {
+                    return null;
+                }
+                for (i = 0; i < objects.length; i += 1) {
+                    if (objects[i] === value) {
+                        return {$ref: paths[i]};
+                    }
+                }
+                objects.push(value);
+                paths.push(path);
+                if (Object.prototype.toString.apply(value) === '[object Array]') {
+                    nu = [];
+                    for (i = 0; i < value.length; i += 1) {
+                        nu[i] = derez(value[i], path + '[' + i + ']');
+                    }
+                } else {
+                    nu = {};
+                    for (name in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, name)) {
+                            nu[name] = derez(value[name],
+                                path + '[' + JSON.stringify(name) + ']');
+                        }
+                    }
+                }
+                return nu;
+            case 'number':
+            case 'string':
+            case 'boolean':
+                return value;
+            }
+        }(object, '$'));
+    };
+}
+if (typeof exports.retrocycle !== 'function') {
+    exports.retrocycle = function retrocycle($) {
+        'use strict';
+        var px =
+            /^\$(?:\[(?:\d+|\"(?:[^\\\"\u0000-\u001f]|\\([\\\"\/bfnrt]|u[0-9a-zA-Z]{4}))*\")\])*$/;
+        (function rez(value) {
+            var i, item, name, path;
+            if (value && typeof value === 'object') {
+                if (Object.prototype.toString.apply(value) === '[object Array]') {
+                    for (i = 0; i < value.length; i += 1) {
+                        item = value[i];
+                        if (item && typeof item === 'object') {
+                            path = item.$ref;
+                            if (typeof path === 'string' && px.test(path)) {
+                                value[i] = eval(path);
+                            } else {
+                                rez(item);
+                            }
+                        }
+                    }
+                } else {
+                    for (name in value) {
+                        if (typeof value[name] === 'object') {
+                            item = value[name];
+                            if (item) {
+                                path = item.$ref;
+                                if (typeof path === 'string' && px.test(path)) {
+                                    value[name] = eval(path);
+                                } else {
+                                    rez(item);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }($));
+        return $;
+    };
+}
+}) (
+  (typeof exports !== 'undefined') ? 
+    exports : 
+    (window.JSON ? 
+      (window.JSON) :
+      (window.JSON = {})
+    )
+);
+},{}],16:[function(require,module,exports){
+var JSON2 = require('./json2');
+var cycle = require('./cycle');
+JSON2.decycle = cycle.decycle;
+JSON2.retrocycle = cycle.retrocycle;
+module.exports = JSON2;
+},{"./cycle":15,"./json2":17}],17:[function(require,module,exports){
+/*
+    json2.js
+    2011-10-19
+    Public Domain.
+    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+    See http://www.JSON.org/js.html
+    This code should be minified before deployment.
+    See http://javascript.crockford.com/jsmin.html
+    USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
+    NOT CONTROL.
+    This file creates a global JSON object containing two methods: stringify
+    and parse.
+        JSON.stringify(value, replacer, space)
+            value       any JavaScript value, usually an object or array.
+            replacer    an optional parameter that determines how object
+                        values are stringified for objects. It can be a
+                        function or an array of strings.
+            space       an optional parameter that specifies the indentation
+                        of nested structures. If it is omitted, the text will
+                        be packed without extra whitespace. If it is a number,
+                        it will specify the number of spaces to indent at each
+                        level. If it is a string (such as '\t' or '&nbsp;'),
+                        it contains the characters used to indent at each level.
+            This method produces a JSON text from a JavaScript value.
+            When an object value is found, if the object contains a toJSON
+            method, its toJSON method will be called and the result will be
+            stringified. A toJSON method does not serialize: it returns the
+            value represented by the name/value pair that should be serialized,
+            or undefined if nothing should be serialized. The toJSON method
+            will be passed the key associated with the value, and this will be
+            bound to the value
+            For example, this would serialize Dates as ISO strings.
+                Date.prototype.toJSON = function (key) {
+                    function f(n) {
+                        return n < 10 ? '0' + n : n;
+                    }
+                    return this.getUTCFullYear()   + '-' +
+                         f(this.getUTCMonth() + 1) + '-' +
+                         f(this.getUTCDate())      + 'T' +
+                         f(this.getUTCHours())     + ':' +
+                         f(this.getUTCMinutes())   + ':' +
+                         f(this.getUTCSeconds())   + 'Z';
+                };
+            You can provide an optional replacer method. It will be passed the
+            key and value of each member, with this bound to the containing
+            object. The value that is returned from your method will be
+            serialized. If your method returns undefined, then the member will
+            be excluded from the serialization.
+            If the replacer parameter is an array of strings, then it will be
+            used to select the members to be serialized. It filters the results
+            such that only members with keys listed in the replacer array are
+            stringified.
+            Values that do not have JSON representations, such as undefined or
+            functions, will not be serialized. Such values in objects will be
+            dropped; in arrays they will be replaced with null. You can use
+            a replacer function to replace those with JSON values.
+            JSON.stringify(undefined) returns undefined.
+            The optional space parameter produces a stringification of the
+            value that is filled with line breaks and indentation to make it
+            easier to read.
+            If the space parameter is a non-empty string, then that string will
+            be used for indentation. If the space parameter is a number, then
+            the indentation will be that many spaces.
+            Example:
+            text = JSON.stringify(['e', {pluribus: 'unum'}]);
+            text = JSON.stringify(['e', {pluribus: 'unum'}], null, '\t');
+            text = JSON.stringify([new Date()], function (key, value) {
+                return this[key] instanceof Date ?
+                    'Date(' + this[key] + ')' : value;
+            });
+        JSON.parse(text, reviver)
+            This method parses a JSON text to produce an object or array.
+            It can throw a SyntaxError exception.
+            The optional reviver parameter is a function that can filter and
+            transform the results. It receives each of the keys and values,
+            and its return value is used instead of the original value.
+            If it returns what it received, then the structure is not modified.
+            If it returns undefined then the member is deleted.
+            Example:
+            myData = JSON.parse(text, function (key, value) {
+                var a;
+                if (typeof value === 'string') {
+                    a =
+/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
+                    if (a) {
+                        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4],
+                            +a[5], +a[6]));
+                    }
+                }
+                return value;
+            });
+            myData = JSON.parse('["Date(09/09/2001)"]', function (key, value) {
+                var d;
+                if (typeof value === 'string' &&
+                        value.slice(0, 5) === 'Date(' &&
+                        value.slice(-1) === ')') {
+                    d = new Date(value.slice(5, -1));
+                    if (d) {
+                        return d;
+                    }
+                }
+                return value;
+            });
+    This is a reference implementation. You are free to copy, modify, or
+    redistribute.
+*/
+/*jslint evil: true, regexp: true */
+/*members "", "\b", "\t", "\n", "\f", "\r", "\"", JSON, "\\", apply,
+    call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
+    getUTCMinutes, getUTCMonth, getUTCSeconds, hasOwnProperty, join,
+    lastIndex, length, parse, prototype, push, replace, slice, stringify,
+    test, toJSON, toString, valueOf
+*/
+(function (JSON) {
+    'use strict';
+    function f(n) {
+        return n < 10 ? '0' + n : n;
+    }
+    /* DDOPSON-2012-04-16 - mutating global prototypes is NOT allowed for a well-behaved module.  
+     * It's also unneeded, since Date already defines toJSON() to the same ISOwhatever format below
+     * Thus, we skip this logic for the CommonJS case where 'exports' is defined
+     */
+    if (typeof exports === 'undefined') {
+      if (typeof Date.prototype.toJSON !== 'function') {
+          Date.prototype.toJSON = function (key) {
+              return isFinite(this.valueOf())
+                  ? this.getUTCFullYear()     + '-' +
+                      f(this.getUTCMonth() + 1) + '-' +
+                      f(this.getUTCDate())      + 'T' +
+                      f(this.getUTCHours())     + ':' +
+                      f(this.getUTCMinutes())   + ':' +
+                      f(this.getUTCSeconds())   + 'Z'
+                  : null;
+          };
+      }
+      if (typeof String.prototype.toJSON !== 'function') {
+        String.prototype.toJSON = function (key) { return this.valueOf(); };
+      }
+      if (typeof Number.prototype.toJSON !== 'function') {
+        Number.prototype.toJSON = function (key) { return this.valueOf(); };
+      }
+      if (typeof Boolean.prototype.toJSON !== 'function') {
+        Boolean.prototype.toJSON = function (key) { return this.valueOf(); };
+      }
+    }
+    var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+        escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
+        gap,
+        indent,
+        meta = {   
+            '\b': '\\b',
+            '\t': '\\t',
+            '\n': '\\n',
+            '\f': '\\f',
+            '\r': '\\r',
+            '"' : '\\"',
+            '\\': '\\\\'
+        },
+        rep;
+    function quote(string) {
+        escapable.lastIndex = 0;
+        return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
+            var c = meta[a];
+            return typeof c === 'string'
+                ? c
+                : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+        }) + '"' : '"' + string + '"';
+    }
+    function str(key, holder) {
+        var i,         
+            k,         
+            v,         
+            length,
+            mind = gap,
+            partial,
+            value = holder[key];
+        if (value && typeof value === 'object' &&
+                typeof value.toJSON === 'function') {
+            value = value.toJSON(key);
+        }
+        if (typeof rep === 'function') {
+            value = rep.call(holder, key, value);
+        }
+        switch (typeof value) {
+        case 'string':
+            return quote(value);
+        case 'number':
+            return isFinite(value) ? String(value) : 'null';
+        case 'boolean':
+        case 'null':
+            return String(value);
+        case 'object':
+            if (!value) {
+                return 'null';
+            }
+            gap += indent;
+            partial = [];
+            if (Object.prototype.toString.apply(value) === '[object Array]') {
+                length = value.length;
+                for (i = 0; i < length; i += 1) {
+                    partial[i] = str(i, value) || 'null';
+                }
+                v = partial.length === 0
+                    ? '[]'
+                    : gap
+                    ? '[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']'
+                    : '[' + partial.join(',') + ']';
+                gap = mind;
+                return v;
+            }
+            if (rep && typeof rep === 'object') {
+                length = rep.length;
+                for (i = 0; i < length; i += 1) {
+                    if (typeof rep[i] === 'string') {
+                        k = rep[i];
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                        }
+                    }
+                }
+            } else {
+                for (k in value) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                        }
+                    }
+                }
+            }
+            v = partial.length === 0
+                ? '{}'
+                : gap
+                ? '{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}'
+                : '{' + partial.join(',') + '}';
+            gap = mind;
+            return v;
+        }
+    }
+    if (typeof JSON.stringify !== 'function') {
+        JSON.stringify = function (value, replacer, space) {
+            var i;
+            gap = '';
+            indent = '';
+            if (typeof space === 'number') {
+                for (i = 0; i < space; i += 1) {
+                    indent += ' ';
+                }
+            } else if (typeof space === 'string') {
+                indent = space;
+            }
+            rep = replacer;
+            if (replacer && typeof replacer !== 'function' &&
+                    (typeof replacer !== 'object' ||
+                    typeof replacer.length !== 'number')) {
+                throw new Error('JSON.stringify');
+            }
+            return str('', {'': value});
+        };
+    }
+    if (typeof JSON.parse !== 'function') {
+        JSON.parse = function (text, reviver) {
+            var j;
+            function walk(holder, key) {
+                var k, v, value = holder[key];
+                if (value && typeof value === 'object') {
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = walk(value, k);
+                            if (v !== undefined) {
+                                value[k] = v;
+                            } else {
+                                delete value[k];
+                            }
+                        }
+                    }
+                }
+                return reviver.call(holder, key, value);
+            }
+            text = String(text);
+            cx.lastIndex = 0;
+            if (cx.test(text)) {
+                text = text.replace(cx, function (a) {
+                    return '\\u' +
+                        ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+                });
+            }
+            if (/^[\],:{}\s]*$/
+                    .test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
+                        .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
+                        .replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+                j = eval('(' + text + ')');
+                return typeof reviver === 'function'
+                    ? walk({'': j}, '')
+                    : j;
+            }
+            throw new SyntaxError('JSON.parse');
+        };
+    }
+})(
+  (typeof exports !== 'undefined') ? 
+    exports : 
+    (window.JSON ? 
+      (window.JSON) :
+      (window.JSON = {})
+    )
+);
+},{}],18:[function(require,module,exports){
 /**
  * Expose `Emitter`.
  */

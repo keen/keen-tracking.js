@@ -1,4 +1,7 @@
 var assert = require('proclaim');
+var JSON2 = require('JSON2');
+var sinon = require('sinon');
+
 var Keen = require('../../../lib/browser');
 var config = require('../helpers/client-config');
 
@@ -13,9 +16,15 @@ describe('Keen.Client core methods (browser)', function() {
         projectId: config.projectId,
         writeKey: config.writeKey,
         requestType: 'xhr',
-        host: config.host
+        host: config.host,
+        protocol: config.protocol
       });
       this.postUrl = this.client.url('/events/' + config.collection);
+
+      // Hack for IE9 request shim
+      if ('undefined' !== typeof document && document.all) {
+        this.postUrl = this.postUrl.replace('https', 'http');
+      }
       this.server = sinon.fakeServer.create();
     });
 
@@ -104,7 +113,7 @@ describe('Keen.Client core methods (browser)', function() {
           { page: 'same again' }
         ]
       };
-      this.batchResponse = JSON.stringify({
+      this.batchResponse = JSON2.stringify({
         click: [
           { 'success': true }
         ],

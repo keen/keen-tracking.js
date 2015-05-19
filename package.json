@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "browserify-versionify": "^1.0.4",
-    "component-emitter": "^1.2.0"
+    "component-emitter": "^1.2.0",
+    "JSON2": "^0.1.0"
   },
   "devDependencies": {
     "browserify": "^9.0.8",
@@ -39,14 +40,27 @@
     "gulp": "^3.8.11",
     "gulp-connect": "^2.2.0",
     "gulp-mocha": "^2.0.1",
+    "gulp-mocha-phantomjs": "^0.6.1",
     "gulp-remove-empty-lines": "0.0.2",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-strip-comments": "^1.0.1",
     "gulp-util": "^3.0.4",
     "gulp-yuicompressor": "0.0.3",
+    "karma": "^0.12.32",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-mocha": "^0.1.10",
+    "karma-nyan-reporter": "0.0.60",
+    "karma-requirejs": "^0.2.2",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-sauce-launcher": "^0.2.11",
+    "karma-sinon": "^1.0.4",
+    "mocha": "^2.2.5",
+    "moment": "^2.10.3",
     "nock": "^2.0.1",
     "proclaim": "^3.2.1",
+    "sinon": "^1.14.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "vinyl-transform": "^1.0.0"

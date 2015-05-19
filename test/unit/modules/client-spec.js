@@ -14,6 +14,11 @@ describe('Keen.Client (browser)', function() {
       host: config.host
     });
     this.matchUrlBase = config.protocol + '://' + config.host + '/projects/' + config.projectId;
+
+    // Hack for IE9 request shim
+    if ('undefined' !== typeof document && document.all) {
+      this.matchUrlBase = this.matchUrlBase.replace('https', 'http');
+    }
   });
 
   describe('#configure', function(){

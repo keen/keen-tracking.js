@@ -20,8 +20,6 @@
   ],
   "devDependencies": {
     "mocha": "~2.2.4",
-    "proclaim": "~3.2.1",
-    "requirejs-bower": "~2.1.17",
-    "sinon-1.12.1": "http://sinonjs.org/releases/sinon-1.12.1.js"
+    "requirejs-bower": "~2.1.17"
   }
 }
