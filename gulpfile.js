@@ -69,7 +69,11 @@ gulp.task('watch', ['connect'], function() {
 // Test tasks
 // -------------------------
 
-gulp.task('test:browserify', function () {
+gulp.task('test:clean', function(callback){
+  del(['./test/unit/build'], callback);
+});
+
+gulp.task('test:browserify', ['test:clean'], function() {
   var b = browserify({
     entries: './test/unit/browser.js',
     debug: true
