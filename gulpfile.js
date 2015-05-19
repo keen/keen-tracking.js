@@ -86,7 +86,7 @@ gulp.task('test:browserify', ['test:clean'], function() {
 });
 
 gulp.task('test:mocha', ['test:browserify'], function () {
-  return gulp.src('./test/unit/index.js', { read: false })
+  return gulp.src('./test/unit/server.js', { read: false })
   .pipe(mocha({ reporter: 'nyan' }));
 });
 
