@@ -17,7 +17,6 @@ describe('Keen event emitter system', function(){
 
   describe('#trigger', function(){
     it('should call bound functions when triggered', function(done){
-      // var callback = chai.spy();
       var count = 0;
       Keen.on('event', function(){
         count++;
@@ -29,11 +28,9 @@ describe('Keen event emitter system', function(){
         }
       });
       Keen.emit('event');
-      // expect(callback).to.have.been.called.once;
     });
 
     it('should pass arguments to bound functions when triggered', function(done){
-      // var callback = chai.spy(),
       var payload = { status: 'ok' }, count = 0;
       Keen.on('event', function(data){
         count++;
@@ -45,7 +42,6 @@ describe('Keen event emitter system', function(){
         }
       });
       Keen.emit('event', payload);
-      // expect(callback).to.have.been.called.once.with(payload);
     });
 
     it('should call bound functions multiple when triggered multiple times', function(){
@@ -64,7 +60,6 @@ describe('Keen event emitter system', function(){
 
   describe('#off', function(){
     it('should remove all listeners for an event name with #off(name)', function(){
-      // var callback = chai.spy();
       var count = 0;
       function callback(){
         count++;
@@ -74,11 +69,9 @@ describe('Keen event emitter system', function(){
       Keen.off('event');
       Keen.emit('event');
       assert.equal(count, 0);
-      // expect(callback).to.not.have.been.called.once;
     });
 
     it('should remove specified listeners with #off(name, callback)', function(){
-      // var callback = chai.spy(),
       var count = 0;
       function callback(){
         count++;
@@ -91,7 +84,6 @@ describe('Keen event emitter system', function(){
       Keen.off('event', fakeback);
       Keen.emit('event');
       assert.equal(count, 1);
-      // expect(callback).to.have.been.called.once;
     });
   });
 
@@ -109,13 +101,9 @@ describe('Keen event emitter system', function(){
       Keen.emit('event');
       assert.equal(countA, 1);
       assert.equal(countB, 1);
-      // expect(callbackA).to.have.been.called.once;
-      // expect(callbackB).to.have.been.called.once;
       Keen.emit('event');
       assert.equal(countA, 1);
       assert.equal(countB, 1);
-      // expect(callbackA).to.have.been.called.once;
-      // expect(callbackB).to.have.been.called.once;
     });
   });
 });

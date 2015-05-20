@@ -2,7 +2,29 @@
 
 **Important:** This project is not yet functional. We're building this in public, in open collaboration with our customers and community members! Below is a sketch of planned functionality. [Learn more about contributing to this project](./CONTRIBUTING.md).
 
-Run the following commands to get this dev project set up locally:
+### Vision quest
+
+Why are we splitting this functionality out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases cause bring more heartache than nirvana.
+
+Once this project is ready, we'll import and replace existing tracking functionality within keen-js. This *could* get messy :) If you have any ideas for how to make this purely awesome instead, jump on in and join the fun!
+
+### Roadmap
+
+Here's what is done, what needs to be built:
+
+* [x] `Keen.Client` instance and accessors
+* [x] `Keen.helpers`: a collection of helpers to return common data model fragments
+* [x] `Keen.utils`: a collection of handy utilities like `each` and `parseParams`
+* [x] Top-level `Keen` settings for debugging and disabling event transmission
+* [x] `#recordEvent` and `#recordEvents` methods for sending single/multiple events
+* [ ] `#deferEvent` and `#deferEvents` methods for managing a queue of events that are processed at a configurable interval
+* [ ] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
+* [ ] `Keen.listenTo` (concept) for listening to common user/window events
+* [ ] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
+
+*So how about dependencies?* No required dependencies. As for internally bundled deps, let's also avoid them as much as possible to minimize the compiled/minified browser library. Currently considering using [sizzle.js](http://sizzlejs.com/) for DOM wizardry, but open to alternatives here as well.
+
+*Ready to get started?* Run the following commands to get this dev project set up locally:
 
 ```ssh
 # Clone the repo
