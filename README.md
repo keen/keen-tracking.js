@@ -4,7 +4,7 @@
 
 ### Vision quest
 
-Why are we splitting this functionality out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases cause bring more heartache than nirvana.
+Why are we splitting this functionality out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases bring more heartache than nirvana.
 
 Once this project is ready, we'll import and replace existing tracking functionality within keen-js. This *could* get messy :) If you have any ideas for how to make this purely awesome instead, jump on in and join the fun!
 
@@ -19,6 +19,8 @@ Here's what is done, what needs to be built:
 * [x] `#recordEvent` and `#recordEvents` methods for sending single/multiple events
 * [ ] `#deferEvent` and `#deferEvents` methods for managing a queue of events that are processed at a configurable interval
 * [ ] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
+* [ ] `Keen.utils.cookie()` for managing simple cookies
+* [ ] `Keen.utils.timer()` for managing a simple timer
 * [ ] `Keen.listenTo` (concept) for listening to common user/window events
 * [ ] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
 
@@ -109,6 +111,9 @@ client.on("recordEvent", Keen.log);
 
 ### Install the library
 
+*Currently unpublished.. but not far off!*
+
+<!--
 ```
 # via npm
 $ npm install keen-tracking
@@ -129,6 +134,7 @@ Or load the library synchronously from our CDN:
 ```
 https://d26b395fwzu5fz.cloudfront.net/0.0.1/keen-tracking.min.js
 ```
+-->
 
 ### Configure a new client for each project
 
