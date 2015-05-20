@@ -374,7 +374,7 @@ function sendXhr(method, url, data, callback){
   };
   xhr.open(method, url, true);
   xhr.setRequestHeader('Authorization', self.writeKey());
-  xhr.setRequestHeader('Content-Type', 'application/JSON');
+  xhr.setRequestHeader('Content-Type', 'application/json');
   if (data) {
     payload = JSON2.stringify(data);
   }
