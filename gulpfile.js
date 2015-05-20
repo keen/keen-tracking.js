@@ -58,7 +58,7 @@ gulp.task('build:minify', ['build:browserify'], function(){
 
 gulp.task('connect', ['build'], function() {
   return connect.server({
-      root: [ __dirname, 'test', 'test/unit', 'test/vendor' ],
+      root: [ __dirname, 'test', 'test/demo', 'test/unit', 'test/vendor' ],
       port: 9000
     });
 });

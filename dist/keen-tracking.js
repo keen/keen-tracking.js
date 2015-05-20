@@ -418,7 +418,7 @@ function sendJSONp(url, callback){
     }
     cleanup();
   };
-  script.src = url + '&JSONp=' + callbackName;
+  script.src = url + '&jsonp=' + callbackName;
   parent.appendChild(script);
   script.onreadystatechange = function() {
     if (loaded === false && this.readyState === 'loaded') {
