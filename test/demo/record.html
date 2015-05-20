@@ -23,12 +23,15 @@
       }
     };
     client.recordEvent('recordEvent', eventBody, function(err, res){
+      Keen.log('#recordEvent');
       Keen.log(err);
       Keen.log(res);
     });
-    client.recordEvents({
-      'recordEvents': [eventBody, eventBody, eventBody]
-    })
+    client.recordEvents({ 'recordEvents': [eventBody, eventBody, eventBody] }, function(err, res){
+      Keen.log('#recordEvents');
+      Keen.log(err);
+      Keen.log(res);
+    });
 	</script>
 </body>
 </html>
