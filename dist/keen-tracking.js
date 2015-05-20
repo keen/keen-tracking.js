@@ -74,12 +74,6 @@ module.exports = getDateTimeIndex;
 },{}],4:[function(require,module,exports){
 function getDomEventProfile(e){
   if (!arguments.length) return {};
-  return {
-    'innerText': e.target.innerText,
-    'path': Keen.helpers.getDomPath(e.target).join(' > '),
-    'tagName': e.target.tagName,
-    'title': e.target.title
-  };
 }
 module.exports = getDomEventProfile;
 },{}],5:[function(require,module,exports){
@@ -110,7 +104,7 @@ function getDomNodePath(el){
     }
     el = el.parentNode;
   }
-  return stack.slice(1);
+  return stack.slice(1).join(' > ');
 }
 module.exports = getDomNodePath;
 },{}],6:[function(require,module,exports){
@@ -140,8 +134,8 @@ function getWindowProfile(){
   body = document.body;
   html = document.documentElement;
   output = {
-    'height': window.innerHeight || null,
-    'width': window.innerWidth || null,
+    'height': ('innerHeight' in window) ? window.innerHeight : document.documentElement.offsetHeight,
+    'width': ('innerWidth' in window) ? window.innerWidth : document.documentElement.offsetWidth,
     'scrollHeight': Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight ) || null
   };
   if (window.screen) {
@@ -153,6 +147,10 @@ function getWindowProfile(){
   return output;
 }
 module.exports = getWindowProfile;
+/*
+  Notes:
+    document.documentElement.offsetHeight/Width is a workaround for IE8 and below, where window.innerHeight/Width is undefined
+*/
 },{}],9:[function(require,module,exports){
 var Emitter = require('component-emitter');
 var each = require('./utils/each');
