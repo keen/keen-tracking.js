@@ -2,12 +2,18 @@
 
 **Important:** This project is not yet functional. We're building this in public, in open collaboration with our customers and community members! Below is a sketch of planned functionality. [Learn more about contributing to this project](./CONTRIBUTING.md).
 
+### Vision quest
+
+Why are we splitting this functionality out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases cause bring more heartache than nirvana.
+
+Once this project is ready, we'll import and replace existing tracking functionality within keen-js. This *could* get messy :) If you have any ideas for how to make this purely awesome instead, jump on in and join the fun!
+
 ### Roadmap
 
 Here's what is done, what needs to be built:
 
 * [x] `Keen.Client` instance and accessors
-* [ ] `Keen.helpers`: a collection of helpers to return common data model fragments
+* [x] `Keen.helpers`: a collection of helpers to return common data model fragments
 * [x] `Keen.utils`: a collection of handy utilities like `each` and `parseParams`
 * [x] Top-level `Keen` settings for debugging and disabling event transmission
 * [x] `#recordEvent` and `#recordEvents` methods for sending single/multiple events
