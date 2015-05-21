@@ -49,7 +49,7 @@ $ gulp with-tests
 
 ### Overview
 
-```
+```javascript
 var client = new Keen.Client(object);
 
 // Config accessors
@@ -114,7 +114,7 @@ client.on("recordEvent", Keen.log);
 *Currently unpublished.. but not far off!*
 
 <!--
-```
+```ssh
 # via npm
 $ npm install keen-tracking
 
@@ -124,21 +124,21 @@ $ bower install keen-tracking
 
 For quick browser use, copy/paste this snippet of JavaScript above the </head> tag of your page:
 
-```
+```javascript
 // async loader ...
 !function(a,b){a("Keen","https://d26b395fwzu5fz.cloudfront.net/0.0.1/keen-tracking.min.js",b)}(function(a,b,c){var d,e,f;c["_"+a]={},c[a]=function(b){c["_"+a].clients=c["_"+a].clients||{},c["_"+a].clients[b.projectId]=this,this._config=b},c[a].ready=function(b){c["_"+a].ready=c["_"+a].ready||[],c["_"+a].ready.push(b)},d=["recordEvent","recordEvents","on"];for(var g=0;g<d.length;g++){var h=d[g],i=function(a){return function(){return this["_"+a]=this["_"+a]||[],this["_"+a].push(arguments),this}};c[a].prototype[h]=i(h)}e=document.createElement("script"),e.async=!0,e.src=b,f=document.getElementsByTagName("script")[0],f.parentNode.insertBefore(e,f)},this);
 ```
 
 Or load the library synchronously from our CDN:
 
-```
+```ssh
 https://d26b395fwzu5fz.cloudfront.net/0.0.1/keen-tracking.min.js
 ```
 -->
 
 ### Configure a new client for each project
 
-```
+```javascript
 var client = new Keen.Client({
 	projectId: "YOUR_PROJECT_ID",
 	writeKey: "YOUR_WRITE_KEY"
@@ -154,7 +154,7 @@ function callback(err, res){
 
 These methods push single or multiple events to their respective API endpoints.
 
-```
+```javascript
 // Single event
 client.recordEvent("transaction", { value: 123 }, callback);
 
@@ -174,7 +174,7 @@ client.recordEvents({
 
 These methods handle an internal queue of events, which is pushed to the Events resource endpoint on a given interval.
 
-```
+```javascript
 // Single event
 client.deferEvent("transaction", {}, callback);
 
@@ -235,11 +235,6 @@ client.extendEvents(function(){
 client.extendEvent("pageview", { title: document.title });
 ```
 
-**Example**
-
-```javascript
-
-```
 
 ### DOM Element tracking
 
@@ -247,7 +242,7 @@ This method surfaces events from user interactions. Form submits and clicks will
 
 Also check out declarative binding demo here: http://jsfiddle.net/hm514aj8/10/
 
-```
+```javascript
 // Listen to DOM events
 Keen.listenTo({
 	// Form submits and clicks will be delayed (configurable)
@@ -275,7 +270,7 @@ Keen.deferDomEvents("FORM", "submit", 500);
 
 #### Window events
 
-```
+```javascript
 Keen.listenTo({
 	"scroll window": function(e){
 		// update engagement helper's scroll tracking
@@ -307,7 +302,7 @@ Keen.listenTo({
 * unload
 
 
-```
+```javascript
 /* Alternate interface
 	Pass in DOM elements or CSS selectors (sizzle.js) */
 var form = document.getElementById('my-fancy-form');
@@ -318,7 +313,7 @@ client.listenTo(".nav > a.login", "click", function(e){ ... });
 
 ### Cookies
 
-```
+```javascript
 var session = Keen.utils.cookie("visitor-stats");
 session.set("user_id", "222323843234");
 session.get("user_id"); // "222323843234"
@@ -328,7 +323,7 @@ session.clear();
 
 ### Timers
 
-```
+```javascript
 var userActivity = Keen.utils.timer();
 userActivity.start();
 userActivity.pause();
@@ -344,7 +339,7 @@ historicalActivity.pause();
 
 These helpers can be passed into `client.extendEvent(s)` method(s) to construct and attach common sets of properties.
 
-```
+```javascript
 Keen.helpers = {
 	getBrowserProfile: function(){
 		return {
@@ -385,7 +380,7 @@ Keen.helpers = {
 
 ## Example Setup
 
-```
+```javascript
 var client = new Keen.Client({});
 
 Keen.listenTo({
@@ -432,7 +427,7 @@ client.recordEvent("pageview");
 
 ### Inspect event stream
 
-```
+```javascript
 Keen.debug(true);
 client.on("all", Keen.log);
 client.on("recordEvent", Keen.log);
