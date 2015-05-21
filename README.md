@@ -156,13 +156,17 @@ These methods push single or multiple events to their respective API endpoints.
 
 ```
 // Single event
-client.recordEvent("transaction", {}, callback);
+client.recordEvent("transaction", { value: 123 }, callback);
 
 // Multiple events
 client.recordEvents({
-	"transaction": [ {} ],
-	"purchase": [ {}, {}, {} ],
-	"pageview": [ {} ]
+	"transaction": [ { value: 123 } ],
+	"purchase": [ 
+		{ value: 123 }, 
+		{ value: 456 }, 
+		{ value: 789 }
+	],
+	"pageview": [ { value: 012 } ]
 }, callback);
 ```
 
@@ -202,17 +206,21 @@ client.extendEvents(function(){ return {}; });
 // Example usage
 
 var userProps = {
-  full_name: "User Dude",
-  email: "name@domain.com",
-  id: "f1233423h",
-  username: "userdude213"
+	full_name: "User Dude",
+	email: "name@domain.com",
+	id: "f1233423h",
+	username: "userdude213"
 };
 
+// Include a predefined "user" object with every purchase event
 client.extendEvent("purchase", {
 	"user": userProps
 });
 
+// Include a predefined "user" object with every event
 client.extendEvents({ "user": userProps });
+
+// Include a dynamic "keen.timestamp" property with every event
 client.extendEvents(function(){
 	return {
 		keen: {
@@ -220,6 +228,8 @@ client.extendEvents(function(){
 		}
 	};
 });
+
+// Include a "title" property with every pageview event
 client.extendEvent("pageview", { title: document.title });
 ```
 
@@ -357,10 +367,7 @@ Keen.helpers = {
 		// http://stackoverflow.com/a/16742828/2511985
 		// returns something like "body > div#nav > ul > a#signup"
 	},
-	getEngagementInfo: function(){},
-	getKitchenSink: function(){
-		// applies all helpers
-	},
+	// getEngagementInfo: function(){}, // ? what might this entail? activity timers and scroll depth?
 	getRandomId: function(){},
 	getScreenProperties: function(){},
 	getWindowProperties: function(){}
