@@ -162,7 +162,7 @@ var Keen = {
   enabled: true,
   helpers: {},
   utils: {},
-  version: '0.0.0'
+  version: '0.0.1'
 };
 Keen.Client = function(cfg){
   this.configure(cfg);
@@ -180,9 +180,11 @@ Keen.Client.prototype.configure = function(cfg){
   this.config = {
     projectId   : config.projectId,
     writeKey    : config.writeKey,
+    host        : config['host']     || 'api.keen.io',
+    protocol    : config['protocol'] || defaultProtocol,
     requestType : config.requestType || 'jsonp',
-    host        : config['host']     || 'api.keen.io/3.0',
-    protocol    : config['protocol'] || defaultProtocol
+    basePath    : config.basePath || '/3.0',
+    writePath   : config.writePath,
   };
   if (Keen.debug) {
     this.on('error', Keen.log);
@@ -200,13 +202,24 @@ Keen.Client.prototype.writeKey = function(str){
   this.config.writeKey = (str ? String(str) : null);
   return this;
 };
+Keen.Client.prototype.writePath = function(str){
+  if (!arguments.length) {
+    if (!this.projectId()) {
+      this.emit('error', 'Keen.Client is missing a projectId property');
+      return;
+    }
+    return this.config.writePath ? this.config.writePath : (this.config.basePath + '/projects/' + this.projectId() + '/events');
+  }
+  this.config.writePath = (str ? String(str) : null);
+  return this;
+};
 Keen.Client.prototype.url = function(path, data){
   var url;
   if (!this.projectId()) {
     this.emit('error', 'Keen.Client is missing a projectId property');
     return;
   }
-  url = this.config.protocol + '://' + this.config.host + '/projects/' + this.projectId();
+  url = this.config.protocol + '://' + this.config.host + this.config.basePath + '/projects/' + this.projectId();
   if (path) {
     url += path;
   }

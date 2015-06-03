@@ -8,13 +8,13 @@ var client = new Keen.Client({
   writeKey: '554a723d023da6cb24e51c56a9a54555e9dcf8403d4b71ffa37e9112295622e78a10eed43a13c83b14ce171b0f1317bb09aa8df43d50f73b77709ab431af611ea47ed65f4d74c0ea5f2bde8407322ab70559afef294673ee6c224308b1744c9e069508799edefc51264b3f75a1ba9e26'
 });
 var eventBody = {
-  user_agent: '${keen.user_agent}',
+  ip_address: '${keen.ip}',
   keen: {
     addons: [
       {
-        name : 'keen:ua_parser',
-        input : { ua_string : 'user_agent' },
-        output : 'parsed_user_agent'
+        name : 'keen:ip_to_geo',
+        input : { ip : 'ip_address' },
+        output : 'ip_geo_info'
       }
     ]
   }
@@ -30,3 +30,5 @@ client.recordEvents({ 'recordEvents': [eventBody, eventBody, eventBody] }, funct
   Keen.log(err);
   Keen.log(res);
 });
+
+// console.log(Keen.version);

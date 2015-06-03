@@ -13,7 +13,7 @@ describe('Keen.Client (browser)', function() {
       protocol: config.protocol,
       host: config.host
     });
-    this.matchUrlBase = config.protocol + '://' + config.host + '/projects/' + config.projectId;
+    this.matchUrlBase = config.protocol + '://' + config.host + '/3.0/projects/' + config.projectId;
 
     // Hack for IE9 request shim
     if ('undefined' !== typeof document && document.all) {
