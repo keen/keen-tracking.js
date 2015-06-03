@@ -30,8 +30,7 @@
   "dependencies": {
     "JSON2": "^0.1.0",
     "browserify-versionify": "^1.0.4",
-    "component-emitter": "^1.2.0",
-    "superagent": "^1.2.0"
+    "component-emitter": "^1.2.0"
   },
   "devDependencies": {
     "browserify": "^9.0.8",
