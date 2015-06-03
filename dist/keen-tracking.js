@@ -162,7 +162,7 @@ var Keen = {
   enabled: true,
   helpers: {},
   utils: {},
-  version: '0.0.0'
+  version: '0.0.1'
 };
 Keen.Client = function(cfg){
   this.configure(cfg);

@@ -30,3 +30,5 @@ client.recordEvents({ 'recordEvents': [eventBody, eventBody, eventBody] }, funct
   Keen.log(err);
   Keen.log(res);
 });
+
+// console.log(Keen.version);

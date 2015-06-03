@@ -10,7 +10,8 @@ var browserify = require('browserify'),
     mocha = require('gulp-mocha'),
     mochaPhantomJS = require('gulp-mocha-phantomjs'),
     moment = require('moment'),
-    rename = require('gulp-rename')
+    rename = require('gulp-rename'),
+    replace = require('gulp-replace'),
     removeEmptyLines = require('gulp-remove-empty-lines'),
     source = require('vinyl-source-stream'),
     sourcemaps = require('gulp-sourcemaps'),
@@ -39,6 +40,7 @@ gulp.task('build:browserify', function() {
         // Add transformation tasks to the pipeline here.
         .pipe(stripComments({ line: true }))
         .pipe(removeEmptyLines())
+        .pipe(replace('__VERSION__', pkg.version))
         .on('error', util.log)
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./dist/'));
