@@ -135,7 +135,15 @@ https://d26b395fwzu5fz.cloudfront.net/0.0.1/keen-tracking.min.js
 ```
 var client = new Keen.Client({
 	projectId: "YOUR_PROJECT_ID",
-	writeKey: "YOUR_WRITE_KEY"
+	writeKey: "YOUR_WRITE_KEY",
+
+	// Additional options (defaults shown):
+	// -------------------------------------
+	// basePath: "/3.0"
+	// writePath: "/3.0/projects/YOUR_PROJECT_ID/events"
+	// host: "api.keen.io"
+	// protocol: "https"
+	// requestType: "jsonp" // Also: "xhr", "beacon"
 });
 
 // Callback used by examples
