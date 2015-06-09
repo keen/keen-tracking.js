@@ -37,6 +37,46 @@
     'extend'     : extend,
     'parseParams': require('./utils/parseParams')
   });
+  Keen.noConflict = function(){
+    root.Keen = previousKeen;
+    return Keen;
+  };
+  Keen.ready = function(fn){
+    if (Keen.loaded) {
+      fn();
+    }
+    else {
+      Keen.once('ready', fn);
+    }
+  };
+  domReady(function(){
+    Keen.loaded = true;
+    Keen.emit('ready');
+  });
+  function domReady(fn){
+    if (Keen.loaded || 'undefined' === typeof document) {
+      fn();
+      return;
+    }
+    if(document.readyState == null && document.addEventListener){
+      document.addEventListener("DOMContentLoaded", function DOMContentLoaded(){
+        document.removeEventListener("DOMContentLoaded", DOMContentLoaded, false);
+        document.readyState = "complete";
+      }, false);
+      document.readyState = "loading";
+    }
+    testDom(fn);
+  }
+  function testDom(fn){
+    if (/in/.test(document.readyState)) {
+      setTimeout(function(){
+        testDom(fn);
+      }, 9);
+    }
+    else {
+      fn();
+    }
+  };
   module.exports = Keen;
   return Keen;
 });
@@ -160,6 +200,7 @@ var previousKeen = root.Keen;
 var Keen = {
   debug: false,
   enabled: true,
+  loaded: false,
   helpers: {},
   utils: {},
   version: '0.0.1'
@@ -244,10 +285,6 @@ Keen.log = function(message) {
   if (Keen.debug && typeof console == 'object') {
     console.log('[Keen IO]', message);
   }
-};
-Keen.noConflict = function(){
-  root.Keen = previousKeen;
-  return Keen;
 };
 module.exports = Keen;
 },{"./utils/each":12,"JSON2":16,"component-emitter":18}],10:[function(require,module,exports){
