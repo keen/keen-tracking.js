@@ -6,12 +6,10 @@
   <script src="https://d26b395fwzu5fz.cloudfront.net/3.2.4/keen.min.js?date=2015-06-09"></script>
   <script>
 
-    !function(name, win) {
-      if ('undefined' !== typeof window[name]) return;
-      var previous = name !== 'Keen' && window['Keen'] ? window['Keen'] : false,
-          latest;
-      window[name] = {
-        load: function(url, fn) {
+    !function(name, path, ctx) {
+      var previous = name !== 'Keen' && ctx['Keen'] ? ctx['Keen'] : false, latest;
+      ctx[name] = ctx[name] || {
+        ready: function(fn) {
           var head = document.getElementsByTagName('head')[0],
               script = document.createElement('script'),
               loaded;
@@ -20,22 +18,22 @@
             script.onload = script['onreadystatechange'] = null;
             loaded = 1;
             // noConflict
-            latest = window.Keen;
+            latest = ctx.Keen;
             if (previous) {
-              window.Keen = previous;
-              window[name] = latest;
+              ctx.Keen = previous;
+              ctx[name] = latest;
             }
-            window[name].ready(fn);
+            ctx[name].ready(fn);
           }
           script.async = 1;
-          script.src = url;
+          script.src = path;
           head.parentNode.insertBefore(script, head);
         }
       };
-    }('Keen2', this);
+    }('Keen2', '../dist/keen-tracking.js', this);
 
     Keen2
-      .load('../dist/keen-tracking.js', function(){
+      .ready(function(){
         console.log('Keen2 is ready!', Keen2);
         var client = new Keen2.Client({
     			projectId: "123",
@@ -50,12 +48,10 @@
     // TESTING DUPLICATE INCLUDES
     // ----------------------------------------------
 
-    !function(name, win) {
-      if ('undefined' !== typeof window[name]) return;
-      var previous = name !== 'Keen' && window['Keen'] ? window['Keen'] : false,
-          latest;
-      window[name] = {
-        load: function(url, fn) {
+    !function(name, path, ctx) {
+      var previous = name !== 'Keen' && ctx['Keen'] ? ctx['Keen'] : false, latest;
+      ctx[name] = ctx[name] || {
+        ready: function(fn) {
           var head = document.getElementsByTagName('head')[0],
               script = document.createElement('script'),
               loaded;
@@ -64,22 +60,22 @@
             script.onload = script['onreadystatechange'] = null;
             loaded = 1;
             // noConflict
-            latest = window.Keen;
+            latest = ctx.Keen;
             if (previous) {
-              window.Keen = previous;
-              window[name] = latest;
+              ctx.Keen = previous;
+              ctx[name] = latest;
             }
-            window[name].ready(fn);
+            ctx[name].ready(fn);
           }
           script.async = 1;
-          script.src = url;
+          script.src = path;
           head.parentNode.insertBefore(script, head);
         }
       };
-    }('Keen3', this);
+    }('Keen3', 'https://d26b395fwzu5fz.cloudfront.net/3.2.1/keen.min.js?date=2015-06-09', this);
 
-    var url = 'https://d26b395fwzu5fz.cloudfront.net/3.2.1/keen.min.js?date=2015-06-09';
-    Keen3.load(url, function(){
+    // var url = 'https://d26b395fwzu5fz.cloudfront.net/3.2.1/keen.min.js?date=2015-06-09';
+    Keen3.ready(function(){
       window.client3 = new Keen3({
         projectId: "12312312",
         writeKey: "43253465"

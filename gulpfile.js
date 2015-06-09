@@ -55,7 +55,10 @@ gulp.task('build:minify', ['build:browserify'], function(){
 
 gulp.task('minify-loader', function(){
   return gulp.src(['./lib/browser-async.js'])
-    .pipe(compress({ type: 'js' }))
+    .pipe(compress({
+      nomunge: 0,
+      type: 'js'
+    }))
     .pipe(rename({ basename: 'keen-loader', suffix: '.min' }))
     .pipe(gulp.dest('./dist/'));
 });
