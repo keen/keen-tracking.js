@@ -5,41 +5,48 @@
   <!-- <script src='../dist/keen-tracking.js' type='text/javascript'></script> -->
   <script src="https://d26b395fwzu5fz.cloudfront.net/3.2.4/keen.min.js?date=2015-06-09"></script>
   <script>
+  console.log('Loaded v' + Keen.version + ' from CDN');
+
+    var trackingLibs = {};
 
     !function(name, path, ctx) {
-      var previous = name !== 'Keen' && ctx['Keen'] ? ctx['Keen'] : false, latest;
+      var latest, prev = name !== 'Keen' && window['Keen'] ? window['Keen'] : false;
       ctx[name] = ctx[name] || {
         ready: function(fn) {
-          var head = document.getElementsByTagName('head')[0],
-              script = document.createElement('script'),
-              loaded;
-          script.onload = script.onerror = script['onreadystatechange'] = function () {
-            if ( (script['readyState'] && !(/^c|loade/.test(script['readyState'])) ) || loaded) return;
-            script.onload = script['onreadystatechange'] = null;
+          var h = document.getElementsByTagName('head')[0],
+              s = document.createElement('script'),
+              w = window, loaded;
+          s.onload = s.onerror = s['onreadystatechange'] = function () {
+            if ( (s['readyState'] && !(/^c|loade/.test(s['readyState'])) ) || loaded) return;
+            s.onload = s['onreadystatechange'] = null;
             loaded = 1;
             // noConflict
-            latest = ctx.Keen;
-            if (previous) {
-              ctx.Keen = previous;
-              ctx[name] = latest;
+            latest = w.Keen;
+            if (prev) {
+              w.Keen = prev;
             }
+            else {
+              try { delete w.Keen; }
+              catch(e) { w.Keen = void 0; }
+            }
+            ctx[name] = latest;
             ctx[name].ready(fn);
           }
-          script.async = 1;
-          script.src = path;
-          head.parentNode.insertBefore(script, head);
+          s.async = 1;
+          s.src = path;
+          h.parentNode.insertBefore(s, h);
         }
       };
     }('Keen2', '../dist/keen-tracking.js', this);
 
     Keen2
       .ready(function(){
-        console.log('Keen2 is ready!', Keen2);
+        console.log('Loaded v' + Keen2.version + ' from local directory');
         var client = new Keen2.Client({
     			projectId: "123",
     			writeKey: "4324543"
     		});
-        console.log(client);
+        console.log('Client (' + Keen2.version + ')', client);
       });
 
 
@@ -49,37 +56,43 @@
     // ----------------------------------------------
 
     !function(name, path, ctx) {
-      var previous = name !== 'Keen' && ctx['Keen'] ? ctx['Keen'] : false, latest;
+      var latest, prev = name !== 'Keen' && window['Keen'] ? window['Keen'] : false;
       ctx[name] = ctx[name] || {
         ready: function(fn) {
-          var head = document.getElementsByTagName('head')[0],
-              script = document.createElement('script'),
-              loaded;
-          script.onload = script.onerror = script['onreadystatechange'] = function () {
-            if ( (script['readyState'] && !(/^c|loade/.test(script['readyState'])) ) || loaded) return;
-            script.onload = script['onreadystatechange'] = null;
+          var h = document.getElementsByTagName('head')[0],
+              s = document.createElement('script'),
+              w = window, loaded;
+          s.onload = s.onerror = s['onreadystatechange'] = function () {
+            if ( (s['readyState'] && !(/^c|loade/.test(s['readyState'])) ) || loaded) return;
+            s.onload = s['onreadystatechange'] = null;
             loaded = 1;
             // noConflict
-            latest = ctx.Keen;
-            if (previous) {
-              ctx.Keen = previous;
-              ctx[name] = latest;
+            latest = w.Keen;
+            if (prev) {
+              w.Keen = prev;
             }
+            else {
+              try { delete w.Keen; }
+              catch(e) { w.Keen = void 0; }
+            }
+            ctx[name] = latest;
             ctx[name].ready(fn);
           }
-          script.async = 1;
-          script.src = path;
-          head.parentNode.insertBefore(script, head);
+          s.async = 1;
+          s.src = path;
+          h.parentNode.insertBefore(s, h);
         }
       };
-    }('Keen3', 'https://d26b395fwzu5fz.cloudfront.net/3.2.1/keen.min.js?date=2015-06-09', this);
+    }('Keen3', 'https://d26b395fwzu5fz.cloudfront.net/3.2.1/keen.min.js?date=2015-06-09', trackingLibs);
 
     // var url = 'https://d26b395fwzu5fz.cloudfront.net/3.2.1/keen.min.js?date=2015-06-09';
-    Keen3.ready(function(){
-      window.client3 = new Keen3({
+    trackingLibs.Keen3.ready(function(){
+      console.log('Loaded v' + trackingLibs.Keen3.version + ' from CDN to object: ', trackingLibs);
+      trackingLibs.client3 = new trackingLibs.Keen3({
         projectId: "12312312",
         writeKey: "43253465"
       });
+      console.log('Client (' + trackingLibs.Keen3.version + ')', trackingLibs.client3);
     });
 
 	</script>
