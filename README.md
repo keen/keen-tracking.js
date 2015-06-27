@@ -19,7 +19,7 @@ Here's what is done, what needs to be built:
 * [ ] `#deferEvent` and `#deferEvents` methods for managing a queue of events that are processed at a configurable interval
 * [ ] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
 * [x] `Keen.utils.cookie()` for managing simple cookies
-* [ ] `Keen.utils.timer()` for managing a simple timer
+* [x] `Keen.utils.timer()` for managing a simple timer
 * [ ] `Keen.listenTo` (concept) for listening to common user/window events
 * [x] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
 * [x] Top-level `Keen` settings for debugging and disabling event transmission
@@ -415,12 +415,21 @@ Read all options for Cookies.js [here](https://github.com/ScottHamper/Cookies#co
 
 ```javascript
 var userActivity = Keen.utils.timer();
+
+// Start a timer
 userActivity.start();
+
+// Pause the timer
 userActivity.pause();
-userActivity.value();
+
+// Return the vale of the timer (seconds)
+userActivity.value(); // 10
+
+// Clear the current value of the timer
 userActivity.clear();
+
 // Start from a given number
-var historicalActivity = Keen.utils.timer(312413123123).start();
+var historicalActivity = Keen.utils.timer(3132).start();
 historicalActivity.pause();
 ```
 
