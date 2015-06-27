@@ -15,14 +15,14 @@ Here's what is done, what needs to be built:
 * [x] `Keen.Client` instance and accessors
 * [x] `Keen.helpers`: a collection of helpers to return common data model fragments
 * [x] `Keen.utils`: a collection of handy utilities like `each` and `parseParams`
-* [x] Top-level `Keen` settings for debugging and disabling event transmission
 * [x] `#recordEvent` and `#recordEvents` methods for sending single/multiple events
 * [ ] `#deferEvent` and `#deferEvents` methods for managing a queue of events that are processed at a configurable interval
 * [ ] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
 * [ ] `Keen.utils.cookie()` for managing simple cookies
 * [ ] `Keen.utils.timer()` for managing a simple timer
 * [ ] `Keen.listenTo` (concept) for listening to common user/window events
-* [ ] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
+* [x] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
+* [x] Top-level `Keen` settings for debugging and disabling event transmission
 
 *So how about dependencies?* No required dependencies. As for internally bundled deps, let's also avoid them as much as possible to minimize the compiled/minified browser library. Currently considering using [sizzle.js](http://sizzlejs.com/) for DOM wizardry, but open to alternatives here as well.
 
