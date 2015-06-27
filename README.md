@@ -15,14 +15,14 @@ Here's what is done, what needs to be built:
 * [x] `Keen.Client` instance and accessors
 * [x] `Keen.helpers`: a collection of helpers to return common data model fragments
 * [x] `Keen.utils`: a collection of handy utilities like `each` and `parseParams`
-* [x] Top-level `Keen` settings for debugging and disabling event transmission
 * [x] `#recordEvent` and `#recordEvents` methods for sending single/multiple events
 * [ ] `#deferEvent` and `#deferEvents` methods for managing a queue of events that are processed at a configurable interval
 * [ ] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
 * [ ] `Keen.utils.cookie()` for managing simple cookies
 * [ ] `Keen.utils.timer()` for managing a simple timer
 * [ ] `Keen.listenTo` (concept) for listening to common user/window events
-* [ ] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
+* [x] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
+* [x] Top-level `Keen` settings for debugging and disabling event transmission
 
 *So how about dependencies?* No required dependencies. As for internally bundled deps, let's also avoid them as much as possible to minimize the compiled/minified browser library. Currently considering using [sizzle.js](http://sizzlejs.com/) for DOM wizardry, but open to alternatives here as well.
 
@@ -192,13 +192,14 @@ var client = new Keen.Client({
 	projectId: "YOUR_PROJECT_ID",
 	writeKey: "YOUR_WRITE_KEY",
 
-	// Additional options (defaults shown):
-	// -------------------------------------
-	// basePath: "/3.0"
-	// writePath: "/3.0/projects/YOUR_PROJECT_ID/events"
-	// host: "api.keen.io"
-	// protocol: "https"
-	// requestType: "jsonp" // Also: "xhr", "beacon"
+	/* Additional options (defaults shown):
+
+		writePath: "/3.0/projects/YOUR_PROJECT_ID/events"
+		host: "api.keen.io"
+		protocol: "https"
+		requestType: "jsonp" // Also: "xhr", "beacon"
+
+	*/
 });
 
 // Callback used by examples
@@ -206,6 +207,13 @@ function callback(err, res){
 	console.log(err, res);
 };
 ```
+
+**Important notes about client configuration options:**
+
+* `host` and `writePath`: these options can be overwritten to make it easier than ever to proxy events through your own intermediary host.
+* `protocol`: older versions of IE feature a fun little quirk where cross-domain requests to a secure resource (https) from an insecure host (!https) fail. In these rare cases the library will match the current host's protocol.
+* `requestType`: this option sets a default for GET requests, which is only supported when recording single events. There are limits to the URL string length of a request, so if this limit is exceeded we'll attempt to execute a POST instead, using XHR. In rare cases where XHR isn't supported, the request will fail.
+
 
 ### Record events
 

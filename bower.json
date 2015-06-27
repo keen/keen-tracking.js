@@ -1,7 +1,6 @@
 {
   "name": "keen-tracking",
   "main": "./dist/keen-tracking.min.js",
-  "version": "0.0.1",
   "homepage": "https://github.com/keen/keen-tracking.js",
   "authors": [
     "Dustin Larimer <dustin@keen.io>",
