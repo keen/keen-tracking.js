@@ -18,7 +18,7 @@ Here's what is done, what needs to be built:
 * [x] `#recordEvent` and `#recordEvents` methods for sending single/multiple events
 * [ ] `#deferEvent` and `#deferEvents` methods for managing a queue of events that are processed at a configurable interval
 * [ ] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
-* [ ] `Keen.utils.cookie()` for managing simple cookies
+* [x] `Keen.utils.cookie()` for managing simple cookies
 * [ ] `Keen.utils.timer()` for managing a simple timer
 * [ ] `Keen.listenTo` (concept) for listening to common user/window events
 * [x] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
@@ -378,13 +378,38 @@ client.listenTo(".nav > a.login", "click", function(e){ ... });
 
 ### Cookies
 
+This utility uses [ScottHamper's](https://github.com/ScottHamper) wonderfully simple [Cookies.js](https://github.com/ScottHamper/Cookies) library.
+
 ```javascript
-var session = Keen.utils.cookie("visitor-stats");
-session.set("user_id", "222323843234");
-session.get("user_id"); // "222323843234"
+var session = Keen.utils.cookie('visitor-stats');
+
+// Set a single value
+session.set('user_id', '222323843234');
+
+// Set multiple values
+session.set({
+	user_id: '222323843234',
+	first_referrer: 'https://github.com/keen/keen-tracking.js'
+})
+
+// Get a single value
+session.get('user_id'); // "222323843234"
+
+// Get all values
 session.get(); // { user_id: "222323843234" }
-session.clear();
+
+// Expire the cookie
+session.expire();
+
+// Set options on the cookie
+session.options({
+	domain: '...',
+	secure: true
+});
 ```
+
+Read all options for Cookies.js [here](https://github.com/ScottHamper/Cookies#cookiessetkey-value--options).
+
 
 ### Timers
 
