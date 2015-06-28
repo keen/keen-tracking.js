@@ -102,7 +102,10 @@ gulp.task('test:browserify', ['test:clean'], function() {
 
 gulp.task('test:mocha', ['test:browserify'], function () {
   return gulp.src('./test/unit/server.js', { read: false })
-    .pipe(mocha({ reporter: 'nyan' }));
+    .pipe(mocha({
+      reporter: 'nyan',
+      timeout: 5000
+    }));
 });
 
 gulp.task('test:phantom', ['build', 'test:browserify'], function () {

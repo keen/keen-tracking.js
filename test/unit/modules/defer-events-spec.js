@@ -54,7 +54,6 @@ describe('.deferEvent(s) methods', function() {
       assert.deepEqual(data['deferred event'][0], { test: 'data' });
       assert.deepEqual(data['deferred event'][1], { test: 'none' });
       assert.deepEqual(data['another event'][0], { test: 'data' });
-      // done();
     });
     this.client.deferEvents({
       'deferred event': [{ test: 'data' }, { test: 'none' }],
