@@ -10,7 +10,7 @@ var mock = require('../helpers/mock-server-requests');
 
 // Keen.debug = true;
 
-describe('Keen.Client core methods (server)', function() {
+describe('.recordEvent(s) methods (server)', function() {
 
   beforeEach(function(){
     this.client = new Keen.Client({
@@ -21,7 +21,7 @@ describe('Keen.Client core methods (server)', function() {
 
   // afterEach(function(){});
 
-  describe('#recordEvent', function() {
+  describe('.recordEvent', function() {
 
     it('should make an HTTP request',function(done){
       mock.post('/events/' + config.collection, 201, config.responses.success);
@@ -52,7 +52,7 @@ describe('Keen.Client core methods (server)', function() {
 
   });
 
-  describe('#recordEvents', function() {
+  describe('.recordEvents', function() {
 
     beforeEach(function() {
       this.batchData = {

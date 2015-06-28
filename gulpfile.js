@@ -26,7 +26,7 @@ gulp.task('default', ['build', 'connect', 'watch']);
 // Build tasks
 // -------------------------
 
-gulp.task('build', ['build:browserify', 'build:minify']);
+gulp.task('build', ['build:browserify', 'build:minify', 'test:browserify']);
 
 gulp.task('build:browserify', function() {
   var b = browserify({
