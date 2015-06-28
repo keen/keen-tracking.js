@@ -53,16 +53,16 @@ $ gulp with-tests
 var client = new Keen.Client(object);
 
 // Config accessors
-client.projectId("PROJECT_ID");
-client.writeKey("WRITE_KEY");
+client.projectId('PROJECT_ID');
+client.writeKey('WRITE_KEY');
 
 // Record events
-client.recordEvent("collection", {}, function(err, res){ });
-client.recordEvents({ "collection": [{}] }, function(err, res){ });
+client.recordEvent('collection', {}, function(err, res){ });
+client.recordEvents({ 'collection': [{}] }, function(err, res){ });
 
 // Defer events for batch upload at a configurable interval
-client.deferEvent("collection", {});
-client.deferEvents({ "collection": [{}] });
+client.deferEvent('collection', {});
+client.deferEvents({ 'collection': [{}] });
 
 // Force-clear the deferred queue
 client.recordDeferredEvents();
@@ -73,34 +73,37 @@ client.queueInterval(15000);
 
 // Extend each event body for one or all collections
 // Accepts a static object or function that returns an object
-client.extendEvent("collection", {});
-client.extendEvent("collection", function(){ return {} });
+client.extendEvent('collection', {});
+client.extendEvent('collection', function(){ return {} });
 client.extendEvents({});
 client.extendEvents(function(){ return {} });
 
 // Listen to DOM events
 Keen.listenTo({
-	"submit form": function(e){ ... }
+	'submit form': function(e){ ... }
 });
+
+Keen.deferDomEvents('FORM', 'submit', 500);
+
 /* alternate:
-Keen.listenTo(document.getElementById("signup-form"), "submit", function(e){ ... });
-Keen.listenTo("#signup-form", "submit", function(e){ ... });
+	Keen.listenTo(document.getElementById('signup-form'), 'submit', function(e){ ... });
+	Keen.listenTo('#signup-form', 'submit', function(e){ ... });
 */
-Keen.deferDomEvents("FORM", "submit", 500);
+
 
 // Miscellaneous
 
 // Get/extend base API URL
 client.url();
-client.url("/events");
+client.url('/events');
 
 // Get API URL with url-encoded params
-client.url("/events/name", { key: "value" });
+client.url('/events/name', { key: 'value' });
 
 // Read events in progress
 Keen.debug(true);
-client.on("all", Keen.log);
-client.on("recordEvent", Keen.log);
+client.on('all', Keen.log);
+client.on('recordEvent', Keen.log);
 ```
 
 
@@ -131,8 +134,8 @@ Copy/paste this snippet of JavaScript above the </head> tag of your page to load
 <script>
 // Loads the library asynchronously from any URI
 !function(name,path,ctx){
-  var latest,prev=name!=="Keen"&&window.Keen?window.Keen:false;ctx[name]=ctx[name]||{ready:function(fn){var h=document.getElementsByTagName("head")[0],s=document.createElement("script"),w=window,loaded;s.onload=s.onerror=s.onreadystatechange=function(){if((s.readyState&&!(/^c|loade/.test(s.readyState)))||loaded){return}s.onload=s.onreadystatechange=null;loaded=1;latest=w.Keen;if(prev){w.Keen=prev}else{try{delete w.Keen}catch(e){w.Keen=void 0}}ctx[name]=latest;ctx[name].ready(fn)};s.async=1;s.src=path;h.parentNode.insertBefore(s,h)}}
-}("Keen","./keen-tracking.js",this);
+  var latest,prev=name!=='Keen'&&window.Keen?window.Keen:false;ctx[name]=ctx[name]||{ready:function(fn){var h=document.getElementsByTagName('head')[0],s=document.createElement('script'),w=window,loaded;s.onload=s.onerror=s.onreadystatechange=function(){if((s.readyState&&!(/^c|loade/.test(s.readyState)))||loaded){return}s.onload=s.onreadystatechange=null;loaded=1;latest=w.Keen;if(prev){w.Keen=prev}else{try{delete w.Keen}catch(e){w.Keen=void 0}}ctx[name]=latest;ctx[name].ready(fn)};s.async=1;s.src=path;h.parentNode.insertBefore(s,h)}}
+}('Keen','./keen-tracking.js',this);
 
 // Executes when the library is loaded and ready
 Keen.ready(function(){
@@ -150,7 +153,7 @@ Keen.ready(function(){
 
 This loader works a little differently than all the previous versions we have released.
 
-Notice the last line of the asynchronous loader snippet: `}("Keen", "./keen-tracking.js", this);`. These three arguments can be overwritten, allowing you to customize important details about the installation process.
+Notice the last line of the asynchronous loader snippet: `}('Keen', './keen-tracking.js', this);`. These three arguments can be overwritten, allowing you to customize important details about the installation process.
 
 1. **Namespace:** Define a custom namespace for the library, instead of the default `Keen`, like `MyCustomKeenBuild`.
 2. **Script URI:** Define the location of the script to load. You don't need to rely on our CDN. You can use your own, or host the file locally.
@@ -162,7 +165,7 @@ Here's an example that uses all of these features together:
 var modules = {};
 !function(name,path,ctx){
   //~ .etc
-}("MyKeenBuild","/assets/js/custom-keen-tracking.js", modules);
+}('MyKeenBuild','/assets/js/custom-keen-tracking.js', modules);
 
 modules.MyKeenBuild.ready(function(){
 	var client = new modules.MyKeenBuild.Client({
@@ -181,7 +184,7 @@ You can also load the library synchronously:
 
 ```html
 <!-- Currently not available in our CDN (coming soon!) -->
-<script src="https://d26b395fwzu5fz.cloudfront.net/0.0.1/keen-tracking.min.js"></script>
+<script src='https://d26b395fwzu5fz.cloudfront.net/0.0.1/keen-tracking.min.js'></script>
 ```
 
 
@@ -189,15 +192,15 @@ You can also load the library synchronously:
 
 ```javascript
 var client = new Keen.Client({
-	projectId: "YOUR_PROJECT_ID",
-	writeKey: "YOUR_WRITE_KEY",
+	projectId: 'YOUR_PROJECT_ID',
+	writeKey: 'YOUR_WRITE_KEY',
 
 	/* Additional options (defaults shown):
 
-		writePath: "/3.0/projects/YOUR_PROJECT_ID/events"
-		host: "api.keen.io"
-		protocol: "https"
-		requestType: "jsonp" // Also: "xhr", "beacon"
+		writePath: '/3.0/projects/YOUR_PROJECT_ID/events'
+		host: 'api.keen.io'
+		protocol: 'https'
+		requestType: 'jsonp' // Also: 'xhr', 'beacon'
 
 	*/
 });
@@ -221,17 +224,17 @@ These methods push single or multiple events to their respective API endpoints.
 
 ```javascript
 // Single event
-client.recordEvent("transaction", { value: 123 }, callback);
+client.recordEvent('transaction', { value: 123 }, callback);
 
 // Multiple events
 client.recordEvents({
-	"transaction": [ { value: 123 } ],
-	"purchase": [
+	'transaction': [ { value: 123 } ],
+	'purchase': [
 		{ value: 123 },
 		{ value: 456 },
 		{ value: 789 }
 	],
-	"pageview": [ { value: 012 } ]
+	'pageview': [ { value: 012 } ]
 }, callback);
 ```
 
@@ -241,10 +244,10 @@ These methods handle an internal queue of events, which is pushed to the Events 
 
 ```javascript
 // Single event
-client.deferEvent("transaction", {});
+client.deferEvent('transaction', {});
 
 // Multiple events
-client.deferEvents({ "Name": [{},{}] });
+client.deferEvents({ 'Name': [{},{}] });
 
 // Flush the deferred queue
 client.recordDeferredEvents();
@@ -267,8 +270,8 @@ These methods extend the event body of every event sent through `recordEvent()` 
 
 ```javascript
 // Extend events for a single collection
-client.extendEvent("transaction", {});
-client.extendEvent("transaction", function(){ return {}; });
+client.extendEvent('transaction', {});
+client.extendEvent('transaction', function(){ return {}; });
 
 // Extend events for all collections
 client.extendEvents({});
@@ -277,21 +280,21 @@ client.extendEvents(function(){ return {}; });
 // Example usage
 
 var userProps = {
-	full_name: "User Dude",
-	email: "name@domain.com",
-	id: "f1233423h",
-	username: "userdude213"
+	full_name: 'User Dude',
+	email: 'name@domain.com',
+	id: 'f1233423h',
+	username: 'userdude213'
 };
 
-// Include a predefined "user" object with every purchase event
-client.extendEvent("purchase", {
-	"user": userProps
+// Include a predefined 'user' object with every purchase event
+client.extendEvent('purchase', {
+	'user': userProps
 });
 
-// Include a predefined "user" object with every event
-client.extendEvents({ "user": userProps });
+// Include a predefined 'user' object with every event
+client.extendEvents({ 'user': userProps });
 
-// Include a dynamic "keen.timestamp" property with every event
+// Include a dynamic 'keen.timestamp' property with every event
 client.extendEvents(function(){
 	return {
 		keen: {
@@ -300,8 +303,8 @@ client.extendEvents(function(){
 	};
 });
 
-// Include a "title" property with every pageview event
-client.extendEvent("pageview", { title: document.title });
+// Include a 'title' property with every pageview event
+client.extendEvent('pageview', { title: document.title });
 ```
 
 
@@ -316,24 +319,24 @@ Also check out declarative binding demo here: http://jsfiddle.net/hm514aj8/10/
 Keen.listenTo({
 	// Form submits and clicks will be delayed (configurable)
 
-	"submit form#my-fancy-form": function(e){
-		client.recordEvent("signup");
+	'submit form#my-fancy-form': function(e){
+		client.recordEvent('signup');
 	},
 
-	"click .nav > a": function(e){
-		client.recordEvent("user_action", { type: "click" });
+	'click .nav > a': function(e){
+		client.recordEvent('user_action', { type: 'click' });
 	},
 
-	"mouseover .nav > a.login": function(e){
-		client.recordEvent("user_action", { type: "mouseover" });
+	'mouseover .nav > a.login': function(e){
+		client.recordEvent('user_action', { type: 'mouseover' });
 	}
 });
 
-Keen.listenTo({ "submit form": function(e){ ... } });
+Keen.listenTo({ 'submit form': function(e){ ... } });
 
 // Override DOM event timeouts (defaults shown)
-Keen.deferDomEvents("A", "click", 500);
-Keen.deferDomEvents("FORM", "submit", 500);
+Keen.deferDomEvents('A', 'click', 500);
+Keen.deferDomEvents('FORM', 'submit', 500);
 
 ```
 
@@ -341,10 +344,10 @@ Keen.deferDomEvents("FORM", "submit", 500);
 
 ```javascript
 Keen.listenTo({
-	"scroll window": function(e){
+	'scroll window': function(e){
 		// update engagement helper's scroll tracking
 	},
-	"unload window": function(e){
+	'unload window': function(e){
 		// kick out a synchronous request
 	}
 });
@@ -375,8 +378,8 @@ Keen.listenTo({
 /* Alternate interface
 	Pass in DOM elements or CSS selectors (sizzle.js) */
 var form = document.getElementById('my-fancy-form');
-client.listenTo(form, "submit", function(e){ ... });
-client.listenTo(".nav > a.login", "click", function(e){ ... });
+client.listenTo(form, 'submit', function(e){ ... });
+client.listenTo('.nav > a.login', 'click', function(e){ ... });
 ```
 
 
@@ -397,10 +400,10 @@ session.set({
 })
 
 // Get a single value
-session.get('user_id'); // "222323843234"
+session.get('user_id'); // '222323843234'
 
 // Get all values
-session.get(); // { user_id: "222323843234" }
+session.get(); // { user_id: '222323843234' }
 
 // Expire the cookie
 session.expire();
@@ -446,32 +449,32 @@ These helpers can be passed into `client.extendEvent(s)` method(s) to construct 
 Keen.helpers = {
 	getBrowserProfile: function(){
 		return {
-			"cookies" : navigator.cookieEnabled,
-			"screen"  : Keen.helpers.getScreenProperties(),
-			"window"  : Keen.helpers.getWindowProperties()
+			'cookies' : navigator.cookieEnabled,
+			'screen'  : Keen.helpers.getScreenProperties(),
+			'window'  : Keen.helpers.getWindowProperties()
 		};
 	},
 	getDatetimeIndex: function(obj){
 		var date = obj || new Date();
 		return {
-			"hour_of_day"    : date.getHours(),
-			"day_of_week"    : parseInt( 1 + date.getDay() ),
-			"day_of_month"   : date.getDate(),
-			"month"          : parseInt( 1 + date.getMonth() ),
-			"year"           : date.getFullYear()
+			'hour_of_day'    : date.getHours(),
+			'day_of_week'    : parseInt( 1 + date.getDay() ),
+			'day_of_month'   : date.getDate(),
+			'month'          : parseInt( 1 + date.getMonth() ),
+			'year'           : date.getFullYear()
 		};
 	},
 	getDomEventProfile: function(e){
 		return {
-			"innerText": e.target.innerText,
-            "path": Keen.helpers.getDomPath(e.target).join(' > '),
-            "tagName": e.target.tagName,
-            "title": e.target.title
+			'innerText': e.target.innerText,
+            'path': Keen.helpers.getDomPath(e.target).join(' > '),
+            'tagName': e.target.tagName,
+            'title': e.target.title
 		};
 	},
 	getDomNodePath: function(el){
 		// http://stackoverflow.com/a/16742828/2511985
-		// returns something like "body > div#nav > ul > a#signup"
+		// returns something like 'body > div#nav > ul > a#signup'
 	},
 	// getEngagementInfo: function(){}, // ? what might this entail? activity timers and scroll depth?
 	getRandomId: function(){},
@@ -487,57 +490,57 @@ Keen.helpers = {
 var client = new Keen.Client({});
 
 Keen.listenTo({
-	"submit form#signup": function(e){
-		var userEmail = document.getElementById("signup-email").value;
-		client.recordEvent("user signup", {
-			"interaction": {
-				"type": "submit"
+	'submit form#signup': function(e){
+		var userEmail = document.getElementById('signup-email').value;
+		client.recordEvent('user signup', {
+			'interaction': {
+				'type': 'submit'
 			},
-			"visitor": {
-				"email": userEmail
+			'visitor': {
+				'email': userEmail
 			}
 		});
 	},
-	"error window": function(e){
+	'error window': function(e){
 		// Report a JavaScript error
 	}
 });
 
 client.extendEvents(function(){
 	return {
-		"engagement": Keen.helpers.getEngagementInfo(),
-		"interaction": {
-			"event": Keen.helpers.getDomEventProfile(),
-			"target": Keen.helpers.getDomNodePath()
+		'engagement': Keen.helpers.getEngagementInfo(),
+		'interaction': {
+			'event': Keen.helpers.getDomEventProfile(),
+			'target': Keen.helpers.getDomNodePath()
 		},
-		"page": {
+		'page': {
 			title: document.title,
 			href: document.href
 		},
-		"tech": Keen.helpers.getBrowserProfile(),
-		"time": Keen.helpers.getDatetimeIndex(),
-		"visitor": {
-			"id": Keen.helpers.getRandomId()
+		'tech': Keen.helpers.getBrowserProfile(),
+		'time': Keen.helpers.getDatetimeIndex(),
+		'visitor': {
+			'id': Keen.helpers.getRandomId()
 		},
-		"keen": {
-			"timestamp": new Date().toISOString()
+		'keen': {
+			'timestamp': new Date().toISOString()
 		}
 	};
 });
 
-client.recordEvent("pageview");
+client.recordEvent('pageview');
 ```
 
 ### Inspect event stream
 
 ```javascript
 Keen.debug(true);
-client.on("all", Keen.log);
-client.on("recordEvent", Keen.log);
-client.on("recordEvents", Keen.log);
-client.on("deferEvent", Keen.log);
-client.on("deferEvents", Keen.log);
-client.on("recordDeferredEvents", Keen.log);
-client.on("extendEvent", Keen.log);
-client.on("extendEvents", Keen.log);
+// client.on('all', Keen.log);
+// client.on('recordEvent', Keen.log);
+// client.on('recordEvents', Keen.log);
+client.on('deferEvent', Keen.log);
+client.on('deferEvents', Keen.log);
+client.on('recordDeferredEvents', Keen.log);
+// client.on('extendEvent', Keen.log);
+// client.on('extendEvents', Keen.log);
 ```
