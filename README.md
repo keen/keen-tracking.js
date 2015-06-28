@@ -20,7 +20,7 @@ Here's what is done, what needs to be built:
 * [x] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
 * [x] `Keen.utils.cookie()` for managing simple cookies
 * [x] `Keen.utils.timer()` for managing a simple timer
-* [ ] `Keen.listenTo` (concept) for listening to common user/window events
+* [ ] `Keen.listenTo` for listening to common user/window events
 * [x] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
 * [x] Top-level `Keen` settings for debugging and disabling event transmission
 
@@ -80,14 +80,14 @@ client.extendEvents(function(){ return {} });
 
 // Listen to DOM events
 Keen.listenTo({
-	'submit form': function(e){ ... }
+  'submit form': function(e){ ... }
 });
 
 Keen.deferDomEvents('FORM', 'submit', 500);
 
 /* alternate:
-	Keen.listenTo(document.getElementById('signup-form'), 'submit', function(e){ ... });
-	Keen.listenTo('#signup-form', 'submit', function(e){ ... });
+  Keen.listenTo(document.getElementById('signup-form'), 'submit', function(e){ ... });
+  Keen.listenTo('#signup-form', 'submit', function(e){ ... });
 */
 
 
@@ -100,10 +100,20 @@ client.url('/events');
 // Get API URL with url-encoded params
 client.url('/events/name', { key: 'value' });
 
-// Read events in progress
-Keen.debug(true);
-client.on('all', Keen.log);
+// Track errors and messages in the dev console
+Keen.debug = true;
+
+// Disable event writes to the API
+Keen.enabled = false;
+
+// Observe what's happening
 client.on('recordEvent', Keen.log);
+client.on('recordEvents', Keen.log);
+client.on('deferEvent', Keen.log);
+client.on('deferEvents', Keen.log);
+client.on('recordDeferredEvents', Keen.log);
+client.on('extendEvent', Keen.log);
+client.on('extendEvents', Keen.log);
 ```
 
 
@@ -197,10 +207,10 @@ var client = new Keen.Client({
 
 	/* Additional options (defaults shown):
 
-		writePath: '/3.0/projects/YOUR_PROJECT_ID/events'
-		host: 'api.keen.io'
-		protocol: 'https'
-		requestType: 'jsonp' // Also: 'xhr', 'beacon'
+	writePath: '/3.0/projects/YOUR_PROJECT_ID/events'
+	host: 'api.keen.io'
+	protocol: 'https'
+	requestType: 'jsonp' // Also: 'xhr', 'beacon'
 
 	*/
 });
@@ -587,13 +597,11 @@ client.recordEvent('pageview');
 ### Inspect event stream
 
 ```javascript
-Keen.debug(true);
-// client.on('all', Keen.log);
-// client.on('recordEvent', Keen.log);
-// client.on('recordEvents', Keen.log);
+client.on('recordEvent', Keen.log);
+client.on('recordEvents', Keen.log);
 client.on('deferEvent', Keen.log);
 client.on('deferEvents', Keen.log);
 client.on('recordDeferredEvents', Keen.log);
-// client.on('extendEvent', Keen.log);
-// client.on('extendEvents', Keen.log);
+client.on('extendEvent', Keen.log);
+client.on('extendEvents', Keen.log);
 ```
