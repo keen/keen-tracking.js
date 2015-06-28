@@ -71,4 +71,54 @@ describe('.extendEvent(s) methods', function() {
     this.client.extendEvents({ key: 123 });
   });
 
+
+  describe('when calling .recordEvent', function(){
+
+    it('should extend the event body of all events', function(){
+      this.client.on('recordEvent', function(eventCollection, eventBody){
+        assert.equal(eventCollection, 'test');
+        assert.deepEqual(eventBody, { key: 123, exists: true, user: { id: '3434', active: false } });
+      });
+      this.client.extendEvents({ key: 123, user: { id: '3434' } });
+      this.client.recordEvent('test', { exists: true, user: { active: false } });
+    });
+
+    it('should extend the event body of a specific collection', function(){
+      this.client.on('recordEvent', function(eventCollection, eventBody){
+        assert.equal(eventCollection, 'test');
+        assert.deepEqual(eventBody, { key: 123, exists: true, user: { id: '3434', active: false } });
+      });
+      this.client.extendEvent('test', { key: 123, user: { id: '3434' } });
+      this.client.recordEvent('test', { exists: true, user: { active: false } });
+    });
+
+  });
+
+  describe('when calling .recordEvents', function(){
+
+    it('should extend the event body of all events', function(){
+      this.client.on('recordEvents', function(eventsHash){
+        assert.deepEqual(eventsHash, {
+          'test 1': [
+            { key: 123, exists: true, user: { id: '424234', key: 0 } }
+          ],
+          'test 2': [
+            { key: 123, exists: false, test: 'string', user: { id: '424234' } }
+          ],
+          'test 3': [
+            { key: 456, user: { id: '424234' } },
+            { key: 123, exists: true, user: { id: '424234' } }
+          ]
+        });
+      });
+      this.client.extendEvents({ key: 123, user: { id: '424234' } });
+      this.client.recordEvents({
+        'test 1': [ { exists: true, user: { key: 0 } } ],
+        'test 2': [ { exists: false, test: 'string' } ],
+        'test 3': [ { key: 456 }, { exists: true } ]
+      });
+    });
+
+  });
+
 });

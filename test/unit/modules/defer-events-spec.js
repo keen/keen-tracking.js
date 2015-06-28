@@ -44,9 +44,9 @@ describe('.deferEvent(s) methods', function() {
     assert.deepEqual(this.client.queue.events['another event'][0], { test: 'data' });
   });
 
-  it('should attempt to record events from the queue at given interval', function(done){
+  it('should attempt to record events from the queue at given interval', function(){
     this.timeout(5000);
-    this.client.queueInterval(1);
+    this.client.queueInterval(2);
     this.client.on('recordDeferredEvents', function(data){
       assert.isObject(data);
       assert.isArray(data['deferred event']);
@@ -54,7 +54,7 @@ describe('.deferEvent(s) methods', function() {
       assert.deepEqual(data['deferred event'][0], { test: 'data' });
       assert.deepEqual(data['deferred event'][1], { test: 'none' });
       assert.deepEqual(data['another event'][0], { test: 'data' });
-      done();
+      // done();
     });
     this.client.deferEvents({
       'deferred event': [{ test: 'data' }, { test: 'none' }],
@@ -62,7 +62,7 @@ describe('.deferEvent(s) methods', function() {
     });
   });
 
-  it('should attempt to record events from the queue when capacity is met', function(done){
+  it('should attempt to record events from the queue when capacity is met', function(){
     this.timeout(5000);
     this.client.queueCapacity(3);
     this.client.on('recordDeferredEvents', function(data){
@@ -72,7 +72,6 @@ describe('.deferEvent(s) methods', function() {
       assert.deepEqual(data['deferred event'][0], { test: 'data' });
       assert.deepEqual(data['deferred event'][1], { test: 'none' });
       assert.deepEqual(data['another event'][0], { test: 'data' });
-      done();
     });
     this.client.deferEvents({
       'deferred event': [{ test: 'data' }, { test: 'none' }],
@@ -80,7 +79,7 @@ describe('.deferEvent(s) methods', function() {
     });
   });
 
-  it('should attempt to record events when .recordDeferredEvents is called', function(done){
+  it('should attempt to record events when .recordDeferredEvents is called', function(){
     this.timeout(5000);
     this.client.on('recordDeferredEvents', function(data){
       assert.isObject(data);
@@ -89,7 +88,6 @@ describe('.deferEvent(s) methods', function() {
       assert.deepEqual(data['deferred event'][0], { test: 'data' });
       assert.deepEqual(data['deferred event'][1], { test: 'none' });
       assert.deepEqual(data['another event'][0], { test: 'data' });
-      done();
     });
     this.client.deferEvents({
       'deferred event': [{ test: 'data' }, { test: 'none' }],

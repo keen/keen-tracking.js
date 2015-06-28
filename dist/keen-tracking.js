@@ -24,7 +24,10 @@
   var extend = require('./utils/extend');
   extend(Keen.Client.prototype, require('./record-events-browser'));
   extend(Keen.Client.prototype, require('./defer-events'));
-  extend(Keen.Client.prototype, require('./extend-events'));
+  extend(Keen.Client.prototype, {
+    'extendEvent': require('./extend-events').extendEvent,
+    'extendEvents': require('./extend-events').extendEvents
+  });
   extend(Keen.helpers, {
     'getBrowserProfile'  : require('./helpers/getBrowserProfile'),
     'getDatetimeIndex'   : require('./helpers/getDatetimeIndex'),
@@ -82,6 +85,23 @@
       fn();
     }
   };
+  if (!Array.prototype.indexOf){
+    Array.prototype.indexOf = function(elt /*, from*/) {
+      var len = this.length >>> 0;
+      var from = Number(arguments[1]) || 0;
+      from = (from < 0)
+           ? Math.ceil(from)
+           : Math.floor(from);
+      if (from < 0)
+        from += len;
+      for (; from < len; from++) {
+        if (from in this &&
+            this[from] === elt)
+          return from;
+      }
+      return -1;
+    };
+  }
   module.exports = Keen;
   return Keen;
 });
@@ -155,10 +175,12 @@ function handleValidationError(message){
   this.emit('error', err);
 }
 },{"./index":11,"./utils/each":16,"./utils/queue":19}],3:[function(require,module,exports){
-var Keen = require('./index');
+var deepExtend = require('./utils/deepExtend');
+var each = require('./utils/each');
 module.exports = {
   'extendEvent': extendEvent,
-  'extendEvents': extendEvents
+  'extendEvents': extendEvents,
+  'getExtendedEventBody': getExtendedEventBody
 };
 function extendEvent(eventCollection, eventModifier){
   if (arguments.length !== 2 || typeof eventCollection !== 'string'
@@ -184,7 +206,16 @@ function handleValidationError(message){
   var err = 'Event(s) not extended: ' + message;
   this.emit('error', err);
 }
-},{"./index":11}],4:[function(require,module,exports){
+function getExtendedEventBody(result, queue){
+  if (queue && queue.length > 0) {
+    each(queue, function(eventModifier, i){
+      var modifierResult = (typeof eventModifier === 'function') ? eventModifier() : eventModifier;
+      deepExtend(result, modifierResult);
+    });
+  }
+  return result;
+}
+},{"./utils/deepExtend":15,"./utils/each":16}],4:[function(require,module,exports){
 var getScreenProfile = require('./getScreenProfile'),
     getWindowProfile = require('./getWindowProfile');
 function getBrowserProfile(){
@@ -402,26 +433,36 @@ module.exports = Keen;
 var Keen = require('./index');
 var base64 = require('./utils/base64');
 var each = require('./utils/each');
+var extendEvents = require('./extend-events');
 var JSON2 = require('JSON2');
 module.exports = {
   'recordEvent': recordEvent,
   'recordEvents': recordEvents
 };
 function recordEvent(eventCollection, eventBody, callback){
-  var self = this, url, data, cb, getRequestUrl;
-  url = self.url('/events/' + encodeURIComponent(eventCollection));
+  var url, data, cb, getRequestUrl, extendedEventBody;
+  url = this.url('/events/' + encodeURIComponent(eventCollection));
   data = eventBody || {};
   cb = callback;
-  if (!checkValidation.call(self, cb)) {
+  if (!checkValidation.call(this, cb)) {
     return;
   }
   if (!eventCollection || typeof eventCollection !== 'string') {
-    handleValidationError.call(self, 'Collection name must be a string.', cb);
+    handleValidationError.call(this, 'Collection name must be a string.', cb);
     return;
   }
-  getRequestUrl = self.url('/events/' + encodeURIComponent(eventCollection), {
+  extendedEventBody = {};
+  extendEvents.getExtendedEventBody(extendedEventBody, this.extensions.events);
+  extendEvents.getExtendedEventBody(extendedEventBody, this.extensions.collections[eventCollection]);
+  extendEvents.getExtendedEventBody(extendedEventBody, [data]);
+  this.emit('recordEvent', eventCollection, extendedEventBody);
+  if (!Keen.enabled) {
+    handleValidationError.call(this, 'Keen.enabled is set to false.', cb);
+    return false;
+  }
+  getRequestUrl = this.url('/events/' + encodeURIComponent(eventCollection), {
     api_key  : this.writeKey(),
-    data     : base64.encode(JSON2.stringify(data)),
+    data     : base64.encode(JSON2.stringify(extendedEventBody)),
     modified : new Date().getTime()
   });
   if (getRequestUrl.length < getUrlMaxLength()) {
@@ -438,43 +479,57 @@ function recordEvent(eventCollection, eventBody, callback){
     }
   }
   else if (getXhr()) {
-    sendXhr.call(this, 'POST', url, data, cb);
+    sendXhr.call(this, 'POST', url, extendedEventBody, cb);
   }
   else {
-    handleValidationError.call(self, 'URL length exceeds current browser limit, and XHR is not supported.');
+    handleValidationError.call(this, 'URL length exceeds current browser limit, and XHR is not supported.');
   }
   callback = cb = null;
+  return this;
 }
 function recordEvents(eventsHash, callback){
-  var self = this, url, cb;
-  url = self.url('/events');
+  var self = this, url, cb, extendedEventsHash;
+  url = this.url('/events');
   cb = callback;
   callback = null;
-  if (!checkValidation.call(self, cb)) {
+  if (!checkValidation.call(this, cb)) {
     return;
   }
   if ('object' !== typeof eventsHash || eventsHash instanceof Array) {
-    handleValidationError.call(self, 'First argument must be an object', cb);
+    handleValidationError.call(this, 'First argument must be an object', cb);
     return;
   }
   if (arguments.length > 2) {
-    handleValidationError.call(self, 'Incorrect arguments provided to #recordEvents method', cb);
+    handleValidationError.call(this, 'Incorrect arguments provided to #recordEvents method', cb);
     return;
   }
-  if (getXhr()) {
-    sendXhr.call(this, 'POST', url, eventsHash, cb);
-  }
-  else {
-  }
-  callback = cb = null;
-}
-function checkValidation(callback){
-  var cb = callback;
-  callback = null;
+  extendedEventsHash = {};
+  each(eventsHash, function(eventList, eventCollection){
+    extendedEventsHash[eventCollection] = extendedEventsHash[eventCollection] || [];
+    each(eventList, function(eventBody, index){
+      var extendedEventBody = {};
+      extendEvents.getExtendedEventBody(extendedEventBody, self.extensions.events);
+      extendEvents.getExtendedEventBody(extendedEventBody, self.extensions.collections[eventCollection]);
+      extendEvents.getExtendedEventBody(extendedEventBody, [eventBody]);
+      extendedEventsHash[eventCollection].push(extendedEventBody);
+    });
+  });
+  this.emit('recordEvents', extendedEventsHash);
   if (!Keen.enabled) {
     handleValidationError.call(this, 'Keen.enabled is set to false.', cb);
     return false;
   }
+  if (getXhr()) {
+    sendXhr.call(this, 'POST', url, extendedEventsHash, cb);
+  }
+  else {
+  }
+  callback = cb = null;
+  return this;
+}
+function checkValidation(callback){
+  var cb = callback;
+  callback = null;
   if (!this.projectId()) {
     handleValidationError.call(this, 'Keen.Client is missing a projectId property.', cb);
     return false;
@@ -635,7 +690,7 @@ function sendBeacon(url, callback){
   };
   img.src = url + '&c=clv1';
 }
-},{"./index":11,"./utils/base64":13,"./utils/each":16,"JSON2":22}],13:[function(require,module,exports){
+},{"./extend-events":3,"./index":11,"./utils/base64":13,"./utils/each":16,"JSON2":22}],13:[function(require,module,exports){
 module.exports = {
   map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
   encode: function (n) {
@@ -725,6 +780,7 @@ cookie.prototype.options = function(obj){
   return this;
 };
 },{"./extend":17,"JSON2":22,"cookies-js":25}],15:[function(require,module,exports){
+var JSON2 = require('JSON2');
 module.exports = deepExtend;
 function deepExtend(target){
   for (var i = 1; i < arguments.length; i++) {
@@ -738,17 +794,20 @@ function deepExtend(target){
     else {
       for (var prop in arguments[i]){
         if ('undefined' !== typeof target[prop] && 'object' === typeof arguments[i][prop] && arguments[i][prop] !== null) {
-          deepExtend(target[prop], arguments[i][prop]);
+          deepExtend(target[prop], clone(arguments[i][prop]));
         }
         else {
-          target[prop] = arguments[i][prop];
+          target[prop] = clone(arguments[i][prop]);
         }
       }
     }
   }
   return target;
 }
-},{}],16:[function(require,module,exports){
+function clone(input){
+  return JSON2.parse(JSON2.stringify(input))
+}
+},{"JSON2":22}],16:[function(require,module,exports){
 module.exports = each;
 function each(o, cb, s){
   var n;
