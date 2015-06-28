@@ -16,7 +16,7 @@ Here's what is done, what needs to be built:
 * [x] `Keen.helpers`: a collection of helpers to return common data model fragments
 * [x] `Keen.utils`: a collection of handy utilities like `each` and `parseParams`
 * [x] `#recordEvent` and `#recordEvents` methods for sending single/multiple events
-* [ ] `#deferEvent` and `#deferEvents` methods for managing a queue of events that are processed at a configurable interval
+* [x] `#deferEvent` and `#deferEvents` methods for managing a queue of events that are processed at a configurable interval
 * [ ] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
 * [x] `Keen.utils.cookie()` for managing simple cookies
 * [x] `Keen.utils.timer()` for managing a simple timer
@@ -61,8 +61,8 @@ client.recordEvent("collection", {}, function(err, res){ });
 client.recordEvents({ "collection": [{}] }, function(err, res){ });
 
 // Defer events for batch upload at a configurable interval
-client.deferEvent("collection", {}, function(err, res){ });
-client.deferEvents({ "collection": [{}] }, function(err, res){ });
+client.deferEvent("collection", {});
+client.deferEvents({ "collection": [{}] });
 
 // Force-clear the deferred queue
 client.recordDeferredEvents();
@@ -241,17 +241,21 @@ These methods handle an internal queue of events, which is pushed to the Events 
 
 ```javascript
 // Single event
-client.deferEvent("transaction", {}, callback);
+client.deferEvent("transaction", {});
 
 // Multiple events
-client.deferEvents({ "Name": [{},{}] }, callback);
+client.deferEvents({ "Name": [{},{}] });
 
-// Force-clear the deferred queue
+// Flush the deferred queue
 client.recordDeferredEvents();
 
-// Configure deferred queue
+// Record events when queue contains at least N events (default: 5000)
 client.queueCapacity(5000);
-client.queueInterval(15000);
+client.queueCapacity(); // 5000
+
+// Record events every N seconds (default: 15)
+client.queueInterval(15);
+client.queueInterval(); // 15
 ```
 
 

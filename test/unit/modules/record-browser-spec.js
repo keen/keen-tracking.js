@@ -7,9 +7,9 @@ var config = require('../helpers/client-config');
 
 // Keen.debug = true;
 
-describe('Keen.Client core methods (browser)', function() {
+describe('.recordEvent(s) methods (browser)', function() {
 
-  describe('#recordEvent', function() {
+  describe('.recordEvent', function() {
 
     beforeEach(function() {
       this.client = new Keen.Client({
@@ -99,7 +99,7 @@ describe('Keen.Client core methods (browser)', function() {
 
   });
 
-  describe('#recordEvents', function() {
+  describe('.recordEvents', function() {
 
     beforeEach(function() {
       this.client = new Keen.Client({ projectId: config.projectId, writeKey: config.writeKey, requestType: 'xhr', host: config.host });

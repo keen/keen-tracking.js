@@ -1,5 +1,6 @@
 require('./modules/client-spec');
 require('./modules/record-server-spec');
+require('./modules/defer-spec');
 require('./modules/events-spec');
 require('./modules/utils-spec');
 
