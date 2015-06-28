@@ -6,7 +6,6 @@ describe('.deferEvent(s) methods', function() {
 
   beforeEach(function() {
     Keen.enabled = false;
-    this.timeout(5000);
     this.client = new Keen.Client({
       projectId: config.projectId,
       writeKey: config.writeKey,
@@ -46,6 +45,7 @@ describe('.deferEvent(s) methods', function() {
   });
 
   it('should attempt to record events from the queue at given interval', function(done){
+    this.timeout(5000);
     this.client.queueInterval(1);
     this.client.on('recordDeferredEvents', function(data){
       assert.isObject(data);
@@ -63,6 +63,7 @@ describe('.deferEvent(s) methods', function() {
   });
 
   it('should attempt to record events from the queue when capacity is met', function(done){
+    this.timeout(5000);
     this.client.queueCapacity(3);
     this.client.on('recordDeferredEvents', function(data){
       assert.isObject(data);
@@ -80,6 +81,7 @@ describe('.deferEvent(s) methods', function() {
   });
 
   it('should attempt to record events when .recordDeferredEvents is called', function(done){
+    this.timeout(5000);
     this.client.on('recordDeferredEvents', function(data){
       assert.isObject(data);
       assert.isArray(data['deferred event']);

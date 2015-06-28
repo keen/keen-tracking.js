@@ -7,5 +7,6 @@ require('./modules/utils-spec');
 
 require('./modules/utils/cookie-spec');
 require('./modules/utils/timer-spec');
+require('./modules/utils/deep-extend-spec');
 
 // Include browser-specific specs here
