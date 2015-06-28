@@ -22,8 +22,9 @@
   'use strict';
   var Keen = require('./');
   var extend = require('./utils/extend');
-  extend(Keen.Client.prototype, require('./record-browser'));
-  extend(Keen.Client.prototype, require('./defer'));
+  extend(Keen.Client.prototype, require('./record-events-browser'));
+  extend(Keen.Client.prototype, require('./defer-events'));
+  extend(Keen.Client.prototype, require('./extend-events'));
   extend(Keen.helpers, {
     'getBrowserProfile'  : require('./helpers/getBrowserProfile'),
     'getDatetimeIndex'   : require('./helpers/getDatetimeIndex'),
@@ -85,7 +86,7 @@
   return Keen;
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./":10,"./defer":2,"./helpers/getBrowserProfile":3,"./helpers/getDatetimeIndex":4,"./helpers/getDomEventProfile":5,"./helpers/getDomNodePath":6,"./helpers/getScreenProfile":7,"./helpers/getUniqueId":8,"./helpers/getWindowProfile":9,"./record-browser":11,"./utils/cookie":13,"./utils/deepExtend":14,"./utils/each":15,"./utils/extend":16,"./utils/parseParams":17,"./utils/timer":19}],2:[function(require,module,exports){
+},{"./":11,"./defer-events":2,"./extend-events":3,"./helpers/getBrowserProfile":4,"./helpers/getDatetimeIndex":5,"./helpers/getDomEventProfile":6,"./helpers/getDomNodePath":7,"./helpers/getScreenProfile":8,"./helpers/getUniqueId":9,"./helpers/getWindowProfile":10,"./record-events-browser":12,"./utils/cookie":14,"./utils/deepExtend":15,"./utils/each":16,"./utils/extend":17,"./utils/parseParams":18,"./utils/timer":20}],2:[function(require,module,exports){
 var Keen = require('./index');
 var each = require('./utils/each');
 var queue = require('./utils/queue');
@@ -153,7 +154,37 @@ function handleValidationError(message){
   var err = 'Event(s) not deferred: ' + message;
   this.emit('error', err);
 }
-},{"./index":10,"./utils/each":15,"./utils/queue":18}],3:[function(require,module,exports){
+},{"./index":11,"./utils/each":16,"./utils/queue":19}],3:[function(require,module,exports){
+var Keen = require('./index');
+module.exports = {
+  'extendEvent': extendEvent,
+  'extendEvents': extendEvents
+};
+function extendEvent(eventCollection, eventModifier){
+  if (arguments.length !== 2 || typeof eventCollection !== 'string'
+    || ('object' !== typeof eventModifier && 'function' !== typeof eventModifier)) {
+      handleValidationError.call(this, 'Incorrect arguments provided to #extendEvent method');
+      return;
+  }
+  this.extensions.collections[eventCollection] = this.extensions.collections[eventCollection] || [];
+  this.extensions.collections[eventCollection].push(eventModifier);
+  this.emit('extendEvent', eventCollection, eventModifier);
+  return this;
+}
+function extendEvents(eventsModifier){
+  if (arguments.length !== 1 || ('object' !== typeof eventsModifier && 'function' !== typeof eventsModifier)) {
+    handleValidationError.call(this, 'Incorrect arguments provided to #extendEvents method');
+    return;
+  }
+  this.extensions.events.push(eventsModifier);
+  this.emit('extendEvents', eventsModifier);
+  return this;
+}
+function handleValidationError(message){
+  var err = 'Event(s) not extended: ' + message;
+  this.emit('error', err);
+}
+},{"./index":11}],4:[function(require,module,exports){
 var getScreenProfile = require('./getScreenProfile'),
     getWindowProfile = require('./getWindowProfile');
 function getBrowserProfile(){
@@ -171,7 +202,7 @@ function getBrowserProfile(){
   }
 }
 module.exports = getBrowserProfile;
-},{"./getScreenProfile":7,"./getWindowProfile":9}],4:[function(require,module,exports){
+},{"./getScreenProfile":8,"./getWindowProfile":10}],5:[function(require,module,exports){
 function getDateTimeIndex(input){
   var date = input || new Date();
   return {
@@ -183,12 +214,12 @@ function getDateTimeIndex(input){
   };
 }
 module.exports = getDateTimeIndex;
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 function getDomEventProfile(e){
   if (!arguments.length) return {};
 }
 module.exports = getDomEventProfile;
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /*!
   via: http://stackoverflow.com/a/16742828/2511985
   */
@@ -219,7 +250,7 @@ function getDomNodePath(el){
   return stack.slice(1).join(' > ');
 }
 module.exports = getDomNodePath;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 function getScreenProfile(){
   var keys, output;
   if ('undefined' == typeof window || !window.screen) return {};
@@ -235,11 +266,11 @@ function getScreenProfile(){
   return output;
 }
 module.exports = getScreenProfile;
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 function getUniqueId(){
 }
 module.exports = getUniqueId;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 function getWindowProfile(){
   var body, html, output;
   if ('undefined' == typeof document) return {};
@@ -263,7 +294,7 @@ module.exports = getWindowProfile;
   Notes:
     document.documentElement.offsetHeight/Width is a workaround for IE8 and below, where window.innerHeight/Width is undefined
 */
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var Emitter = require('component-emitter');
 var JSON2 = require('JSON2');
 var each = require('./utils/each');
@@ -303,6 +334,10 @@ Keen.Client.prototype.configure = function(cfg){
   self.queue.on('flush', function(){
     self.recordDeferredEvents();
   });
+  self.extensions = {
+    events: [],
+    collections: {}
+  };
   if (Keen.debug) {
     self.on('error', Keen.log);
   }
@@ -363,7 +398,7 @@ Keen.log = function(message) {
   }
 };
 module.exports = Keen;
-},{"./utils/each":15,"./utils/queue":18,"JSON2":21,"component-emitter":23}],11:[function(require,module,exports){
+},{"./utils/each":16,"./utils/queue":19,"JSON2":22,"component-emitter":24}],12:[function(require,module,exports){
 var Keen = require('./index');
 var base64 = require('./utils/base64');
 var each = require('./utils/each');
@@ -600,7 +635,7 @@ function sendBeacon(url, callback){
   };
   img.src = url + '&c=clv1';
 }
-},{"./index":10,"./utils/base64":12,"./utils/each":15,"JSON2":21}],12:[function(require,module,exports){
+},{"./index":11,"./utils/base64":13,"./utils/each":16,"JSON2":22}],13:[function(require,module,exports){
 module.exports = {
   map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
   encode: function (n) {
@@ -647,7 +682,7 @@ module.exports = {
     }
   }
 };
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var Cookies = require('cookies-js');
 var JSON2 = require('JSON2');
 var extend = require('./extend');
@@ -689,7 +724,7 @@ cookie.prototype.options = function(obj){
   this.config.options = (typeof obj === 'object') ? obj : {};
   return this;
 };
-},{"./extend":16,"JSON2":21,"cookies-js":24}],14:[function(require,module,exports){
+},{"./extend":17,"JSON2":22,"cookies-js":25}],15:[function(require,module,exports){
 module.exports = deepExtend;
 function deepExtend(target){
   for (var i = 1; i < arguments.length; i++) {
@@ -713,7 +748,7 @@ function deepExtend(target){
   }
   return target;
 }
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = each;
 function each(o, cb, s){
   var n;
@@ -738,7 +773,7 @@ function each(o, cb, s){
   }
   return 1;
 }
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = function(target){
   for (var i = 1; i < arguments.length; i++) {
     for (var prop in arguments[i]){
@@ -747,7 +782,7 @@ module.exports = function(target){
   }
   return target;
 };
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 function parseParams(str){
   var urlParams = {},
       match,
@@ -761,7 +796,7 @@ function parseParams(str){
   return urlParams;
 };
 module.exports = parseParams;
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var Emitter = require('component-emitter');
 module.exports = queue;
 function queue(){
@@ -791,7 +826,7 @@ function checkQueue(){
   }
 }
 Emitter(queue.prototype);
-},{"component-emitter":23}],19:[function(require,module,exports){
+},{"component-emitter":24}],20:[function(require,module,exports){
 module.exports = timer;
 function timer(num){
   if (this instanceof timer === false) {
@@ -819,7 +854,7 @@ timer.prototype.clear = function(){
   this.count = 0;
   return this;
 };
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /*jslint evil: true, regexp: true */
 /*members $ref, apply, call, decycle, hasOwnProperty, length, prototype, push,
     retrocycle, stringify, test, toString
@@ -917,13 +952,13 @@ if (typeof exports.retrocycle !== 'function') {
       (window.JSON = {})
     )
 );
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var JSON2 = require('./json2');
 var cycle = require('./cycle');
 JSON2.decycle = cycle.decycle;
 JSON2.retrocycle = cycle.retrocycle;
 module.exports = JSON2;
-},{"./cycle":20,"./json2":22}],22:[function(require,module,exports){
+},{"./cycle":21,"./json2":23}],23:[function(require,module,exports){
 /*
     json2.js
     2011-10-19
@@ -1232,7 +1267,7 @@ module.exports = JSON2;
       (window.JSON = {})
     )
 );
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /**
  * Expose `Emitter`.
  */
@@ -1365,7 +1400,7 @@ Emitter.prototype.listeners = function(event){
 Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /* * Cookies.js - 1.2.1 * https://github.com/ScottHamper/Cookies * * This is free and unencumbered software released into the public domain. */(function (global, undefined) {    'use strict';    var factory = function (window) {        if (typeof window.document !== 'object') {            throw new Error('Cookies.js requires a `window` with a `document` object');        }        var Cookies = function (key, value, options) {            return arguments.length === 1 ?                Cookies.get(key) : Cookies.set(key, value, options);        };        Cookies._document = window.document;        Cookies._cacheKeyPrefix = 'cookey.';        Cookies._maxExpireDate = new Date('Fri, 31 Dec 9999 23:59:59 UTC');        Cookies.defaults = {            path: '/',            secure: false        };        Cookies.get = function (key) {            if (Cookies._cachedDocumentCookie !== Cookies._document.cookie) {                Cookies._renewCache();            }            return Cookies._cache[Cookies._cacheKeyPrefix + key];        };        Cookies.set = function (key, value, options) {            options = Cookies._getExtendedOptions(options);            options.expires = Cookies._getExpiresDate(value === undefined ? -1 : options.expires);            Cookies._document.cookie = Cookies._generateCookieString(key, value, options);            return Cookies;        };        Cookies.expire = function (key, options) {            return Cookies.set(key, undefined, options);        };        Cookies._getExtendedOptions = function (options) {            return {                path: options && options.path || Cookies.defaults.path,                domain: options && options.domain || Cookies.defaults.domain,                expires: options && options.expires || Cookies.defaults.expires,                secure: options && options.secure !== undefined ?  options.secure : Cookies.defaults.secure            };        };        Cookies._isValidDate = function (date) {            return Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime());        };        Cookies._getExpiresDate = function (expires, now) {            now = now || new Date();            if (typeof expires === 'number') {                expires = expires === Infinity ?                    Cookies._maxExpireDate : new Date(now.getTime() + expires * 1000);            } else if (typeof expires === 'string') {                expires = new Date(expires);            }            if (expires && !Cookies._isValidDate(expires)) {                throw new Error('`expires` parameter cannot be converted to a valid Date instance');            }            return expires;        };        Cookies._generateCookieString = function (key, value, options) {            key = key.replace(/[^#$&+\^`|]/g, encodeURIComponent);            key = key.replace(/\(/g, '%28').replace(/\)/g, '%29');            value = (value + '').replace(/[^!#$&-+\--:<-\[\]-~]/g, encodeURIComponent);            options = options || {};            var cookieString = key + '=' + value;            cookieString += options.path ? ';path=' + options.path : '';            cookieString += options.domain ? ';domain=' + options.domain : '';            cookieString += options.expires ? ';expires=' + options.expires.toUTCString() : '';            cookieString += options.secure ? ';secure' : '';            return cookieString;        };        Cookies._getCacheFromString = function (documentCookie) {            var cookieCache = {};            var cookiesArray = documentCookie ? documentCookie.split('; ') : [];            for (var i = 0; i < cookiesArray.length; i++) {                var cookieKvp = Cookies._getKeyValuePairFromCookieString(cookiesArray[i]);                if (cookieCache[Cookies._cacheKeyPrefix + cookieKvp.key] === undefined) {                    cookieCache[Cookies._cacheKeyPrefix + cookieKvp.key] = cookieKvp.value;                }            }            return cookieCache;        };        Cookies._getKeyValuePairFromCookieString = function (cookieString) {            var separatorIndex = cookieString.indexOf('=');            separatorIndex = separatorIndex < 0 ? cookieString.length : separatorIndex;            return {                key: decodeURIComponent(cookieString.substr(0, separatorIndex)),                value: decodeURIComponent(cookieString.substr(separatorIndex + 1))            };        };        Cookies._renewCache = function () {            Cookies._cache = Cookies._getCacheFromString(Cookies._document.cookie);            Cookies._cachedDocumentCookie = Cookies._document.cookie;        };        Cookies._areEnabled = function () {            var testKey = 'cookies.js';            var areEnabled = Cookies.set(testKey, 1).get(testKey) === '1';            Cookies.expire(testKey);            return areEnabled;        };        Cookies.enabled = Cookies._areEnabled();        return Cookies;    };    var cookiesExport = typeof global.document === 'object' ? factory(global) : factory;    if (typeof define === 'function' && define.amd) {        define(function () { return cookiesExport; });    } else if (typeof exports === 'object') {        if (typeof module === 'object' && typeof module.exports === 'object') {            exports = module.exports = cookiesExport;        }        exports.Cookies = cookiesExport;    } else {        global.Cookies = cookiesExport;    }})(typeof window === 'undefined' ? this : window);
 },{}]},{},[1])
 
