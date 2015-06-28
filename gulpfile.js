@@ -107,7 +107,13 @@ gulp.task('test:mocha', ['test:browserify'], function () {
 
 gulp.task('test:phantom', ['build', 'test:browserify'], function () {
   return gulp.src('./test/unit/index.html')
-    .pipe(mochaPhantomJS());
+    .pipe(mochaPhantomJS())
+    .once('error', function () {
+      process.exit(1);
+    })
+    .once('end', function () {
+      process.exit();
+    });
 });
 
 gulp.task('test:karma', ['build', 'test:browserify'], function (done){
