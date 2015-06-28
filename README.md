@@ -17,7 +17,7 @@ Here's what is done, what needs to be built:
 * [x] `Keen.utils`: a collection of handy utilities like `each` and `parseParams`
 * [x] `#recordEvent` and `#recordEvents` methods for sending single/multiple events
 * [x] `#deferEvent` and `#deferEvents` methods for managing a queue of events that are processed at a configurable interval
-* [ ] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
+* [x] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
 * [x] `Keen.utils.cookie()` for managing simple cookies
 * [x] `Keen.utils.timer()` for managing a simple timer
 * [ ] `Keen.listenTo` (concept) for listening to common user/window events
@@ -238,6 +238,7 @@ client.recordEvents({
 }, callback);
 ```
 
+
 ### Defer events
 
 These methods handle an internal queue of events, which is pushed to the Events resource endpoint on a given interval.
@@ -271,11 +272,15 @@ These methods extend the event body of every event sent through `recordEvent()` 
 ```javascript
 // Extend events for a single collection
 client.extendEvent('transaction', {});
-client.extendEvent('transaction', function(){ return {}; });
+client.extendEvent('transaction', function(){
+	return {};
+});
 
 // Extend events for all collections
 client.extendEvents({});
-client.extendEvents(function(){ return {}; });
+client.extendEvents(function(){
+	return {};
+});
 
 // Example usage
 
@@ -292,7 +297,9 @@ client.extendEvent('purchase', {
 });
 
 // Include a predefined 'user' object with every event
-client.extendEvents({ 'user': userProps });
+client.extendEvents({
+	'user': userProps
+});
 
 // Include a dynamic 'keen.timestamp' property with every event
 client.extendEvents(function(){
@@ -302,9 +309,55 @@ client.extendEvents(function(){
 		}
 	};
 });
+```
 
-// Include a 'title' property with every pageview event
-client.extendEvent('pageview', { title: document.title });
+**Example usage:**
+
+```javascript
+// Object (static)
+client.extendEvents({
+	page: {
+		href: document.location.href,
+		title: document.title
+	},
+	referrer: document.referrer,
+	user: {
+		email: 'name@domain.com',
+		id: 'f1233423h',
+		username: 'someuser123'
+	}
+});
+
+// Function that returns an object (dynamic)
+// Useful for attaching time-sensitive data
+client.extendEvents(function(){
+	return {
+		keen: {
+			timestamp: new Date().toISOString()
+		}
+	}
+});
+
+//
+client.recordEvent('pageview');
+
+/* Resulting event body:
+{
+	user: {
+		email: 'name@domain.com',
+		id: 'f1233423h',
+		username: 'someuser123'
+	},
+	page: {
+		href: 'https://github.com/keen/keen-tracking.js#extend-events',
+		title: document.title
+	},
+	referrer: 'https://github.com/keen/',
+	keen: {
+		timestamp: '2015-06-28T22:01:38.824Z'
+	}
+}
+*/
 ```
 
 

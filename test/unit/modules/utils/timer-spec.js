@@ -39,13 +39,14 @@ describe('Keen.utils.timer', function() {
 
   describe('methods', function(){
 
-    it('should run the timer for one second and return the correct value', function(done){
+    it('should run the timer for one second and return the correct value', function(){
       var self = this;
+      this.timeout(5000);
       this.timer.start();
       setTimeout(function(){
         self.timer.pause();
         assert.equal(self.timer.value(), 1);
-        done();
+        // done();
       }, 1000);
     });
 
