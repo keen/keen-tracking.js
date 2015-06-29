@@ -10,7 +10,7 @@ Once this project is ready, we'll import and replace existing tracking functiona
 
 ### Roadmap
 
-Here's what is done, what needs to be built:
+Here's what is done:
 
 * [x] `Keen.Client` instance and accessors
 * [x] `Keen.helpers`: a collection of helpers to return common data model fragments
@@ -20,9 +20,16 @@ Here's what is done, what needs to be built:
 * [x] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
 * [x] `Keen.utils.cookie()` for managing simple cookies
 * [x] `Keen.utils.timer()` for managing a simple timer
-* [ ] `Keen.listenTo` for listening to common user/window events
+* [x] `Keen.listenTo` for listening to common user/window events
 * [x] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
 * [x] Top-level `Keen` settings for debugging and disabling event transmission
+
+Here's what needs to be done:
+
+* [ ] `Keen.helpers.getUniqueId`: return a guuid
+* [ ] Validate `Keen.listenTo` form submit binding on IE8
+* [ ] Expose `A` element click event and `FORM` element submit event timeouts (default: 500ms)
+
 
 *So how about dependencies?* No required dependencies. As for internally bundled deps, let's also avoid them as much as possible to minimize the compiled/minified browser library. Currently considering using [sizzle.js](http://sizzlejs.com/) for DOM wizardry, but open to alternatives here as well.
 
@@ -74,31 +81,27 @@ client.queueInterval(15000);
 // Extend each event body for one or all collections
 // Accepts a static object or function that returns an object
 client.extendEvent('collection', {});
-client.extendEvent('collection', function(){ return {} });
+client.extendEvent('collection', function(){
+  return {}
+});
 client.extendEvents({});
-client.extendEvents(function(){ return {} });
+client.extendEvents(function(){
+  return {}
+});
 
 // Listen to DOM events
 Keen.listenTo({
-  'submit form': function(e){ ... }
+  'click .nav a': function(e){
+    // you have 500ms.. record an event!
+  }
 });
 
-Keen.deferDomEvents('FORM', 'submit', 500);
-
-/* alternate:
-  Keen.listenTo(document.getElementById('signup-form'), 'submit', function(e){ ... });
-  Keen.listenTo('#signup-form', 'submit', function(e){ ... });
-*/
+// Accessor methods not yet built-
+// Keen.deferDomEvents('A', 'click', 500);
+// Keen.deferDomEvents('FORM', 'submit', 500);
 
 
 // Miscellaneous
-
-// Get/extend base API URL
-client.url();
-client.url('/events');
-
-// Get API URL with url-encoded params
-client.url('/events/name', { key: 'value' });
 
 // Track errors and messages in the dev console
 Keen.debug = true;
@@ -407,11 +410,11 @@ Keen.deferDomEvents('FORM', 'submit', 500);
 
 ```javascript
 Keen.listenTo({
-	'scroll window': function(e){
-		// update engagement helper's scroll tracking
+	'hashchange window': function(e){
+		// user clicked an internal anchor (eg: /#some-heading)
 	},
-	'unload window': function(e){
-		// kick out a synchronous request
+	'scroll window': function(e){
+		// user scrolled the page
 	}
 });
 ```
@@ -430,7 +433,7 @@ Keen.listenTo({
 * mouseup
 
 
-**Important note about `<a>` and `<form>` elements:** `<a>` tag **clicks** (when navigating the current page) and `<form>` **submits** are deferred for 500ms \, to allow for quick, asynchronous API calls.
+**Important note about `<a>` and `<form>` elements:** `<a>` tag **clicks** (when navigating away from the current page) and `<form>` **submits** are deferred for 500ms to allow for quick, asynchronous API calls.
 
 
 **`window` events:**
@@ -531,20 +534,11 @@ Keen.helpers = {
 			'year'           : date.getFullYear()
 		};
 	},
-	getDomEventProfile: function(e){
-		return {
-			'innerText': e.target.innerText,
-            'path': Keen.helpers.getDomPath(e.target).join(' > '),
-            'tagName': e.target.tagName,
-            'title': e.target.title
-		};
-	},
 	getDomNodePath: function(el){
-		// http://stackoverflow.com/a/16742828/2511985
 		// returns something like 'body > div#nav > ul > a#signup'
+    // via: http://stackoverflow.com/a/16742828/2511985
 	},
-	// getEngagementInfo: function(){}, // ? what might this entail? activity timers and scroll depth?
-	getRandomId: function(){},
+	getUniqueId: function(){},
 	getScreenProperties: function(){},
 	getWindowProperties: function(){}
 };
@@ -568,18 +562,13 @@ Keen.listenTo({
 			}
 		});
 	},
-	'error window': function(e){
-		// Report a JavaScript error
+	'click .nav a': function(e){
+		// Clicked a nav link!
 	}
 });
 
 client.extendEvents(function(){
 	return {
-		'engagement': Keen.helpers.getEngagementInfo(),
-		'interaction': {
-			'event': Keen.helpers.getDomEventProfile(),
-			'target': Keen.helpers.getDomNodePath()
-		},
 		'page': {
 			title: document.title,
 			href: document.href
@@ -587,7 +576,7 @@ client.extendEvents(function(){
 		'tech': Keen.helpers.getBrowserProfile(),
 		'time': Keen.helpers.getDatetimeIndex(),
 		'visitor': {
-			'id': Keen.helpers.getRandomId()
+			'id': Keen.helpers.getUniqueId()
 		},
 		'keen': {
 			'timestamp': new Date().toISOString()

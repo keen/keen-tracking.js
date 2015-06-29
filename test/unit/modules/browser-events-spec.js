@@ -17,9 +17,9 @@ describe('Keen.listenTo', function() {
   });
 
   it('should set window events', function(){
-    var noop = function(e){ return false; };
+    var noop = function(e){ };
     Keen.listenTo({
-      'click window': noop,
+      // 'click window': noop,
       'keydown window': noop,
       'keypress window': noop,
       'keyup window': noop,
@@ -35,7 +35,7 @@ describe('Keen.listenTo', function() {
       'scroll window': noop
     });
     assert.deepEqual(Keen.domEvents, {
-      'click window': noop,
+      // 'click window': noop,
       'keydown window': noop,
       'keypress window': noop,
       'keyup window': noop,
@@ -53,9 +53,9 @@ describe('Keen.listenTo', function() {
   });
 
   it('should set `<a>` events', function(){
-    var noop = function(e){ return false; };
+    var noop = function(e){ };
     Keen.listenTo({
-      'click a': noop,
+      // 'click a': noop,
       'mousedown a': noop,
       'mousemove a': noop,
       'mouseout a': noop,
@@ -63,7 +63,7 @@ describe('Keen.listenTo', function() {
       'mouseup a': noop
     });
     assert.deepEqual(Keen.domEvents, {
-      'click a': noop,
+      // 'click a': noop,
       'mousedown a': noop,
       'mousemove a': noop,
       'mouseout a': noop,
@@ -73,9 +73,9 @@ describe('Keen.listenTo', function() {
   });
 
   it('should set `<form>` events', function(){
-    var noop = function(e){ return false; };
+    var noop = function(e){ };
     Keen.listenTo({
-      'submit form': noop,
+      // 'submit form': noop,
       'keydown form': noop,
       'keypress form': noop,
       'keyup form': noop,
@@ -86,7 +86,7 @@ describe('Keen.listenTo', function() {
       'mouseup form': noop
     });
     assert.deepEqual(Keen.domEvents, {
-      'submit form': noop,
+      // 'submit form': noop,
       'keydown form': noop,
       'keypress form': noop,
       'keyup form': noop,
@@ -100,9 +100,10 @@ describe('Keen.listenTo', function() {
 
 
   it('should handle `<a>` click events', function(){
-    var btn;
+    var a;
     Keen.listenTo({
       'click a#listen-to-anchor': function(e){
+        // e.preventDefault();
         Keen.log('click a#listen-to-anchor');
         assert.ok(true);
         return false;
@@ -110,11 +111,11 @@ describe('Keen.listenTo', function() {
     });
 
     setTimeout(function(){
-      btn = document.createElement("A");
-      btn.id = 'listen-to-anchor';
-      btn.style.display = 'none';
-      document.body.appendChild(btn);
-      btn.click();
+      a = document.createElement("A");
+      a.id = 'listen-to-anchor';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
     }, 1000);
   });
 
@@ -124,8 +125,8 @@ describe('Keen.listenTo', function() {
   it('should handle `<form>` submit events', function(){
     var form, input;
     Keen.listenTo({
-      'submit form#listen-to-form-2': function(e){
-        Keen.log('submit form#listen-to-form-2');
+      'submit form#listen-to-form': function(e){
+        Keen.log('submit form#listen-to-form');
         assert.ok(true);
         return false;
       }
@@ -134,7 +135,6 @@ describe('Keen.listenTo', function() {
     setTimeout(function(){
       form = document.createElement("FORM");
       form.id = 'listen-to-form';
-      form.name = 'myForm';
       form.style.display = 'none';
 
       input = document.createElement("INPUT");

@@ -1,6 +1,7 @@
 var assert = require('proclaim');
 
 var getBrowserProfile = require('../../../lib/helpers/getBrowserProfile');
+var getDateTimeIndex = require('../../../lib/helpers/getDateTimeIndex');
 // var getDomEventProfile = require('../../../lib/helpers/getDomEventProfile');
 var getDomNodePath = require('../../../lib/helpers/getDomNodePath');
 var getScreenProfile = require('../../../lib/helpers/getScreenProfile');
@@ -20,6 +21,29 @@ describe('Keen.helpers', function(){
   //   it('should return a random GUID', function(){
   //   });
   // });
+
+  describe('#getDateTimeIndex', function(){
+    it('should return an object of datetime properties', function(){
+      var datetime = getDateTimeIndex();
+      assert.isObject(datetime);
+      assert.isNumber(datetime.hour_of_day);
+      assert.isNumber(datetime.day_of_week);
+      assert.isNumber(datetime.day_of_month);
+      assert.isNumber(datetime.month);
+      assert.isNumber(datetime.year);
+    });
+    it('should return an object of datetime properties from a provided date', function(){
+      var now = new Date();
+      var datetime = getDateTimeIndex(now);
+      assert.deepEqual(datetime, {
+        'hour_of_day'  : now.getHours(),
+        'day_of_week'  : parseInt( 1 + now.getDay() ),
+        'day_of_month' : now.getDate(),
+        'month'        : parseInt( 1 + now.getMonth() ),
+        'year'         : now.getFullYear()
+      });
+    });
+  });
 
   if ('undefined' === typeof navigator) return;
 
