@@ -10,4 +10,6 @@ require('./modules/utils/cookie-spec');
 require('./modules/utils/timer-spec');
 require('./modules/utils/deep-extend-spec');
 
+require('./modules/browser-events-spec');
+
 // Include browser-specific specs here

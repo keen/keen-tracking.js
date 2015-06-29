@@ -173,6 +173,7 @@ function handleClickEvent(evt, anchor, callback){
 function handleFormSubmit(evt, form, callback){
   var timeout = 500;
   cbResponse = callback(evt);
+  evt.preventDefault();
   if (cbResponse === false || evt.defaultPrevented || evt.returnValue === false) {
     evt.preventDefault();
     return false;
