@@ -25,7 +25,8 @@
   "dependencies": {
     "JSON2": "^0.1.0",
     "component-emitter": "^1.2.0",
-    "cookies-js": "^1.2.1"
+    "cookies-js": "^1.2.1",
+    "sizzle": "^2.2.0"
   },
   "devDependencies": {
     "browserify": "^9.0.8",

@@ -45,7 +45,7 @@ describe('Keen.utils.timer', function() {
       this.timer.start();
       setTimeout(function(){
         self.timer.pause();
-        assert.equal(self.timer.value(), 1);
+        assert.lessThan(self.timer.value(), 2);
         // done();
       }, 1000);
     });

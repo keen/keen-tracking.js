@@ -416,34 +416,38 @@ Keen.listenTo({
 });
 ```
 
-**Supported events:**
+**Generally supported events:**
 
-* blur
-* click
-* dblclick
-* error
-* focus
-* hashchange
+* click (see below for `<a>` clicks)
+* submit (see below for `<form>` submits)
 * keydown
 * keypress
 * keyup
-* onload
 * mousedown
 * mousemove
 * mouseout
 * mouseover
 * mouseup
+
+
+**Important note about `<a>` and `<form>` elements:** `<a>` tag **clicks** (when navigating the current page) and `<form>` **submits** are deferred for 500ms \, to allow for quick, asynchronous API calls.
+
+
+**`window` events:**
+
+* blur
+* focus
+* hashchange
 * resize
+* scroll
+
+**Not currently supported:**
+
+* dblclick
+* error
+* onload
 * unload
 
-
-```javascript
-/* Alternate interface
-	Pass in DOM elements or CSS selectors (sizzle.js) */
-var form = document.getElementById('my-fancy-form');
-client.listenTo(form, 'submit', function(e){ ... });
-client.listenTo('.nav > a.login', 'click', function(e){ ... });
-```
 
 
 ### Cookies
