@@ -121,7 +121,11 @@ function listenTo(ctx){
   };
 }
 function setListener(action, selector, callback){
-  window.addEventListener(action, handleEvent, false);
+  if (window.addEventListener) {
+    window.addEventListener(action, handleEvent, false);
+  } else {
+    window.attachEvent("on" + action, handleEvent);
+  }
   function handleEvent(e){
     var evt, target, match, timeout;
     evt = e ? e : window.event;
