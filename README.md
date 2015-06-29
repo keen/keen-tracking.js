@@ -26,7 +26,6 @@ Here's what has been done so far:
 
 Here's what needs to be done next:
 
-* [ ] `Keen.helpers.getUniqueId`: return a guuid
 * [ ] Validate `Keen.listenTo` form submit binding on IE8
 * [ ] Expose `A` element click event and `FORM` element submit event timeouts (default: 500ms)
 
@@ -511,37 +510,101 @@ historicalActivity.pause();
 
 ### Helpers
 
-These helpers can be passed into `client.extendEvent(s)` method(s) to construct and attach common sets of properties.
+These helpers are designed to generate useful properties and objects for event data models, and can be used when recording, deferring or extending events.
 
 ```javascript
-Keen.helpers = {
-	getBrowserProfile: function(){
-		return {
-			'cookies' : navigator.cookieEnabled,
-			'screen'  : Keen.helpers.getScreenProperties(),
-			'window'  : Keen.helpers.getWindowProperties()
-		};
-	},
-	getDatetimeIndex: function(obj){
-		var date = obj || new Date();
-		return {
-			'hour_of_day'    : date.getHours(),
-			'day_of_week'    : parseInt( 1 + date.getDay() ),
-			'day_of_month'   : date.getDate(),
-			'month'          : parseInt( 1 + date.getMonth() ),
-			'year'           : date.getFullYear()
-		};
-	},
-	getDomNodePath: function(el){
-		// returns something like 'body > div#nav > ul > a#signup'
-    // via: http://stackoverflow.com/a/16742828/2511985
-	},
-	getUniqueId: function(){},
-	getScreenProperties: function(){},
-	getWindowProperties: function(){}
-};
+var datetimeIndex = Keen.helpers.getDatetimeIndex();
+/*
+  // Monday, June 29th, 2015
+  {
+    "hour_of_day": 14,
+    "day_of_week": 2,
+    "day_of_month": 29,
+    "month": 6,
+    "year": 2015
+  }
+*/
 
+var uniqueId = Keen.helpers.getUniqueId();
+/*
+  "150caf6b-ef9f-48cd-ae32-43e2f5bb0fe8"
+*/
+
+var btn = document.getElementById('signup-button');
+var domNodePath = Keen.helpers.getDomNodePath(btn);
+/*
+  "body > div#nav > ul > li:eq(1) > a#signup-button"
+*/
+
+var screenProfile = Keen.helpers.getScreenProfile();
+/*
+  {
+    "height": 900,
+    "width": 1440,
+    "colorDepth": 24,
+    "pixelDepth": 24,
+    "availHeight": 878,
+    "availWidth": 1436,
+    "orientation": {
+      "angle": 0,
+      "type": "landscape"
+    }
+  }
+*/
+
+var windowProfile = Keen.helpers.getWindowProfile();
+/*
+  {
+    "height": 436,
+    "width": 1209,
+    "scrollHeight": 13834,
+    "ratio": {
+      "height": 0.5,
+      "width": 0.84
+    }
+  }
+*/
+
+var browserProfile = Keen.helpers.getBrowserProfile();
+/*
+  {
+    "cookies": true,
+    "codeName": "Mozilla",
+    "language": "en-US",
+    "name": "Netscape",
+    "online": true,
+    "platform": "MacIntel",
+    "useragent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36",
+    "version": "5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36",
+
+    // includes Keen.helpers.getScreenProfile();
+    "screen": {
+      "height": 900,
+      "width": 1440,
+      "colorDepth": 24,
+      "pixelDepth": 24,
+      "availHeight": 878,
+      "availWidth": 1436,
+      "orientation": {
+        "angle": 0,
+        "type": "landscape"
+      }
+    },
+
+    // includes Keen.helpers.getWindowProfile();
+    "window": {
+      "height": 436,
+      "width": 1209,
+      "scrollHeight": 13834,
+      "ratio": {
+        "height": 0.5,
+        "width": 0.84
+      }
+    }
+  }
+*/
 ```
+
 
 ## Example Setup
 
