@@ -109,12 +109,13 @@ describe('Keen.listenTo', function() {
       }
     });
 
-    btn = document.createElement("A");
-    btn.id = 'listen-to-anchor';
-    btn.style.display = 'none';
-    document.body.appendChild(btn);
-
-    btn.click();
+    setTimeout(function(){
+      btn = document.createElement("A");
+      btn.id = 'listen-to-anchor';
+      btn.style.display = 'none';
+      document.body.appendChild(btn);
+      btn.click();
+    }, 1000);
   });
 
   // Not testable by IE8
@@ -130,19 +131,21 @@ describe('Keen.listenTo', function() {
       }
     });
 
-    form = document.createElement("FORM");
-    form.id = 'listen-to-form';
-    form.name = 'myForm';
-    form.style.display = 'none';
+    setTimeout(function(){
+      form = document.createElement("FORM");
+      form.id = 'listen-to-form';
+      form.name = 'myForm';
+      form.style.display = 'none';
 
-    input = document.createElement("INPUT");
-    input.id = 'listen-to-form-btn';
-    input.type = 'submit';
+      input = document.createElement("INPUT");
+      input.id = 'listen-to-form-btn';
+      input.type = 'submit';
 
-    form.appendChild(input);
-    document.body.appendChild(form);
+      form.appendChild(input);
+      document.body.appendChild(form);
 
-    input.click();
+      input.click();
+    }, 1000);
 
   });
 
