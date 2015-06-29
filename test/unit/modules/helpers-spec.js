@@ -1,7 +1,7 @@
 var assert = require('proclaim');
 
 var getBrowserProfile = require('../../../lib/helpers/getBrowserProfile');
-var getDateTimeIndex = require('../../../lib/helpers/getDateTimeIndex');
+var getDatetimeIndex = require('../../../lib/helpers/getDatetimeIndex');
 // var getDomEventProfile = require('../../../lib/helpers/getDomEventProfile');
 var getDomNodePath = require('../../../lib/helpers/getDomNodePath');
 var getScreenProfile = require('../../../lib/helpers/getScreenProfile');
@@ -22,9 +22,9 @@ describe('Keen.helpers', function(){
   //   });
   // });
 
-  describe('#getDateTimeIndex', function(){
+  describe('#getDatetimeIndex', function(){
     it('should return an object of datetime properties', function(){
-      var datetime = getDateTimeIndex();
+      var datetime = getDatetimeIndex();
       assert.isObject(datetime);
       assert.isNumber(datetime.hour_of_day);
       assert.isNumber(datetime.day_of_week);
@@ -34,7 +34,7 @@ describe('Keen.helpers', function(){
     });
     it('should return an object of datetime properties from a provided date', function(){
       var now = new Date();
-      var datetime = getDateTimeIndex(now);
+      var datetime = getDatetimeIndex(now);
       assert.deepEqual(datetime, {
         'hour_of_day'  : now.getHours(),
         'day_of_week'  : parseInt( 1 + now.getDay() ),
