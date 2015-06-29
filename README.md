@@ -416,26 +416,30 @@ Keen.listenTo({
 });
 ```
 
-**Supported events:**
+**Generally supported events:**
 
-* blur
 * click
-* dblclick
-* error
-* focus
-* hashchange
 * keydown
 * keypress
 * keyup
-* onload
 * mousedown
 * mousemove
 * mouseout
 * mouseover
 * mouseup
-* resize
-* unload
 
+**`window` events:**
+* blur
+* focus
+* hashchange
+* resize
+
+**Not currently supported:**
+
+* dblclick
+* error
+* onload
+* unload
 
 ```javascript
 /* Alternate interface

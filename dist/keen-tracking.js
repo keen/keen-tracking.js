@@ -22,7 +22,7 @@
   'use strict';
   var Keen = require('./');
   var extend = require('./utils/extend');
-  var listenTo = require('./browser-events');
+  Keen.listenTo = require('./browser-events')(Keen);
   extend(Keen.Client.prototype, require('./record-events-browser'));
   extend(Keen.Client.prototype, require('./defer-events'));
   extend(Keen.Client.prototype, {
@@ -46,7 +46,6 @@
     'parseParams': require('./utils/parseParams'),
     'timer'      : require('./utils/timer')
   });
-  Keen.listenTo = listenTo(Keen);
   Keen.noConflict = function(){
     root.Keen = previousKeen;
     return Keen;
@@ -139,11 +138,9 @@ function setListener(action, selector, callback){
         callback(evt);
       }
     }
-    else {
-      if ('window' === selector && 'scroll' === action) {
-        callback(evt);
-        return;
-      }
+    else if ('window' === selector) {
+      callback(evt);
+      return;
     }
   }
 }

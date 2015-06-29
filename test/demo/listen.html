@@ -8,6 +8,7 @@
       <li class="active"><a href="./listen.html">Link 1</a></li>
       <li><a href="./listen.html" class="btn">Link 2</a></li>
       <li><a href="./listen.html" target="_blank">Link 3 (new window)</a></li>
+      <li><a href="#hash">Link 4 (hash)</a></li>
     </ul>
   </div>
 
@@ -46,6 +47,11 @@
       });
 
   		Keen.listenTo({
+
+        'onload window': function(e){
+          console.log('onload window', e);
+        },
+
         'click #nav a': function(e){
           console.log('HANDLER: ', 'click .nav a', e);
           client.recordEvent('recordEvent via listenTo');
