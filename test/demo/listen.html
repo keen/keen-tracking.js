@@ -48,10 +48,6 @@
 
   		Keen.listenTo({
 
-        'onload window': function(e){
-          console.log('onload window', e);
-        },
-
         'click #nav a': function(e){
           console.log('HANDLER: ', 'click .nav a', e);
           client.recordEvent('recordEvent via listenTo');
