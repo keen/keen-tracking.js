@@ -2,25 +2,30 @@ var assert = require('proclaim');
 
 var getBrowserProfile = require('../../../lib/helpers/getBrowserProfile');
 var getDatetimeIndex = require('../../../lib/helpers/getDatetimeIndex');
-// var getDomEventProfile = require('../../../lib/helpers/getDomEventProfile');
 var getDomNodePath = require('../../../lib/helpers/getDomNodePath');
 var getScreenProfile = require('../../../lib/helpers/getScreenProfile');
-// var getUniqueId = require('../../../lib/helpers/getUniqueId');
+var getUniqueId = require('../../../lib/helpers/getUniqueId');
 var getWindowProfile = require('../../../lib/helpers/getWindowProfile');
 
 describe('Keen.helpers', function(){
 
-  // BUILD ME!
-  // describe('#getDomEventProfile', function(){
-  //   it('should return a curated object of event properties', function(){
-  //   });
-  // });
-
-  // BUILD ME!
-  // describe('#getUniqueId', function(){
-  //   it('should return a random GUID', function(){
-  //   });
-  // });
+  describe('#getUniqueId', function(){
+    it('should return a random UUID', function(){
+      assert.isString(getUniqueId());
+    });
+    it('should return a string of length 36', function(){
+      assert.equal(getUniqueId().length, 36);
+    });
+    it('should return a string of the correct structure', function(){
+      var splitStr = getUniqueId().split('-');
+      assert.equal(splitStr.length, 5);
+      assert.equal(splitStr[0].length, 8);
+      assert.equal(splitStr[1].length, 4);
+      assert.equal(splitStr[2].length, 4);
+      assert.equal(splitStr[3].length, 4);
+      assert.equal(splitStr[4].length, 12);
+    });
+  });
 
   describe('#getDatetimeIndex', function(){
     it('should return an object of datetime properties', function(){
