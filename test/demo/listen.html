@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+
+  <div id="nav">
+    <ul class="nav-tabs">
+      <li class="active"><a href="./listen.html">Link 1</a></li>
+      <li><a href="./listen.html" class="btn">Link 2</a></li>
+      <li><a href="./listen.html" target="_blank">Link 3 (new window)</a></li>
+    </ul>
+  </div>
+
+  <a href="./listen.html" class="body-link">Body Link</a>
+
+  <form id="signup-form" action="./listen.html" method="GET">
+    <input type="text" name="input" id="signup-input" />
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    !function(name,path,ctx){
+      var latest,prev=name!=="Keen"&&window.Keen?window.Keen:false;ctx[name]=ctx[name]||{ready:function(fn){var h=document.getElementsByTagName("head")[0],s=document.createElement("script"),w=window,loaded;s.onload=s.onerror=s.onreadystatechange=function(){if((s.readyState&&!(/^c|loade/.test(s.readyState)))||loaded){return}s.onload=s.onreadystatechange=null;loaded=1;latest=w.Keen;if(prev){w.Keen=prev}else{try{delete w.Keen}catch(e){w.Keen=void 0}}ctx[name]=latest;ctx[name].ready(fn)};s.async=1;s.src=path;h.parentNode.insertBefore(s,h)}}
+    }("Keen","../dist/keen-tracking.js",this);
+
+    Keen.ready(function(){
+      Keen.debug = true;
+
+      var client = new Keen.Client({
+  			projectId: '52f00ec205cd66404b000000',
+  			writeKey: '554a723d023da6cb24e51c56a9a54555e9dcf8403d4b71ffa37e9112295622e78a10eed43a13c83b14ce171b0f1317bb09aa8df43d50f73b77709ab431af611ea47ed65f4d74c0ea5f2bde8407322ab70559afef294673ee6c224308b1744c9e069508799edefc51264b3f75a1ba9e26'
+  			// , requestType: 'xhr'
+  		});
+
+      client.extendEvents({
+        user_agent: '${keen.user_agent}',
+        keen: {
+          addons: [
+            {
+              name : 'keen:ua_parser',
+              input : { ua_string : 'user_agent' },
+              output : 'parsed_user_agent'
+            }
+          ]
+        }
+      });
+
+  		Keen.listenTo({
+        'click #nav a': function(e){
+          console.log('HANDLER: ', 'click .nav a', e);
+          client.recordEvent('recordEvent via listenTo');
+          // e.preventDefault();
+          // return false;
+        },
+        'click #nav li.active a': function(e){
+          console.log('HANDLER: ', 'click .nav li.active a', e);
+          client.recordEvent('recordEvent via listenTo');
+          // e.preventDefault();
+          // return false;
+        },
+        'click #nav a.btn': function(e){
+          console.log('HANDLER: ', 'click .nav a.btn', e);
+          client.recordEvent('recordEvent via listenTo');
+          // e.preventDefault();
+        },
+        'click a.body-link': function(e){
+          console.log('HANDLER: ', 'click a.body-link', e);
+          client.recordEvent('recordEvent via listenTo');
+          // e.preventDefault();
+        },
+
+        // 'mouseover a': function(e){
+        //   console.log('HANDLER: ', 'mouseover a', e);
+        // },
+        // 'mouseout a': function(e){
+        //   console.log('HANDLER: ', 'mouseout a', e);
+        // }
+
+        'submit form#signup-form': function(e){
+          console.log('submit form#signup-form', e);
+          var input = document.getElementById('signup-input');
+          client.recordEvent('recordEvent via listenTo', { formField: input.value });
+          // return false;
+        }
+      });
+    });
+	</script>
+</body>
+</html>

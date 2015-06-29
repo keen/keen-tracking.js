@@ -22,6 +22,7 @@
   'use strict';
   var Keen = require('./');
   var extend = require('./utils/extend');
+  var listenTo = require('./browser-events');
   extend(Keen.Client.prototype, require('./record-events-browser'));
   extend(Keen.Client.prototype, require('./defer-events'));
   extend(Keen.Client.prototype, {
@@ -45,6 +46,7 @@
     'parseParams': require('./utils/parseParams'),
     'timer'      : require('./utils/timer')
   });
+  Keen.listenTo = listenTo(Keen);
   Keen.noConflict = function(){
     root.Keen = previousKeen;
     return Keen;
@@ -106,7 +108,83 @@
   return Keen;
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./":11,"./defer-events":2,"./extend-events":3,"./helpers/getBrowserProfile":4,"./helpers/getDatetimeIndex":5,"./helpers/getDomEventProfile":6,"./helpers/getDomNodePath":7,"./helpers/getScreenProfile":8,"./helpers/getUniqueId":9,"./helpers/getWindowProfile":10,"./record-events-browser":12,"./utils/cookie":14,"./utils/deepExtend":15,"./utils/each":16,"./utils/extend":17,"./utils/parseParams":18,"./utils/timer":20}],2:[function(require,module,exports){
+},{"./":12,"./browser-events":2,"./defer-events":3,"./extend-events":4,"./helpers/getBrowserProfile":5,"./helpers/getDatetimeIndex":6,"./helpers/getDomEventProfile":7,"./helpers/getDomNodePath":8,"./helpers/getScreenProfile":9,"./helpers/getUniqueId":10,"./helpers/getWindowProfile":11,"./record-events-browser":13,"./utils/cookie":15,"./utils/deepExtend":16,"./utils/each":17,"./utils/extend":18,"./utils/parseParams":19,"./utils/timer":21}],2:[function(require,module,exports){
+var Sizzle = require('sizzle');
+var each = require('./utils/each');
+module.exports = listenTo;
+function listenTo(ctx){
+  return function(listenerHash){
+    ctx.domEvents = ctx.domEvents || {};
+    each(listenerHash, function(callback, key){
+      ctx.domEvents[key] = callback;
+      setListener(key.split(' ')[0], key.split(' ').splice(1).join(' '), callback);
+    });
+  };
+}
+function setListener(action, selector, callback){
+  window.addEventListener(action, handleEvent, false);
+  function handleEvent(e){
+    var evt, target, match, timeout;
+    evt = e ? e : window.event;
+    timeout = 2000;
+    match = Sizzle.matches(selector, [evt.target]);
+    if (match.length) {
+      if ('click' === action && 'A' === evt.target.nodeName) {
+        return handleClickEvent(evt, evt.target, callback);
+      }
+      else if ('submit' === action && 'FORM' === evt.target.nodeName) {
+        return handleFormSubmit(evt, evt.target, callback);
+      }
+      else {
+        callback(evt);
+      }
+    }
+    else {
+      if ('window' === selector && 'scroll' === action) {
+        callback(evt);
+        return;
+      }
+    }
+  }
+}
+function handleClickEvent(evt, anchor, callback){
+  var timeout = 500,
+      targetAttr,
+      cbResponse;
+  if (anchor.getAttribute !== void 0) {
+    targetAttr = anchor.getAttribute("target");
+  } else if (anchor.target) {
+    targetAttr = anchor.target;
+  }
+  cbResponse = callback(evt);
+  if (cbResponse === false || evt.defaultPrevented || evt.returnValue === false) {
+    evt.preventDefault();
+    return false;
+  }
+  else if (targetAttr !== '_blank' && targetAttr !== 'blank' && !evt.metaKey) {
+    evt.preventDefault();
+    setTimeout(function(){
+      window.location = anchor.href;
+    }, timeout);
+  }
+  return false;
+}
+function handleFormSubmit(evt, form, callback){
+  var timeout = 500;
+  cbResponse = callback(evt);
+  if (cbResponse === false || evt.defaultPrevented || evt.returnValue === false) {
+    evt.preventDefault();
+    return false;
+  }
+  else {
+    evt.preventDefault();
+    setTimeout(function(){
+      form.submit();
+    }, timeout);
+  }
+  return false;
+}
+},{"./utils/each":17,"sizzle":27}],3:[function(require,module,exports){
 var Keen = require('./index');
 var each = require('./utils/each');
 var queue = require('./utils/queue');
@@ -174,7 +252,7 @@ function handleValidationError(message){
   var err = 'Event(s) not deferred: ' + message;
   this.emit('error', err);
 }
-},{"./index":11,"./utils/each":16,"./utils/queue":19}],3:[function(require,module,exports){
+},{"./index":12,"./utils/each":17,"./utils/queue":20}],4:[function(require,module,exports){
 var deepExtend = require('./utils/deepExtend');
 var each = require('./utils/each');
 module.exports = {
@@ -215,7 +293,7 @@ function getExtendedEventBody(result, queue){
   }
   return result;
 }
-},{"./utils/deepExtend":15,"./utils/each":16}],4:[function(require,module,exports){
+},{"./utils/deepExtend":16,"./utils/each":17}],5:[function(require,module,exports){
 var getScreenProfile = require('./getScreenProfile'),
     getWindowProfile = require('./getWindowProfile');
 function getBrowserProfile(){
@@ -233,7 +311,7 @@ function getBrowserProfile(){
   }
 }
 module.exports = getBrowserProfile;
-},{"./getScreenProfile":8,"./getWindowProfile":10}],5:[function(require,module,exports){
+},{"./getScreenProfile":9,"./getWindowProfile":11}],6:[function(require,module,exports){
 function getDateTimeIndex(input){
   var date = input || new Date();
   return {
@@ -245,12 +323,12 @@ function getDateTimeIndex(input){
   };
 }
 module.exports = getDateTimeIndex;
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 function getDomEventProfile(e){
   if (!arguments.length) return {};
 }
 module.exports = getDomEventProfile;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*!
   via: http://stackoverflow.com/a/16742828/2511985
   */
@@ -281,7 +359,7 @@ function getDomNodePath(el){
   return stack.slice(1).join(' > ');
 }
 module.exports = getDomNodePath;
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 function getScreenProfile(){
   var keys, output;
   if ('undefined' == typeof window || !window.screen) return {};
@@ -297,11 +375,11 @@ function getScreenProfile(){
   return output;
 }
 module.exports = getScreenProfile;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 function getUniqueId(){
 }
 module.exports = getUniqueId;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 function getWindowProfile(){
   var body, html, output;
   if ('undefined' == typeof document) return {};
@@ -325,7 +403,7 @@ module.exports = getWindowProfile;
   Notes:
     document.documentElement.offsetHeight/Width is a workaround for IE8 and below, where window.innerHeight/Width is undefined
 */
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var Emitter = require('component-emitter');
 var JSON2 = require('JSON2');
 var each = require('./utils/each');
@@ -429,7 +507,7 @@ Keen.log = function(message) {
   }
 };
 module.exports = Keen;
-},{"./utils/each":16,"./utils/queue":19,"JSON2":22,"component-emitter":24}],12:[function(require,module,exports){
+},{"./utils/each":17,"./utils/queue":20,"JSON2":23,"component-emitter":25}],13:[function(require,module,exports){
 var Keen = require('./index');
 var base64 = require('./utils/base64');
 var each = require('./utils/each');
@@ -690,7 +768,7 @@ function sendBeacon(url, callback){
   };
   img.src = url + '&c=clv1';
 }
-},{"./extend-events":3,"./index":11,"./utils/base64":13,"./utils/each":16,"JSON2":22}],13:[function(require,module,exports){
+},{"./extend-events":4,"./index":12,"./utils/base64":14,"./utils/each":17,"JSON2":23}],14:[function(require,module,exports){
 module.exports = {
   map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
   encode: function (n) {
@@ -737,7 +815,7 @@ module.exports = {
     }
   }
 };
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var Cookies = require('cookies-js');
 var JSON2 = require('JSON2');
 var extend = require('./extend');
@@ -779,7 +857,7 @@ cookie.prototype.options = function(obj){
   this.config.options = (typeof obj === 'object') ? obj : {};
   return this;
 };
-},{"./extend":17,"JSON2":22,"cookies-js":25}],15:[function(require,module,exports){
+},{"./extend":18,"JSON2":23,"cookies-js":26}],16:[function(require,module,exports){
 var JSON2 = require('JSON2');
 module.exports = deepExtend;
 function deepExtend(target){
@@ -807,7 +885,7 @@ function deepExtend(target){
 function clone(input){
   return JSON2.parse(JSON2.stringify(input))
 }
-},{"JSON2":22}],16:[function(require,module,exports){
+},{"JSON2":23}],17:[function(require,module,exports){
 module.exports = each;
 function each(o, cb, s){
   var n;
@@ -832,7 +910,7 @@ function each(o, cb, s){
   }
   return 1;
 }
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = function(target){
   for (var i = 1; i < arguments.length; i++) {
     for (var prop in arguments[i]){
@@ -841,7 +919,7 @@ module.exports = function(target){
   }
   return target;
 };
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 function parseParams(str){
   var urlParams = {},
       match,
@@ -855,7 +933,7 @@ function parseParams(str){
   return urlParams;
 };
 module.exports = parseParams;
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var Emitter = require('component-emitter');
 module.exports = queue;
 function queue(){
@@ -885,7 +963,7 @@ function checkQueue(){
   }
 }
 Emitter(queue.prototype);
-},{"component-emitter":24}],20:[function(require,module,exports){
+},{"component-emitter":25}],21:[function(require,module,exports){
 module.exports = timer;
 function timer(num){
   if (this instanceof timer === false) {
@@ -913,7 +991,7 @@ timer.prototype.clear = function(){
   this.count = 0;
   return this;
 };
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /*jslint evil: true, regexp: true */
 /*members $ref, apply, call, decycle, hasOwnProperty, length, prototype, push,
     retrocycle, stringify, test, toString
@@ -1011,13 +1089,13 @@ if (typeof exports.retrocycle !== 'function') {
       (window.JSON = {})
     )
 );
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var JSON2 = require('./json2');
 var cycle = require('./cycle');
 JSON2.decycle = cycle.decycle;
 JSON2.retrocycle = cycle.retrocycle;
 module.exports = JSON2;
-},{"./cycle":21,"./json2":23}],23:[function(require,module,exports){
+},{"./cycle":22,"./json2":24}],24:[function(require,module,exports){
 /*
     json2.js
     2011-10-19
@@ -1326,7 +1404,7 @@ module.exports = JSON2;
       (window.JSON = {})
     )
 );
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /**
  * Expose `Emitter`.
  */
@@ -1459,8 +1537,1503 @@ Emitter.prototype.listeners = function(event){
 Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /* * Cookies.js - 1.2.1 * https://github.com/ScottHamper/Cookies * * This is free and unencumbered software released into the public domain. */(function (global, undefined) {    'use strict';    var factory = function (window) {        if (typeof window.document !== 'object') {            throw new Error('Cookies.js requires a `window` with a `document` object');        }        var Cookies = function (key, value, options) {            return arguments.length === 1 ?                Cookies.get(key) : Cookies.set(key, value, options);        };        Cookies._document = window.document;        Cookies._cacheKeyPrefix = 'cookey.';        Cookies._maxExpireDate = new Date('Fri, 31 Dec 9999 23:59:59 UTC');        Cookies.defaults = {            path: '/',            secure: false        };        Cookies.get = function (key) {            if (Cookies._cachedDocumentCookie !== Cookies._document.cookie) {                Cookies._renewCache();            }            return Cookies._cache[Cookies._cacheKeyPrefix + key];        };        Cookies.set = function (key, value, options) {            options = Cookies._getExtendedOptions(options);            options.expires = Cookies._getExpiresDate(value === undefined ? -1 : options.expires);            Cookies._document.cookie = Cookies._generateCookieString(key, value, options);            return Cookies;        };        Cookies.expire = function (key, options) {            return Cookies.set(key, undefined, options);        };        Cookies._getExtendedOptions = function (options) {            return {                path: options && options.path || Cookies.defaults.path,                domain: options && options.domain || Cookies.defaults.domain,                expires: options && options.expires || Cookies.defaults.expires,                secure: options && options.secure !== undefined ?  options.secure : Cookies.defaults.secure            };        };        Cookies._isValidDate = function (date) {            return Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime());        };        Cookies._getExpiresDate = function (expires, now) {            now = now || new Date();            if (typeof expires === 'number') {                expires = expires === Infinity ?                    Cookies._maxExpireDate : new Date(now.getTime() + expires * 1000);            } else if (typeof expires === 'string') {                expires = new Date(expires);            }            if (expires && !Cookies._isValidDate(expires)) {                throw new Error('`expires` parameter cannot be converted to a valid Date instance');            }            return expires;        };        Cookies._generateCookieString = function (key, value, options) {            key = key.replace(/[^#$&+\^`|]/g, encodeURIComponent);            key = key.replace(/\(/g, '%28').replace(/\)/g, '%29');            value = (value + '').replace(/[^!#$&-+\--:<-\[\]-~]/g, encodeURIComponent);            options = options || {};            var cookieString = key + '=' + value;            cookieString += options.path ? ';path=' + options.path : '';            cookieString += options.domain ? ';domain=' + options.domain : '';            cookieString += options.expires ? ';expires=' + options.expires.toUTCString() : '';            cookieString += options.secure ? ';secure' : '';            return cookieString;        };        Cookies._getCacheFromString = function (documentCookie) {            var cookieCache = {};            var cookiesArray = documentCookie ? documentCookie.split('; ') : [];            for (var i = 0; i < cookiesArray.length; i++) {                var cookieKvp = Cookies._getKeyValuePairFromCookieString(cookiesArray[i]);                if (cookieCache[Cookies._cacheKeyPrefix + cookieKvp.key] === undefined) {                    cookieCache[Cookies._cacheKeyPrefix + cookieKvp.key] = cookieKvp.value;                }            }            return cookieCache;        };        Cookies._getKeyValuePairFromCookieString = function (cookieString) {            var separatorIndex = cookieString.indexOf('=');            separatorIndex = separatorIndex < 0 ? cookieString.length : separatorIndex;            return {                key: decodeURIComponent(cookieString.substr(0, separatorIndex)),                value: decodeURIComponent(cookieString.substr(separatorIndex + 1))            };        };        Cookies._renewCache = function () {            Cookies._cache = Cookies._getCacheFromString(Cookies._document.cookie);            Cookies._cachedDocumentCookie = Cookies._document.cookie;        };        Cookies._areEnabled = function () {            var testKey = 'cookies.js';            var areEnabled = Cookies.set(testKey, 1).get(testKey) === '1';            Cookies.expire(testKey);            return areEnabled;        };        Cookies.enabled = Cookies._areEnabled();        return Cookies;    };    var cookiesExport = typeof global.document === 'object' ? factory(global) : factory;    if (typeof define === 'function' && define.amd) {        define(function () { return cookiesExport; });    } else if (typeof exports === 'object') {        if (typeof module === 'object' && typeof module.exports === 'object') {            exports = module.exports = cookiesExport;        }        exports.Cookies = cookiesExport;    } else {        global.Cookies = cookiesExport;    }})(typeof window === 'undefined' ? this : window);
+},{}],27:[function(require,module,exports){
+/*!
+ * Sizzle CSS Selector Engine v2.2.0
+ * http://sizzlejs.com/
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license
+ * http://jquery.org/license
+ *
+ * Date: 2015-04-10
+ */
+(function( window ) {
+var i,
+	support,
+	Expr,
+	getText,
+	isXML,
+	tokenize,
+	compile,
+	select,
+	outermostContext,
+	sortInput,
+	hasDuplicate,
+	setDocument,
+	document,
+	docElem,
+	documentIsHTML,
+	rbuggyQSA,
+	rbuggyMatches,
+	matches,
+	contains,
+	expando = "sizzle" + 1 * new Date(),
+	preferredDoc = window.document,
+	dirruns = 0,
+	done = 0,
+	classCache = createCache(),
+	tokenCache = createCache(),
+	compilerCache = createCache(),
+	sortOrder = function( a, b ) {
+		if ( a === b ) {
+			hasDuplicate = true;
+		}
+		return 0;
+	},
+	MAX_NEGATIVE = 1 << 31,
+	hasOwn = ({}).hasOwnProperty,
+	arr = [],
+	pop = arr.pop,
+	push_native = arr.push,
+	push = arr.push,
+	slice = arr.slice,
+	indexOf = function( list, elem ) {
+		var i = 0,
+			len = list.length;
+		for ( ; i < len; i++ ) {
+			if ( list[i] === elem ) {
+				return i;
+			}
+		}
+		return -1;
+	},
+	booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
+	whitespace = "[\\x20\\t\\r\\n\\f]",
+	identifier = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+",
+	attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
+		"*([*^$|!~]?=)" + whitespace +
+		"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + identifier + "))|)" + whitespace +
+		"*\\]",
+	pseudos = ":(" + identifier + ")(?:\\((" +
+		"('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|" +
+		"((?:\\\\.|[^\\\\()[\\]]|" + attributes + ")*)|" +
+		".*" +
+		")\\)|)",
+	rwhitespace = new RegExp( whitespace + "+", "g" ),
+	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
+	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
+	rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*" ),
+	rattributeQuotes = new RegExp( "=" + whitespace + "*([^\\]'\"]*?)" + whitespace + "*\\]", "g" ),
+	rpseudo = new RegExp( pseudos ),
+	ridentifier = new RegExp( "^" + identifier + "$" ),
+	matchExpr = {
+		"ID": new RegExp( "^#(" + identifier + ")" ),
+		"CLASS": new RegExp( "^\\.(" + identifier + ")" ),
+		"TAG": new RegExp( "^(" + identifier + "|[*])" ),
+		"ATTR": new RegExp( "^" + attributes ),
+		"PSEUDO": new RegExp( "^" + pseudos ),
+		"CHILD": new RegExp( "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace +
+			"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
+			"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
+		"bool": new RegExp( "^(?:" + booleans + ")$", "i" ),
+		"needsContext": new RegExp( "^" + whitespace + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" +
+			whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
+	},
+	rinputs = /^(?:input|select|textarea|button)$/i,
+	rheader = /^h\d$/i,
+	rnative = /^[^{]+\{\s*\[native \w/,
+	rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
+	rsibling = /[+~]/,
+	rescape = /'|\\/g,
+	runescape = new RegExp( "\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig" ),
+	funescape = function( _, escaped, escapedWhitespace ) {
+		var high = "0x" + escaped - 0x10000;
+		return high !== high || escapedWhitespace ?
+			escaped :
+			high < 0 ?
+				String.fromCharCode( high + 0x10000 ) :
+				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
+	},
+	unloadHandler = function() {
+		setDocument();
+	};
+try {
+	push.apply(
+		(arr = slice.call( preferredDoc.childNodes )),
+		preferredDoc.childNodes
+	);
+	arr[ preferredDoc.childNodes.length ].nodeType;
+} catch ( e ) {
+	push = { apply: arr.length ?
+		function( target, els ) {
+			push_native.apply( target, slice.call(els) );
+		} :
+		function( target, els ) {
+			var j = target.length,
+				i = 0;
+			while ( (target[j++] = els[i++]) ) {}
+			target.length = j - 1;
+		}
+	};
+}
+function Sizzle( selector, context, results, seed ) {
+	var m, i, elem, nid, match, groups, newSelector,
+		newContext = context && context.ownerDocument,
+		nodeType = context ? context.nodeType : 9;
+	results = results || [];
+	if ( typeof selector !== "string" || !selector ||
+		nodeType !== 1 && nodeType !== 9 && nodeType !== 11 ) {
+		return results;
+	}
+	if ( !seed ) {
+		if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
+			setDocument( context );
+		}
+		context = context || document;
+		if ( documentIsHTML ) {
+			if ( nodeType !== 11 && (match = rquickExpr.exec( selector )) ) {
+				if ( (m = match[1]) ) {
+					if ( nodeType === 9 ) {
+						if ( (elem = context.getElementById( m )) ) {
+							if ( elem.id === m ) {
+								results.push( elem );
+								return results;
+							}
+						} else {
+							return results;
+						}
+					} else {
+						if ( newContext && (elem = newContext.getElementById( m )) &&
+							contains( context, elem ) &&
+							elem.id === m ) {
+							results.push( elem );
+							return results;
+						}
+					}
+				} else if ( match[2] ) {
+					push.apply( results, context.getElementsByTagName( selector ) );
+					return results;
+				} else if ( (m = match[3]) && support.getElementsByClassName &&
+					context.getElementsByClassName ) {
+					push.apply( results, context.getElementsByClassName( m ) );
+					return results;
+				}
+			}
+			if ( support.qsa &&
+				!compilerCache[ selector + " " ] &&
+				(!rbuggyQSA || !rbuggyQSA.test( selector )) ) {
+				if ( nodeType !== 1 ) {
+					newContext = context;
+					newSelector = selector;
+				} else if ( context.nodeName.toLowerCase() !== "object" ) {
+					if ( (nid = context.getAttribute( "id" )) ) {
+						nid = nid.replace( rescape, "\\$&" );
+					} else {
+						context.setAttribute( "id", (nid = expando) );
+					}
+					groups = tokenize( selector );
+					i = groups.length;
+					while ( i-- ) {
+						groups[i] = "[id='" + nid + "'] " + toSelector( groups[i] );
+					}
+					newSelector = groups.join( "," );
+					newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
+						context;
+				}
+				if ( newSelector ) {
+					try {
+						push.apply( results,
+							newContext.querySelectorAll( newSelector )
+						);
+						return results;
+					} catch ( qsaError ) {
+					} finally {
+						if ( nid === expando ) {
+							context.removeAttribute( "id" );
+						}
+					}
+				}
+			}
+		}
+	}
+	return select( selector.replace( rtrim, "$1" ), context, results, seed );
+}
+/**
+ * Create key-value caches of limited size
+ * @returns {function(string, object)} Returns the Object data after storing it on itself with
+ *	property name the (space-suffixed) string and (if the cache is larger than Expr.cacheLength)
+ *	deleting the oldest entry
+ */
+function createCache() {
+	var keys = [];
+	function cache( key, value ) {
+		if ( keys.push( key + " " ) > Expr.cacheLength ) {
+			delete cache[ keys.shift() ];
+		}
+		return (cache[ key + " " ] = value);
+	}
+	return cache;
+}
+/**
+ * Mark a function for special use by Sizzle
+ * @param {Function} fn The function to mark
+ */
+function markFunction( fn ) {
+	fn[ expando ] = true;
+	return fn;
+}
+/**
+ * Support testing using an element
+ * @param {Function} fn Passed the created div and expects a boolean result
+ */
+function assert( fn ) {
+	var div = document.createElement("div");
+	try {
+		return !!fn( div );
+	} catch (e) {
+		return false;
+	} finally {
+		if ( div.parentNode ) {
+			div.parentNode.removeChild( div );
+		}
+		div = null;
+	}
+}
+/**
+ * Adds the same handler for all of the specified attrs
+ * @param {String} attrs Pipe-separated list of attributes
+ * @param {Function} handler The method that will be applied
+ */
+function addHandle( attrs, handler ) {
+	var arr = attrs.split("|"),
+		i = attrs.length;
+	while ( i-- ) {
+		Expr.attrHandle[ arr[i] ] = handler;
+	}
+}
+/**
+ * Checks document order of two siblings
+ * @param {Element} a
+ * @param {Element} b
+ * @returns {Number} Returns less than 0 if a precedes b, greater than 0 if a follows b
+ */
+function siblingCheck( a, b ) {
+	var cur = b && a,
+		diff = cur && a.nodeType === 1 && b.nodeType === 1 &&
+			( ~b.sourceIndex || MAX_NEGATIVE ) -
+			( ~a.sourceIndex || MAX_NEGATIVE );
+	if ( diff ) {
+		return diff;
+	}
+	if ( cur ) {
+		while ( (cur = cur.nextSibling) ) {
+			if ( cur === b ) {
+				return -1;
+			}
+		}
+	}
+	return a ? 1 : -1;
+}
+/**
+ * Returns a function to use in pseudos for input types
+ * @param {String} type
+ */
+function createInputPseudo( type ) {
+	return function( elem ) {
+		var name = elem.nodeName.toLowerCase();
+		return name === "input" && elem.type === type;
+	};
+}
+/**
+ * Returns a function to use in pseudos for buttons
+ * @param {String} type
+ */
+function createButtonPseudo( type ) {
+	return function( elem ) {
+		var name = elem.nodeName.toLowerCase();
+		return (name === "input" || name === "button") && elem.type === type;
+	};
+}
+/**
+ * Returns a function to use in pseudos for positionals
+ * @param {Function} fn
+ */
+function createPositionalPseudo( fn ) {
+	return markFunction(function( argument ) {
+		argument = +argument;
+		return markFunction(function( seed, matches ) {
+			var j,
+				matchIndexes = fn( [], seed.length, argument ),
+				i = matchIndexes.length;
+			while ( i-- ) {
+				if ( seed[ (j = matchIndexes[i]) ] ) {
+					seed[j] = !(matches[j] = seed[j]);
+				}
+			}
+		});
+	});
+}
+/**
+ * Checks a node for validity as a Sizzle context
+ * @param {Element|Object=} context
+ * @returns {Element|Object|Boolean} The input node if acceptable, otherwise a falsy value
+ */
+function testContext( context ) {
+	return context && typeof context.getElementsByTagName !== "undefined" && context;
+}
+support = Sizzle.support = {};
+/**
+ * Detects XML nodes
+ * @param {Element|Object} elem An element or a document
+ * @returns {Boolean} True iff elem is a non-HTML XML node
+ */
+isXML = Sizzle.isXML = function( elem ) {
+	var documentElement = elem && (elem.ownerDocument || elem).documentElement;
+	return documentElement ? documentElement.nodeName !== "HTML" : false;
+};
+/**
+ * Sets document-related variables once based on the current document
+ * @param {Element|Object} [doc] An element or document object to use to set the document
+ * @returns {Object} Returns the current document
+ */
+setDocument = Sizzle.setDocument = function( node ) {
+	var hasCompare, parent,
+		doc = node ? node.ownerDocument || node : preferredDoc;
+	if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
+		return document;
+	}
+	document = doc;
+	docElem = document.documentElement;
+	documentIsHTML = !isXML( document );
+	if ( document.documentMode && (parent = document.defaultView) && parent.top !== parent ) {
+		if ( parent.addEventListener ) {
+			parent.addEventListener( "unload", unloadHandler, false );
+		} else if ( parent.attachEvent ) {
+			parent.attachEvent( "onunload", unloadHandler );
+		}
+	}
+	/* Attributes
+	---------------------------------------------------------------------- */
+	support.attributes = assert(function( div ) {
+		div.className = "i";
+		return !div.getAttribute("className");
+	});
+	/* getElement(s)By*
+	---------------------------------------------------------------------- */
+	support.getElementsByTagName = assert(function( div ) {
+		div.appendChild( document.createComment("") );
+		return !div.getElementsByTagName("*").length;
+	});
+	support.getElementsByClassName = rnative.test( document.getElementsByClassName );
+	support.getById = assert(function( div ) {
+		docElem.appendChild( div ).id = expando;
+		return !document.getElementsByName || !document.getElementsByName( expando ).length;
+	});
+	if ( support.getById ) {
+		Expr.find["ID"] = function( id, context ) {
+			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
+				var m = context.getElementById( id );
+				return m ? [ m ] : [];
+			}
+		};
+		Expr.filter["ID"] = function( id ) {
+			var attrId = id.replace( runescape, funescape );
+			return function( elem ) {
+				return elem.getAttribute("id") === attrId;
+			};
+		};
+	} else {
+		delete Expr.find["ID"];
+		Expr.filter["ID"] =  function( id ) {
+			var attrId = id.replace( runescape, funescape );
+			return function( elem ) {
+				var node = typeof elem.getAttributeNode !== "undefined" &&
+					elem.getAttributeNode("id");
+				return node && node.value === attrId;
+			};
+		};
+	}
+	Expr.find["TAG"] = support.getElementsByTagName ?
+		function( tag, context ) {
+			if ( typeof context.getElementsByTagName !== "undefined" ) {
+				return context.getElementsByTagName( tag );
+			} else if ( support.qsa ) {
+				return context.querySelectorAll( tag );
+			}
+		} :
+		function( tag, context ) {
+			var elem,
+				tmp = [],
+				i = 0,
+				results = context.getElementsByTagName( tag );
+			if ( tag === "*" ) {
+				while ( (elem = results[i++]) ) {
+					if ( elem.nodeType === 1 ) {
+						tmp.push( elem );
+					}
+				}
+				return tmp;
+			}
+			return results;
+		};
+	Expr.find["CLASS"] = support.getElementsByClassName && function( className, context ) {
+		if ( typeof context.getElementsByClassName !== "undefined" && documentIsHTML ) {
+			return context.getElementsByClassName( className );
+		}
+	};
+	/* QSA/matchesSelector
+	---------------------------------------------------------------------- */
+	rbuggyMatches = [];
+	rbuggyQSA = [];
+	if ( (support.qsa = rnative.test( document.querySelectorAll )) ) {
+		assert(function( div ) {
+			docElem.appendChild( div ).innerHTML = "<a id='" + expando + "'></a>" +
+				"<select id='" + expando + "-\r\\' msallowcapture=''>" +
+				"<option selected=''></option></select>";
+			if ( div.querySelectorAll("[msallowcapture^='']").length ) {
+				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
+			}
+			if ( !div.querySelectorAll("[selected]").length ) {
+				rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
+			}
+			if ( !div.querySelectorAll( "[id~=" + expando + "-]" ).length ) {
+				rbuggyQSA.push("~=");
+			}
+			if ( !div.querySelectorAll(":checked").length ) {
+				rbuggyQSA.push(":checked");
+			}
+			if ( !div.querySelectorAll( "a#" + expando + "+*" ).length ) {
+				rbuggyQSA.push(".#.+[+~]");
+			}
+		});
+		assert(function( div ) {
+			var input = document.createElement("input");
+			input.setAttribute( "type", "hidden" );
+			div.appendChild( input ).setAttribute( "name", "D" );
+			if ( div.querySelectorAll("[name=d]").length ) {
+				rbuggyQSA.push( "name" + whitespace + "*[*^$|!~]?=" );
+			}
+			if ( !div.querySelectorAll(":enabled").length ) {
+				rbuggyQSA.push( ":enabled", ":disabled" );
+			}
+			div.querySelectorAll("*,:x");
+			rbuggyQSA.push(",.*:");
+		});
+	}
+	if ( (support.matchesSelector = rnative.test( (matches = docElem.matches ||
+		docElem.webkitMatchesSelector ||
+		docElem.mozMatchesSelector ||
+		docElem.oMatchesSelector ||
+		docElem.msMatchesSelector) )) ) {
+		assert(function( div ) {
+			support.disconnectedMatch = matches.call( div, "div" );
+			matches.call( div, "[s!='']:x" );
+			rbuggyMatches.push( "!=", pseudos );
+		});
+	}
+	rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
+	rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join("|") );
+	/* Contains
+	---------------------------------------------------------------------- */
+	hasCompare = rnative.test( docElem.compareDocumentPosition );
+	contains = hasCompare || rnative.test( docElem.contains ) ?
+		function( a, b ) {
+			var adown = a.nodeType === 9 ? a.documentElement : a,
+				bup = b && b.parentNode;
+			return a === bup || !!( bup && bup.nodeType === 1 && (
+				adown.contains ?
+					adown.contains( bup ) :
+					a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
+			));
+		} :
+		function( a, b ) {
+			if ( b ) {
+				while ( (b = b.parentNode) ) {
+					if ( b === a ) {
+						return true;
+					}
+				}
+			}
+			return false;
+		};
+	/* Sorting
+	---------------------------------------------------------------------- */
+	sortOrder = hasCompare ?
+	function( a, b ) {
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+		}
+		var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
+		if ( compare ) {
+			return compare;
+		}
+		compare = ( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
+			a.compareDocumentPosition( b ) :
+			1;
+		if ( compare & 1 ||
+			(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
+			if ( a === document || a.ownerDocument === preferredDoc && contains(preferredDoc, a) ) {
+				return -1;
+			}
+			if ( b === document || b.ownerDocument === preferredDoc && contains(preferredDoc, b) ) {
+				return 1;
+			}
+			return sortInput ?
+				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
+				0;
+		}
+		return compare & 4 ? -1 : 1;
+	} :
+	function( a, b ) {
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+		}
+		var cur,
+			i = 0,
+			aup = a.parentNode,
+			bup = b.parentNode,
+			ap = [ a ],
+			bp = [ b ];
+		if ( !aup || !bup ) {
+			return a === document ? -1 :
+				b === document ? 1 :
+				aup ? -1 :
+				bup ? 1 :
+				sortInput ?
+				( indexOf( sortInput, a ) - indexOf( sortInput, b ) ) :
+				0;
+		} else if ( aup === bup ) {
+			return siblingCheck( a, b );
+		}
+		cur = a;
+		while ( (cur = cur.parentNode) ) {
+			ap.unshift( cur );
+		}
+		cur = b;
+		while ( (cur = cur.parentNode) ) {
+			bp.unshift( cur );
+		}
+		while ( ap[i] === bp[i] ) {
+			i++;
+		}
+		return i ?
+			siblingCheck( ap[i], bp[i] ) :
+			ap[i] === preferredDoc ? -1 :
+			bp[i] === preferredDoc ? 1 :
+			0;
+	};
+	return document;
+};
+Sizzle.matches = function( expr, elements ) {
+	return Sizzle( expr, null, null, elements );
+};
+Sizzle.matchesSelector = function( elem, expr ) {
+	if ( ( elem.ownerDocument || elem ) !== document ) {
+		setDocument( elem );
+	}
+	expr = expr.replace( rattributeQuotes, "='$1']" );
+	if ( support.matchesSelector && documentIsHTML &&
+		!compilerCache[ expr + " " ] &&
+		( !rbuggyMatches || !rbuggyMatches.test( expr ) ) &&
+		( !rbuggyQSA     || !rbuggyQSA.test( expr ) ) ) {
+		try {
+			var ret = matches.call( elem, expr );
+			if ( ret || support.disconnectedMatch ||
+					elem.document && elem.document.nodeType !== 11 ) {
+				return ret;
+			}
+		} catch (e) {}
+	}
+	return Sizzle( expr, document, null, [ elem ] ).length > 0;
+};
+Sizzle.contains = function( context, elem ) {
+	if ( ( context.ownerDocument || context ) !== document ) {
+		setDocument( context );
+	}
+	return contains( context, elem );
+};
+Sizzle.attr = function( elem, name ) {
+	if ( ( elem.ownerDocument || elem ) !== document ) {
+		setDocument( elem );
+	}
+	var fn = Expr.attrHandle[ name.toLowerCase() ],
+		val = fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
+			fn( elem, name, !documentIsHTML ) :
+			undefined;
+	return val !== undefined ?
+		val :
+		support.attributes || !documentIsHTML ?
+			elem.getAttribute( name ) :
+			(val = elem.getAttributeNode(name)) && val.specified ?
+				val.value :
+				null;
+};
+Sizzle.error = function( msg ) {
+	throw new Error( "Syntax error, unrecognized expression: " + msg );
+};
+/**
+ * Document sorting and removing duplicates
+ * @param {ArrayLike} results
+ */
+Sizzle.uniqueSort = function( results ) {
+	var elem,
+		duplicates = [],
+		j = 0,
+		i = 0;
+	hasDuplicate = !support.detectDuplicates;
+	sortInput = !support.sortStable && results.slice( 0 );
+	results.sort( sortOrder );
+	if ( hasDuplicate ) {
+		while ( (elem = results[i++]) ) {
+			if ( elem === results[ i ] ) {
+				j = duplicates.push( i );
+			}
+		}
+		while ( j-- ) {
+			results.splice( duplicates[ j ], 1 );
+		}
+	}
+	sortInput = null;
+	return results;
+};
+/**
+ * Utility function for retrieving the text value of an array of DOM nodes
+ * @param {Array|Element} elem
+ */
+getText = Sizzle.getText = function( elem ) {
+	var node,
+		ret = "",
+		i = 0,
+		nodeType = elem.nodeType;
+	if ( !nodeType ) {
+		while ( (node = elem[i++]) ) {
+			ret += getText( node );
+		}
+	} else if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
+		if ( typeof elem.textContent === "string" ) {
+			return elem.textContent;
+		} else {
+			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
+				ret += getText( elem );
+			}
+		}
+	} else if ( nodeType === 3 || nodeType === 4 ) {
+		return elem.nodeValue;
+	}
+	return ret;
+};
+Expr = Sizzle.selectors = {
+	cacheLength: 50,
+	createPseudo: markFunction,
+	match: matchExpr,
+	attrHandle: {},
+	find: {},
+	relative: {
+		">": { dir: "parentNode", first: true },
+		" ": { dir: "parentNode" },
+		"+": { dir: "previousSibling", first: true },
+		"~": { dir: "previousSibling" }
+	},
+	preFilter: {
+		"ATTR": function( match ) {
+			match[1] = match[1].replace( runescape, funescape );
+			match[3] = ( match[3] || match[4] || match[5] || "" ).replace( runescape, funescape );
+			if ( match[2] === "~=" ) {
+				match[3] = " " + match[3] + " ";
+			}
+			return match.slice( 0, 4 );
+		},
+		"CHILD": function( match ) {
+			/* matches from matchExpr["CHILD"]
+				1 type (only|nth|...)
+				2 what (child|of-type)
+				3 argument (even|odd|\d*|\d*n([+-]\d+)?|...)
+				4 xn-component of xn+y argument ([+-]?\d*n|)
+				5 sign of xn-component
+				6 x of xn-component
+				7 sign of y-component
+				8 y of y-component
+			*/
+			match[1] = match[1].toLowerCase();
+			if ( match[1].slice( 0, 3 ) === "nth" ) {
+				if ( !match[3] ) {
+					Sizzle.error( match[0] );
+				}
+				match[4] = +( match[4] ? match[5] + (match[6] || 1) : 2 * ( match[3] === "even" || match[3] === "odd" ) );
+				match[5] = +( ( match[7] + match[8] ) || match[3] === "odd" );
+			} else if ( match[3] ) {
+				Sizzle.error( match[0] );
+			}
+			return match;
+		},
+		"PSEUDO": function( match ) {
+			var excess,
+				unquoted = !match[6] && match[2];
+			if ( matchExpr["CHILD"].test( match[0] ) ) {
+				return null;
+			}
+			if ( match[3] ) {
+				match[2] = match[4] || match[5] || "";
+			} else if ( unquoted && rpseudo.test( unquoted ) &&
+				(excess = tokenize( unquoted, true )) &&
+				(excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length) ) {
+				match[0] = match[0].slice( 0, excess );
+				match[2] = unquoted.slice( 0, excess );
+			}
+			return match.slice( 0, 3 );
+		}
+	},
+	filter: {
+		"TAG": function( nodeNameSelector ) {
+			var nodeName = nodeNameSelector.replace( runescape, funescape ).toLowerCase();
+			return nodeNameSelector === "*" ?
+				function() { return true; } :
+				function( elem ) {
+					return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
+				};
+		},
+		"CLASS": function( className ) {
+			var pattern = classCache[ className + " " ];
+			return pattern ||
+				(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
+				classCache( className, function( elem ) {
+					return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute("class") || "" );
+				});
+		},
+		"ATTR": function( name, operator, check ) {
+			return function( elem ) {
+				var result = Sizzle.attr( elem, name );
+				if ( result == null ) {
+					return operator === "!=";
+				}
+				if ( !operator ) {
+					return true;
+				}
+				result += "";
+				return operator === "=" ? result === check :
+					operator === "!=" ? result !== check :
+					operator === "^=" ? check && result.indexOf( check ) === 0 :
+					operator === "*=" ? check && result.indexOf( check ) > -1 :
+					operator === "$=" ? check && result.slice( -check.length ) === check :
+					operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
+					operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
+					false;
+			};
+		},
+		"CHILD": function( type, what, argument, first, last ) {
+			var simple = type.slice( 0, 3 ) !== "nth",
+				forward = type.slice( -4 ) !== "last",
+				ofType = what === "of-type";
+			return first === 1 && last === 0 ?
+				function( elem ) {
+					return !!elem.parentNode;
+				} :
+				function( elem, context, xml ) {
+					var cache, uniqueCache, outerCache, node, nodeIndex, start,
+						dir = simple !== forward ? "nextSibling" : "previousSibling",
+						parent = elem.parentNode,
+						name = ofType && elem.nodeName.toLowerCase(),
+						useCache = !xml && !ofType,
+						diff = false;
+					if ( parent ) {
+						if ( simple ) {
+							while ( dir ) {
+								node = elem;
+								while ( (node = node[ dir ]) ) {
+									if ( ofType ?
+										node.nodeName.toLowerCase() === name :
+										node.nodeType === 1 ) {
+										return false;
+									}
+								}
+								start = dir = type === "only" && !start && "nextSibling";
+							}
+							return true;
+						}
+						start = [ forward ? parent.firstChild : parent.lastChild ];
+						if ( forward && useCache ) {
+							node = parent;
+							outerCache = node[ expando ] || (node[ expando ] = {});
+							uniqueCache = outerCache[ node.uniqueID ] ||
+								(outerCache[ node.uniqueID ] = {});
+							cache = uniqueCache[ type ] || [];
+							nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
+							diff = nodeIndex && cache[ 2 ];
+							node = nodeIndex && parent.childNodes[ nodeIndex ];
+							while ( (node = ++nodeIndex && node && node[ dir ] ||
+								(diff = nodeIndex = 0) || start.pop()) ) {
+								if ( node.nodeType === 1 && ++diff && node === elem ) {
+									uniqueCache[ type ] = [ dirruns, nodeIndex, diff ];
+									break;
+								}
+							}
+						} else {
+							if ( useCache ) {
+								node = elem;
+								outerCache = node[ expando ] || (node[ expando ] = {});
+								uniqueCache = outerCache[ node.uniqueID ] ||
+									(outerCache[ node.uniqueID ] = {});
+								cache = uniqueCache[ type ] || [];
+								nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
+								diff = nodeIndex;
+							}
+							if ( diff === false ) {
+								while ( (node = ++nodeIndex && node && node[ dir ] ||
+									(diff = nodeIndex = 0) || start.pop()) ) {
+									if ( ( ofType ?
+										node.nodeName.toLowerCase() === name :
+										node.nodeType === 1 ) &&
+										++diff ) {
+										if ( useCache ) {
+											outerCache = node[ expando ] || (node[ expando ] = {});
+											uniqueCache = outerCache[ node.uniqueID ] ||
+												(outerCache[ node.uniqueID ] = {});
+											uniqueCache[ type ] = [ dirruns, diff ];
+										}
+										if ( node === elem ) {
+											break;
+										}
+									}
+								}
+							}
+						}
+						diff -= last;
+						return diff === first || ( diff % first === 0 && diff / first >= 0 );
+					}
+				};
+		},
+		"PSEUDO": function( pseudo, argument ) {
+			var args,
+				fn = Expr.pseudos[ pseudo ] || Expr.setFilters[ pseudo.toLowerCase() ] ||
+					Sizzle.error( "unsupported pseudo: " + pseudo );
+			if ( fn[ expando ] ) {
+				return fn( argument );
+			}
+			if ( fn.length > 1 ) {
+				args = [ pseudo, pseudo, "", argument ];
+				return Expr.setFilters.hasOwnProperty( pseudo.toLowerCase() ) ?
+					markFunction(function( seed, matches ) {
+						var idx,
+							matched = fn( seed, argument ),
+							i = matched.length;
+						while ( i-- ) {
+							idx = indexOf( seed, matched[i] );
+							seed[ idx ] = !( matches[ idx ] = matched[i] );
+						}
+					}) :
+					function( elem ) {
+						return fn( elem, 0, args );
+					};
+			}
+			return fn;
+		}
+	},
+	pseudos: {
+		"not": markFunction(function( selector ) {
+			var input = [],
+				results = [],
+				matcher = compile( selector.replace( rtrim, "$1" ) );
+			return matcher[ expando ] ?
+				markFunction(function( seed, matches, context, xml ) {
+					var elem,
+						unmatched = matcher( seed, null, xml, [] ),
+						i = seed.length;
+					while ( i-- ) {
+						if ( (elem = unmatched[i]) ) {
+							seed[i] = !(matches[i] = elem);
+						}
+					}
+				}) :
+				function( elem, context, xml ) {
+					input[0] = elem;
+					matcher( input, null, xml, results );
+					input[0] = null;
+					return !results.pop();
+				};
+		}),
+		"has": markFunction(function( selector ) {
+			return function( elem ) {
+				return Sizzle( selector, elem ).length > 0;
+			};
+		}),
+		"contains": markFunction(function( text ) {
+			text = text.replace( runescape, funescape );
+			return function( elem ) {
+				return ( elem.textContent || elem.innerText || getText( elem ) ).indexOf( text ) > -1;
+			};
+		}),
+		"lang": markFunction( function( lang ) {
+			if ( !ridentifier.test(lang || "") ) {
+				Sizzle.error( "unsupported lang: " + lang );
+			}
+			lang = lang.replace( runescape, funescape ).toLowerCase();
+			return function( elem ) {
+				var elemLang;
+				do {
+					if ( (elemLang = documentIsHTML ?
+						elem.lang :
+						elem.getAttribute("xml:lang") || elem.getAttribute("lang")) ) {
+						elemLang = elemLang.toLowerCase();
+						return elemLang === lang || elemLang.indexOf( lang + "-" ) === 0;
+					}
+				} while ( (elem = elem.parentNode) && elem.nodeType === 1 );
+				return false;
+			};
+		}),
+		"target": function( elem ) {
+			var hash = window.location && window.location.hash;
+			return hash && hash.slice( 1 ) === elem.id;
+		},
+		"root": function( elem ) {
+			return elem === docElem;
+		},
+		"focus": function( elem ) {
+			return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
+		},
+		"enabled": function( elem ) {
+			return elem.disabled === false;
+		},
+		"disabled": function( elem ) {
+			return elem.disabled === true;
+		},
+		"checked": function( elem ) {
+			var nodeName = elem.nodeName.toLowerCase();
+			return (nodeName === "input" && !!elem.checked) || (nodeName === "option" && !!elem.selected);
+		},
+		"selected": function( elem ) {
+			if ( elem.parentNode ) {
+				elem.parentNode.selectedIndex;
+			}
+			return elem.selected === true;
+		},
+		"empty": function( elem ) {
+			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
+				if ( elem.nodeType < 6 ) {
+					return false;
+				}
+			}
+			return true;
+		},
+		"parent": function( elem ) {
+			return !Expr.pseudos["empty"]( elem );
+		},
+		"header": function( elem ) {
+			return rheader.test( elem.nodeName );
+		},
+		"input": function( elem ) {
+			return rinputs.test( elem.nodeName );
+		},
+		"button": function( elem ) {
+			var name = elem.nodeName.toLowerCase();
+			return name === "input" && elem.type === "button" || name === "button";
+		},
+		"text": function( elem ) {
+			var attr;
+			return elem.nodeName.toLowerCase() === "input" &&
+				elem.type === "text" &&
+				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text" );
+		},
+		"first": createPositionalPseudo(function() {
+			return [ 0 ];
+		}),
+		"last": createPositionalPseudo(function( matchIndexes, length ) {
+			return [ length - 1 ];
+		}),
+		"eq": createPositionalPseudo(function( matchIndexes, length, argument ) {
+			return [ argument < 0 ? argument + length : argument ];
+		}),
+		"even": createPositionalPseudo(function( matchIndexes, length ) {
+			var i = 0;
+			for ( ; i < length; i += 2 ) {
+				matchIndexes.push( i );
+			}
+			return matchIndexes;
+		}),
+		"odd": createPositionalPseudo(function( matchIndexes, length ) {
+			var i = 1;
+			for ( ; i < length; i += 2 ) {
+				matchIndexes.push( i );
+			}
+			return matchIndexes;
+		}),
+		"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
+			var i = argument < 0 ? argument + length : argument;
+			for ( ; --i >= 0; ) {
+				matchIndexes.push( i );
+			}
+			return matchIndexes;
+		}),
+		"gt": createPositionalPseudo(function( matchIndexes, length, argument ) {
+			var i = argument < 0 ? argument + length : argument;
+			for ( ; ++i < length; ) {
+				matchIndexes.push( i );
+			}
+			return matchIndexes;
+		})
+	}
+};
+Expr.pseudos["nth"] = Expr.pseudos["eq"];
+for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
+	Expr.pseudos[ i ] = createInputPseudo( i );
+}
+for ( i in { submit: true, reset: true } ) {
+	Expr.pseudos[ i ] = createButtonPseudo( i );
+}
+function setFilters() {}
+setFilters.prototype = Expr.filters = Expr.pseudos;
+Expr.setFilters = new setFilters();
+tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
+	var matched, match, tokens, type,
+		soFar, groups, preFilters,
+		cached = tokenCache[ selector + " " ];
+	if ( cached ) {
+		return parseOnly ? 0 : cached.slice( 0 );
+	}
+	soFar = selector;
+	groups = [];
+	preFilters = Expr.preFilter;
+	while ( soFar ) {
+		if ( !matched || (match = rcomma.exec( soFar )) ) {
+			if ( match ) {
+				soFar = soFar.slice( match[0].length ) || soFar;
+			}
+			groups.push( (tokens = []) );
+		}
+		matched = false;
+		if ( (match = rcombinators.exec( soFar )) ) {
+			matched = match.shift();
+			tokens.push({
+				value: matched,
+				type: match[0].replace( rtrim, " " )
+			});
+			soFar = soFar.slice( matched.length );
+		}
+		for ( type in Expr.filter ) {
+			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
+				(match = preFilters[ type ]( match ))) ) {
+				matched = match.shift();
+				tokens.push({
+					value: matched,
+					type: type,
+					matches: match
+				});
+				soFar = soFar.slice( matched.length );
+			}
+		}
+		if ( !matched ) {
+			break;
+		}
+	}
+	return parseOnly ?
+		soFar.length :
+		soFar ?
+			Sizzle.error( selector ) :
+			tokenCache( selector, groups ).slice( 0 );
+};
+function toSelector( tokens ) {
+	var i = 0,
+		len = tokens.length,
+		selector = "";
+	for ( ; i < len; i++ ) {
+		selector += tokens[i].value;
+	}
+	return selector;
+}
+function addCombinator( matcher, combinator, base ) {
+	var dir = combinator.dir,
+		checkNonElements = base && dir === "parentNode",
+		doneName = done++;
+	return combinator.first ?
+		function( elem, context, xml ) {
+			while ( (elem = elem[ dir ]) ) {
+				if ( elem.nodeType === 1 || checkNonElements ) {
+					return matcher( elem, context, xml );
+				}
+			}
+		} :
+		function( elem, context, xml ) {
+			var oldCache, uniqueCache, outerCache,
+				newCache = [ dirruns, doneName ];
+			if ( xml ) {
+				while ( (elem = elem[ dir ]) ) {
+					if ( elem.nodeType === 1 || checkNonElements ) {
+						if ( matcher( elem, context, xml ) ) {
+							return true;
+						}
+					}
+				}
+			} else {
+				while ( (elem = elem[ dir ]) ) {
+					if ( elem.nodeType === 1 || checkNonElements ) {
+						outerCache = elem[ expando ] || (elem[ expando ] = {});
+						uniqueCache = outerCache[ elem.uniqueID ] || (outerCache[ elem.uniqueID ] = {});
+						if ( (oldCache = uniqueCache[ dir ]) &&
+							oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
+							return (newCache[ 2 ] = oldCache[ 2 ]);
+						} else {
+							uniqueCache[ dir ] = newCache;
+							if ( (newCache[ 2 ] = matcher( elem, context, xml )) ) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+		};
+}
+function elementMatcher( matchers ) {
+	return matchers.length > 1 ?
+		function( elem, context, xml ) {
+			var i = matchers.length;
+			while ( i-- ) {
+				if ( !matchers[i]( elem, context, xml ) ) {
+					return false;
+				}
+			}
+			return true;
+		} :
+		matchers[0];
+}
+function multipleContexts( selector, contexts, results ) {
+	var i = 0,
+		len = contexts.length;
+	for ( ; i < len; i++ ) {
+		Sizzle( selector, contexts[i], results );
+	}
+	return results;
+}
+function condense( unmatched, map, filter, context, xml ) {
+	var elem,
+		newUnmatched = [],
+		i = 0,
+		len = unmatched.length,
+		mapped = map != null;
+	for ( ; i < len; i++ ) {
+		if ( (elem = unmatched[i]) ) {
+			if ( !filter || filter( elem, context, xml ) ) {
+				newUnmatched.push( elem );
+				if ( mapped ) {
+					map.push( i );
+				}
+			}
+		}
+	}
+	return newUnmatched;
+}
+function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postSelector ) {
+	if ( postFilter && !postFilter[ expando ] ) {
+		postFilter = setMatcher( postFilter );
+	}
+	if ( postFinder && !postFinder[ expando ] ) {
+		postFinder = setMatcher( postFinder, postSelector );
+	}
+	return markFunction(function( seed, results, context, xml ) {
+		var temp, i, elem,
+			preMap = [],
+			postMap = [],
+			preexisting = results.length,
+			elems = seed || multipleContexts( selector || "*", context.nodeType ? [ context ] : context, [] ),
+			matcherIn = preFilter && ( seed || !selector ) ?
+				condense( elems, preMap, preFilter, context, xml ) :
+				elems,
+			matcherOut = matcher ?
+				postFinder || ( seed ? preFilter : preexisting || postFilter ) ?
+					[] :
+					results :
+				matcherIn;
+		if ( matcher ) {
+			matcher( matcherIn, matcherOut, context, xml );
+		}
+		if ( postFilter ) {
+			temp = condense( matcherOut, postMap );
+			postFilter( temp, [], context, xml );
+			i = temp.length;
+			while ( i-- ) {
+				if ( (elem = temp[i]) ) {
+					matcherOut[ postMap[i] ] = !(matcherIn[ postMap[i] ] = elem);
+				}
+			}
+		}
+		if ( seed ) {
+			if ( postFinder || preFilter ) {
+				if ( postFinder ) {
+					temp = [];
+					i = matcherOut.length;
+					while ( i-- ) {
+						if ( (elem = matcherOut[i]) ) {
+							temp.push( (matcherIn[i] = elem) );
+						}
+					}
+					postFinder( null, (matcherOut = []), temp, xml );
+				}
+				i = matcherOut.length;
+				while ( i-- ) {
+					if ( (elem = matcherOut[i]) &&
+						(temp = postFinder ? indexOf( seed, elem ) : preMap[i]) > -1 ) {
+						seed[temp] = !(results[temp] = elem);
+					}
+				}
+			}
+		} else {
+			matcherOut = condense(
+				matcherOut === results ?
+					matcherOut.splice( preexisting, matcherOut.length ) :
+					matcherOut
+			);
+			if ( postFinder ) {
+				postFinder( null, results, matcherOut, xml );
+			} else {
+				push.apply( results, matcherOut );
+			}
+		}
+	});
+}
+function matcherFromTokens( tokens ) {
+	var checkContext, matcher, j,
+		len = tokens.length,
+		leadingRelative = Expr.relative[ tokens[0].type ],
+		implicitRelative = leadingRelative || Expr.relative[" "],
+		i = leadingRelative ? 1 : 0,
+		matchContext = addCombinator( function( elem ) {
+			return elem === checkContext;
+		}, implicitRelative, true ),
+		matchAnyContext = addCombinator( function( elem ) {
+			return indexOf( checkContext, elem ) > -1;
+		}, implicitRelative, true ),
+		matchers = [ function( elem, context, xml ) {
+			var ret = ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
+				(checkContext = context).nodeType ?
+					matchContext( elem, context, xml ) :
+					matchAnyContext( elem, context, xml ) );
+			checkContext = null;
+			return ret;
+		} ];
+	for ( ; i < len; i++ ) {
+		if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
+			matchers = [ addCombinator(elementMatcher( matchers ), matcher) ];
+		} else {
+			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
+			if ( matcher[ expando ] ) {
+				j = ++i;
+				for ( ; j < len; j++ ) {
+					if ( Expr.relative[ tokens[j].type ] ) {
+						break;
+					}
+				}
+				return setMatcher(
+					i > 1 && elementMatcher( matchers ),
+					i > 1 && toSelector(
+						tokens.slice( 0, i - 1 ).concat({ value: tokens[ i - 2 ].type === " " ? "*" : "" })
+					).replace( rtrim, "$1" ),
+					matcher,
+					i < j && matcherFromTokens( tokens.slice( i, j ) ),
+					j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
+					j < len && toSelector( tokens )
+				);
+			}
+			matchers.push( matcher );
+		}
+	}
+	return elementMatcher( matchers );
+}
+function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
+	var bySet = setMatchers.length > 0,
+		byElement = elementMatchers.length > 0,
+		superMatcher = function( seed, context, xml, results, outermost ) {
+			var elem, j, matcher,
+				matchedCount = 0,
+				i = "0",
+				unmatched = seed && [],
+				setMatched = [],
+				contextBackup = outermostContext,
+				elems = seed || byElement && Expr.find["TAG"]( "*", outermost ),
+				dirrunsUnique = (dirruns += contextBackup == null ? 1 : Math.random() || 0.1),
+				len = elems.length;
+			if ( outermost ) {
+				outermostContext = context === document || context || outermost;
+			}
+			for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
+				if ( byElement && elem ) {
+					j = 0;
+					if ( !context && elem.ownerDocument !== document ) {
+						setDocument( elem );
+						xml = !documentIsHTML;
+					}
+					while ( (matcher = elementMatchers[j++]) ) {
+						if ( matcher( elem, context || document, xml) ) {
+							results.push( elem );
+							break;
+						}
+					}
+					if ( outermost ) {
+						dirruns = dirrunsUnique;
+					}
+				}
+				if ( bySet ) {
+					if ( (elem = !matcher && elem) ) {
+						matchedCount--;
+					}
+					if ( seed ) {
+						unmatched.push( elem );
+					}
+				}
+			}
+			matchedCount += i;
+			if ( bySet && i !== matchedCount ) {
+				j = 0;
+				while ( (matcher = setMatchers[j++]) ) {
+					matcher( unmatched, setMatched, context, xml );
+				}
+				if ( seed ) {
+					if ( matchedCount > 0 ) {
+						while ( i-- ) {
+							if ( !(unmatched[i] || setMatched[i]) ) {
+								setMatched[i] = pop.call( results );
+							}
+						}
+					}
+					setMatched = condense( setMatched );
+				}
+				push.apply( results, setMatched );
+				if ( outermost && !seed && setMatched.length > 0 &&
+					( matchedCount + setMatchers.length ) > 1 ) {
+					Sizzle.uniqueSort( results );
+				}
+			}
+			if ( outermost ) {
+				dirruns = dirrunsUnique;
+				outermostContext = contextBackup;
+			}
+			return unmatched;
+		};
+	return bySet ?
+		markFunction( superMatcher ) :
+		superMatcher;
+}
+compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
+	var i,
+		setMatchers = [],
+		elementMatchers = [],
+		cached = compilerCache[ selector + " " ];
+	if ( !cached ) {
+		if ( !match ) {
+			match = tokenize( selector );
+		}
+		i = match.length;
+		while ( i-- ) {
+			cached = matcherFromTokens( match[i] );
+			if ( cached[ expando ] ) {
+				setMatchers.push( cached );
+			} else {
+				elementMatchers.push( cached );
+			}
+		}
+		cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) );
+		cached.selector = selector;
+	}
+	return cached;
+};
+/**
+ * A low-level selection function that works with Sizzle's compiled
+ *  selector functions
+ * @param {String|Function} selector A selector or a pre-compiled
+ *  selector function built with Sizzle.compile
+ * @param {Element} context
+ * @param {Array} [results]
+ * @param {Array} [seed] A set of elements to match against
+ */
+select = Sizzle.select = function( selector, context, results, seed ) {
+	var i, tokens, token, type, find,
+		compiled = typeof selector === "function" && selector,
+		match = !seed && tokenize( (selector = compiled.selector || selector) );
+	results = results || [];
+	if ( match.length === 1 ) {
+		tokens = match[0] = match[0].slice( 0 );
+		if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
+				support.getById && context.nodeType === 9 && documentIsHTML &&
+				Expr.relative[ tokens[1].type ] ) {
+			context = ( Expr.find["ID"]( token.matches[0].replace(runescape, funescape), context ) || [] )[0];
+			if ( !context ) {
+				return results;
+			} else if ( compiled ) {
+				context = context.parentNode;
+			}
+			selector = selector.slice( tokens.shift().value.length );
+		}
+		i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
+		while ( i-- ) {
+			token = tokens[i];
+			if ( Expr.relative[ (type = token.type) ] ) {
+				break;
+			}
+			if ( (find = Expr.find[ type ]) ) {
+				if ( (seed = find(
+					token.matches[0].replace( runescape, funescape ),
+					rsibling.test( tokens[0].type ) && testContext( context.parentNode ) || context
+				)) ) {
+					tokens.splice( i, 1 );
+					selector = seed.length && toSelector( tokens );
+					if ( !selector ) {
+						push.apply( results, seed );
+						return results;
+					}
+					break;
+				}
+			}
+		}
+	}
+	( compiled || compile( selector, match ) )(
+		seed,
+		context,
+		!documentIsHTML,
+		results,
+		!context || rsibling.test( selector ) && testContext( context.parentNode ) || context
+	);
+	return results;
+};
+support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
+support.detectDuplicates = !!hasDuplicate;
+setDocument();
+support.sortDetached = assert(function( div1 ) {
+	return div1.compareDocumentPosition( document.createElement("div") ) & 1;
+});
+if ( !assert(function( div ) {
+	div.innerHTML = "<a href='#'></a>";
+	return div.firstChild.getAttribute("href") === "#" ;
+}) ) {
+	addHandle( "type|href|height|width", function( elem, name, isXML ) {
+		if ( !isXML ) {
+			return elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
+		}
+	});
+}
+if ( !support.attributes || !assert(function( div ) {
+	div.innerHTML = "<input/>";
+	div.firstChild.setAttribute( "value", "" );
+	return div.firstChild.getAttribute( "value" ) === "";
+}) ) {
+	addHandle( "value", function( elem, name, isXML ) {
+		if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
+			return elem.defaultValue;
+		}
+	});
+}
+if ( !assert(function( div ) {
+	return div.getAttribute("disabled") == null;
+}) ) {
+	addHandle( booleans, function( elem, name, isXML ) {
+		var val;
+		if ( !isXML ) {
+			return elem[ name ] === true ? name.toLowerCase() :
+					(val = elem.getAttributeNode( name )) && val.specified ?
+					val.value :
+				null;
+		}
+	});
+}
+if ( typeof define === "function" && define.amd ) {
+	define(function() { return Sizzle; });
+} else if ( typeof module !== "undefined" && module.exports ) {
+	module.exports = Sizzle;
+} else {
+	window.Sizzle = Sizzle;
+}
+})( window );
 },{}]},{},[1])
 
 //# sourceMappingURL=keen-tracking.js.map
