@@ -1,6 +1,6 @@
 # keen-tracking.js [![Build Status](https://travis-ci.org/keen/keen-tracking.js.svg?branch=master)](https://travis-ci.org/keen/keen-tracking.js)
 
-**Important:** This project is not yet functional. We're building this in public, in open collaboration with our customers and community members! Below is a sketch of planned functionality. [Learn more about contributing to this project](./CONTRIBUTING.md).
+**Important:** This project is not yet released. We're building this in public, in open collaboration with our customers and community members! Below is a sketch of planned functionality. [Learn more about contributing to this project](./CONTRIBUTING.md).
 
 ### Vision quest
 
@@ -10,7 +10,7 @@ Once this project is ready, we'll import and replace existing tracking functiona
 
 ### Roadmap
 
-Here's what is done:
+Here's what has been done so far:
 
 * [x] `Keen.Client` instance and accessors
 * [x] `Keen.helpers`: a collection of helpers to return common data model fragments
@@ -24,14 +24,12 @@ Here's what is done:
 * [x] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
 * [x] Top-level `Keen` settings for debugging and disabling event transmission
 
-Here's what needs to be done:
+Here's what needs to be done next:
 
 * [ ] `Keen.helpers.getUniqueId`: return a guuid
 * [ ] Validate `Keen.listenTo` form submit binding on IE8
 * [ ] Expose `A` element click event and `FORM` element submit event timeouts (default: 500ms)
 
-
-*So how about dependencies?* No required dependencies. As for internally bundled deps, let's also avoid them as much as possible to minimize the compiled/minified browser library. Currently considering using [sizzle.js](http://sizzlejs.com/) for DOM wizardry, but open to alternatives here as well.
 
 *Ready to get started?* Run the following commands to get this dev project set up locally:
 
