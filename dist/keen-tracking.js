@@ -127,9 +127,8 @@ function setListener(action, selector, callback){
     window.attachEvent("on" + action, handleEvent);
   }
   function handleEvent(e){
-    var evt, target, match, timeout;
+    var evt, target, match;
     evt = e ? e : window.event;
-    timeout = 2000;
     match = Sizzle.matches(selector, [evt.target]);
     if (match.length) {
       if ('click' === action && 'A' === evt.target.nodeName) {
@@ -173,13 +172,14 @@ function handleClickEvent(evt, anchor, callback){
 function handleFormSubmit(evt, form, callback){
   var timeout = 500;
   cbResponse = callback(evt);
-  evt.preventDefault();
   if (cbResponse === false || evt.defaultPrevented || evt.returnValue === false) {
     evt.preventDefault();
+    evt.returnValue = false;
     return false;
   }
   else {
     evt.preventDefault();
+    evt.returnValue = false;
     setTimeout(function(){
       form.submit();
     }, timeout);

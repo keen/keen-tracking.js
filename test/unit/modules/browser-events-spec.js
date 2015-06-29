@@ -100,35 +100,50 @@ describe('Keen.listenTo', function() {
 
 
   it('should handle `<a>` click events', function(){
-    if (window.mochaPhantomJS && document.addEventListener) {
-      document.addEventListener('DOMContentLoaded', function() {
-        var btn = document.getElementById('listen-to-anchor');
-        Keen.listenTo({
-          'click a#listen-to-anchor': function(e){
-            Keen.log('click a#listen-to-anchor');
-            assert.ok(true);
-            return false;
-          }
-        });
-        btn.click();
-      }, false);
-    }
+    var btn;
+    Keen.listenTo({
+      'click a#listen-to-anchor': function(e){
+        Keen.log('click a#listen-to-anchor');
+        assert.ok(true);
+        return false;
+      }
+    });
+
+    btn = document.createElement("A");
+    btn.id = 'listen-to-anchor';
+    btn.style.display = 'none';
+    document.body.appendChild(btn);
+
+    btn.click();
   });
 
+  // Not testable by IE8
+  if(!document.addEventListener) return;
+
   it('should handle `<form>` submit events', function(){
-    if (window.mochaPhantomJS && document.addEventListener) {
-      document.addEventListener('DOMContentLoaded', function() {
-        var btn = document.getElementById('listen-to-form-btn');
-        Keen.listenTo({
-          'submit form#listen-to-form': function(e){
-            Keen.log('submit form#listen-to-form');
-            assert.ok(true);
-            return false;
-          }
-        });
-        btn.click();
-      }, false);
-    }
+    var form, input;
+    Keen.listenTo({
+      'submit form#listen-to-form-2': function(e){
+        Keen.log('submit form#listen-to-form-2');
+        assert.ok(true);
+        return false;
+      }
+    });
+
+    form = document.createElement("FORM");
+    form.id = 'listen-to-form';
+    form.name = 'myForm';
+    form.style.display = 'none';
+
+    input = document.createElement("INPUT");
+    input.id = 'listen-to-form-btn';
+    input.type = 'submit';
+
+    form.appendChild(input);
+    document.body.appendChild(form);
+
+    input.click();
+
   });
 
 });
