@@ -100,29 +100,35 @@ describe('Keen.listenTo', function() {
 
 
   it('should handle `<a>` click events', function(){
-    var btn = document.getElementById('listen-to-anchor');
-    Keen.listenTo({
-      'click a#listen-to-anchor': function(e){
-        Keen.log('click a#listen-to-anchor');
-        assert.ok(true);
-        return false;
-      }
-    });
-    btn.click();
+    if (window.mochaPhantomJS && document.addEventListener) {
+      document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.getElementById('listen-to-anchor');
+        Keen.listenTo({
+          'click a#listen-to-anchor': function(e){
+            Keen.log('click a#listen-to-anchor');
+            assert.ok(true);
+            return false;
+          }
+        });
+        btn.click();
+      }, false);
+    }
   });
 
   it('should handle `<form>` submit events', function(){
-    // var form = document.getElementById('listen-to-form');
-    var btn = document.getElementById('listen-to-form-btn');
-    Keen.listenTo({
-      'submit form#listen-to-form': function(e){
-        Keen.log('submit form#listen-to-form');
-        assert.ok(true);
-        return false;
-      }
-    });
-    btn.click();
-    // form.submit();
+    if (window.mochaPhantomJS && document.addEventListener) {
+      document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.getElementById('listen-to-form-btn');
+        Keen.listenTo({
+          'submit form#listen-to-form': function(e){
+            Keen.log('submit form#listen-to-form');
+            assert.ok(true);
+            return false;
+          }
+        });
+        btn.click();
+      }, false);
+    }
   });
 
 });
