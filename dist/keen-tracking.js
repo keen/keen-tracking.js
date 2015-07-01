@@ -937,26 +937,35 @@ var each = require('./each');
 */
 module.exports = function(ctx){
   ctx.domListeners = ctx.domListeners || {
+    /*
+    'click': {
+      '.nav li > a': [fn, fn, fn]
+    }
+    */
   };
-  function eventHandler(action){
+  function eventHandler(eventType){
     return function(e){
       var evt = e ? e : window.event,
           target, callback;
-      if ('undefined' === ctx.domListeners[action]) return;
-      each(ctx.domListeners[action], function(fn, key){
+      if ('undefined' === ctx.domListeners[eventType]) return;
+      each(ctx.domListeners[eventType], function(handlers, key){
         if (Sizzle.matches(key, [evt.target]).length) {
-          if ('click' === action && 'A' === evt.target.nodeName) {
-            return handleClickEvent(evt, evt.target, fn);
-          }
-          else if ('submit' === action && 'FORM' === evt.target.nodeName) {
-            return handleFormSubmit(evt, evt.target, fn);
-          }
-          else {
-            fn(evt);
-          }
+          each(handlers, function(fn, i){
+            if ('click' === eventType && 'A' === evt.target.nodeName) {
+              deferClickEvent(evt, evt.target, fn);
+            }
+            else if ('submit' === eventType && 'FORM' === evt.target.nodeName) {
+              deferFormSubmit(evt, evt.target, fn);
+            }
+            else {
+              fn(evt);
+            }
+          });
         }
         else if ('window' === key) {
-          fn(evt);
+          each(handlers, function(fn, i){
+            fn(evt);
+          });
         }
         return;
       });
@@ -977,36 +986,44 @@ module.exports = function(ctx){
       addListener(str, eventHandler(str));
       ctx.domListeners[str] = {};
     }
-    ctx.domListeners[str][self.selector] = function(e){
-      fn.call(self, e);
-    };
+    ctx.domListeners[str][self.selector] = ctx.domListeners[str][self.selector] || [];
+    ctx.domListeners[str][self.selector].push(fn);
     return self;
   };
   listener.prototype.once = function(str, fn){
     var self = this;
-    self.on(str, function(e){
-      fn.call(self, e);
-      self.off(str);
-    });
+    function on() {
+      self.off(str, on);
+      fn.apply(self, arguments);
+    }
+    on.fn = fn;
+    self.on(str, on);
     return self;
   };
-  listener.prototype.off = function(str){
-    var self = this;
-    if (arguments.length) {
+  listener.prototype.off = function(str, fn){
+    var self = this, survivors = [];
+    if (arguments.length === 2) {
+      each(ctx.domListeners[str][self.selector], function(handler, i){
+        if (handler === fn || handler.fn === fn) return;
+        survivors.push(handler);
+      });
+      ctx.domListeners[str][self.selector] = survivors;
+    }
+    else if (arguments.length === 1) {
       try {
         delete ctx.domListeners[str][self.selector];
       }
       catch(e){
-        ctx.domListeners[str][self.selector] = function(){};
+        ctx.domListeners[str][self.selector] = [];
       }
     }
     else {
-      each(ctx.domListeners, function(hash, action){
+      each(ctx.domListeners, function(hash, eventType){
         try {
-          delete ctx.domListeners[action][self.selector];
+          delete ctx.domListeners[eventType][self.selector];
         }
         catch(e){
-          ctx.domListeners[action][self.selector] = function(){};
+          ctx.domListeners[eventType][self.selector] = function(){};
         }
       });
     }
@@ -1014,14 +1031,14 @@ module.exports = function(ctx){
   };
   return listener;
 }
-function addListener(action, fn){
+function addListener(eventType, fn){
   if (window.addEventListener) {
-    window.addEventListener(action, fn, false);
+    window.addEventListener(eventType, fn, false);
   } else {
-    window.attachEvent("on" + action, fn);
+    window.attachEvent("on" + eventType, fn);
   }
 }
-function handleClickEvent(evt, anchor, callback){
+function deferClickEvent(evt, anchor, callback){
   var timeout = 500,
       targetAttr,
       cbResponse;
@@ -1031,7 +1048,7 @@ function handleClickEvent(evt, anchor, callback){
     targetAttr = anchor.target;
   }
   cbResponse = callback(evt);
-  if (cbResponse === false || evt.defaultPrevented || evt.returnValue === false) {
+  if (('boolean' === typeof cbResponse && cbResponse === false) || evt.defaultPrevented || evt.returnValue === false) {
     evt.preventDefault();
     evt.returnValue = false;
     return false;
@@ -1045,7 +1062,7 @@ function handleClickEvent(evt, anchor, callback){
   }
   return false;
 }
-function handleFormSubmit(evt, form, callback){
+function deferFormSubmit(evt, form, callback){
   var timeout = 500;
   cbResponse = callback(evt);
   if (cbResponse === false || evt.defaultPrevented || evt.returnValue === false) {
