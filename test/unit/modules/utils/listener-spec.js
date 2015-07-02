@@ -14,9 +14,8 @@ describe('Keen.utils.listener', function() {
     assert.isFunction(listener);
   });
 
-  it('should create a Keen.domEvents object', function(){
-    Keen.listenTo({});
-    assert.isObject(Keen.domEvents);
+  it('should create a Keen.domListeners object', function(){
+    assert.isObject(Keen.domListeners);
   });
 
   it('should set window events', function(){
@@ -83,6 +82,8 @@ describe('Keen.utils.listener', function() {
   it('should set and handle `<a>` click events set with .on("click", fn)', function(done){
     var listenToThis = listener('body a#listen-to-anchor');
     listenToThis.on('click', callback);
+
+    this.timeout(5000);
 
     function callback(e){
       // Keen.log('click a#listen-to-anchor');
