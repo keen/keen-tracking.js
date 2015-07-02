@@ -92,11 +92,53 @@ describe('Keen.utils.listener', function() {
     }
 
     setTimeout(function(){
-      var a = document.createElement("A");
+      var ev, a;
+
+      a = document.createElement("A");
       a.id = 'listen-to-anchor';
       a.href = './index.html';
       document.body.appendChild(a);
-      a.click();
+
+      ev = document.createEvent("MouseEvent");
+      ev.initMouseEvent("click",
+          true /* bubble */, true /* cancelable */,
+          window, null,
+          0, 0, 0, 0,
+          false, false, false, false,
+          0, null
+      );
+      a.dispatchEvent(ev);
+      // a.click();
+    }, 1000);
+  });
+
+  it('should set and handle `<a>` click events set with .once("click", fn)', function(done){
+    var listen = listener('a#listen-to-anchor-once');
+    listen.once('click', function(e){
+      // Keen.log('click a#listen-to-anchor-once');
+      done();
+      return false;
+    });
+
+    setTimeout(function(){
+      var ev, a;
+
+      a = document.createElement('A');
+      a.id = 'listen-to-anchor-once';
+      a.href = './index.html';
+      document.body.appendChild(a);
+
+      ev = document.createEvent("MouseEvent");
+      ev.initMouseEvent("click",
+          true /* bubble */, true /* cancelable */,
+          window, null,
+          0, 0, 0, 0,
+          false, false, false, false,
+          0, null
+      );
+      a.dispatchEvent(ev);
+
+      // a.click();
     }, 1000);
   });
 
@@ -114,23 +156,6 @@ describe('Keen.utils.listener', function() {
     assert.equal(Keen.domListeners['click']['body a#on-off'].length, 1);
 
     function noop(e){ }
-  });
-
-  it('should set and handle `<a>` click events set with .once("click", fn)', function(done){
-    var listen = listener('a#listen-to-anchor-once');
-    listen.once('click', function(e){
-      // Keen.log('click a#listen-to-anchor-once');
-      done();
-      return false;
-    });
-
-    setTimeout(function(){
-      var a = document.createElement('A');
-      a.id = 'listen-to-anchor-once';
-      a.href = './index.html';
-      document.body.appendChild(a);
-      a.click();
-    }, 1000);
   });
 
   // Not testable by IE8
