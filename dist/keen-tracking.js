@@ -994,7 +994,7 @@ module.exports = function(ctx){
     var self = this;
     function on() {
       self.off(str, on);
-      fn.apply(self, arguments);
+      return fn.apply(self, arguments);
     }
     on.fn = fn;
     self.on(str, on);
@@ -1065,7 +1065,7 @@ function deferClickEvent(evt, anchor, callback){
 function deferFormSubmit(evt, form, callback){
   var timeout = 500;
   cbResponse = callback(evt);
-  if (cbResponse === false || evt.defaultPrevented || evt.returnValue === false) {
+  if (('boolean' === typeof cbResponse && cbResponse === false) || evt.defaultPrevented || evt.returnValue === false) {
     evt.preventDefault();
     evt.returnValue = false;
     return false;
