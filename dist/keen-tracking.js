@@ -22,7 +22,6 @@
   'use strict';
   var Keen = require('./');
   var extend = require('./utils/extend');
-  Keen.listenTo = require('./browser-events')(Keen);
   extend(Keen.Client.prototype, require('./record-events-browser'));
   extend(Keen.Client.prototype, require('./defer-events'));
   extend(Keen.Client.prototype, {
@@ -42,6 +41,7 @@
     'deepExtend' : require('./utils/deepExtend'),
     'each'       : require('./utils/each'),
     'extend'     : extend,
+    'listener'   : require('./utils/listener')(Keen),
     'parseParams': require('./utils/parseParams'),
     'timer'      : require('./utils/timer')
   });
@@ -106,88 +106,7 @@
   return Keen;
 });
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./":11,"./browser-events":2,"./defer-events":3,"./extend-events":4,"./helpers/getBrowserProfile":5,"./helpers/getDatetimeIndex":6,"./helpers/getDomNodePath":7,"./helpers/getScreenProfile":8,"./helpers/getUniqueId":9,"./helpers/getWindowProfile":10,"./record-events-browser":12,"./utils/cookie":14,"./utils/deepExtend":15,"./utils/each":16,"./utils/extend":17,"./utils/parseParams":18,"./utils/timer":20}],2:[function(require,module,exports){
-var Sizzle = require('sizzle');
-var each = require('./utils/each');
-module.exports = listenTo;
-function listenTo(ctx){
-  return function(listenerHash){
-    ctx.domEvents = ctx.domEvents || {};
-    each(listenerHash, function(callback, key){
-      ctx.domEvents[key] = callback;
-      setListener(key.split(' ')[0], key.split(' ').splice(1).join(' '), callback);
-    });
-  };
-}
-function setListener(action, selector, callback){
-  if (window.addEventListener) {
-    window.addEventListener(action, handleEvent, false);
-  } else {
-    window.attachEvent("on" + action, handleEvent);
-  }
-  function handleEvent(e){
-    var evt, target, match;
-    evt = e ? e : window.event;
-    match = Sizzle.matches(selector, [evt.target]);
-    if (match.length) {
-      if ('click' === action && 'A' === evt.target.nodeName) {
-        return handleClickEvent(evt, evt.target, callback);
-      }
-      else if ('submit' === action && 'FORM' === evt.target.nodeName) {
-        return handleFormSubmit(evt, evt.target, callback);
-      }
-      else {
-        callback(evt);
-      }
-    }
-    else if ('window' === selector) {
-      callback(evt);
-      return;
-    }
-  }
-}
-function handleClickEvent(evt, anchor, callback){
-  var timeout = 500,
-      targetAttr,
-      cbResponse;
-  if (anchor.getAttribute !== void 0) {
-    targetAttr = anchor.getAttribute("target");
-  } else if (anchor.target) {
-    targetAttr = anchor.target;
-  }
-  cbResponse = callback(evt);
-  if (cbResponse === false || evt.defaultPrevented || evt.returnValue === false) {
-    evt.preventDefault();
-    evt.returnValue = false;
-    return false;
-  }
-  else if (targetAttr !== '_blank' && targetAttr !== 'blank' && !evt.metaKey) {
-    evt.preventDefault();
-    evt.returnValue = false;
-    setTimeout(function(){
-      window.location = anchor.href;
-    }, timeout);
-  }
-  return false;
-}
-function handleFormSubmit(evt, form, callback){
-  var timeout = 500;
-  cbResponse = callback(evt);
-  if (cbResponse === false || evt.defaultPrevented || evt.returnValue === false) {
-    evt.preventDefault();
-    evt.returnValue = false;
-    return false;
-  }
-  else {
-    evt.preventDefault();
-    evt.returnValue = false;
-    setTimeout(function(){
-      form.submit();
-    }, timeout);
-  }
-  return false;
-}
-},{"./utils/each":16,"sizzle":26}],3:[function(require,module,exports){
+},{"./":10,"./defer-events":2,"./extend-events":3,"./helpers/getBrowserProfile":4,"./helpers/getDatetimeIndex":5,"./helpers/getDomNodePath":6,"./helpers/getScreenProfile":7,"./helpers/getUniqueId":8,"./helpers/getWindowProfile":9,"./record-events-browser":11,"./utils/cookie":13,"./utils/deepExtend":14,"./utils/each":15,"./utils/extend":16,"./utils/listener":17,"./utils/parseParams":18,"./utils/timer":20}],2:[function(require,module,exports){
 var Keen = require('./index');
 var each = require('./utils/each');
 var queue = require('./utils/queue');
@@ -255,7 +174,7 @@ function handleValidationError(message){
   var err = 'Event(s) not deferred: ' + message;
   this.emit('error', err);
 }
-},{"./index":11,"./utils/each":16,"./utils/queue":19}],4:[function(require,module,exports){
+},{"./index":10,"./utils/each":15,"./utils/queue":19}],3:[function(require,module,exports){
 var deepExtend = require('./utils/deepExtend');
 var each = require('./utils/each');
 module.exports = {
@@ -296,7 +215,7 @@ function getExtendedEventBody(result, queue){
   }
   return result;
 }
-},{"./utils/deepExtend":15,"./utils/each":16}],5:[function(require,module,exports){
+},{"./utils/deepExtend":14,"./utils/each":15}],4:[function(require,module,exports){
 var getScreenProfile = require('./getScreenProfile'),
     getWindowProfile = require('./getWindowProfile');
 function getBrowserProfile(){
@@ -314,7 +233,7 @@ function getBrowserProfile(){
   }
 }
 module.exports = getBrowserProfile;
-},{"./getScreenProfile":8,"./getWindowProfile":10}],6:[function(require,module,exports){
+},{"./getScreenProfile":7,"./getWindowProfile":9}],5:[function(require,module,exports){
 function getDateTimeIndex(input){
   var date = input || new Date();
   return {
@@ -326,7 +245,7 @@ function getDateTimeIndex(input){
   };
 }
 module.exports = getDateTimeIndex;
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /*!
   via: http://stackoverflow.com/a/16742828/2511985
   */
@@ -357,7 +276,7 @@ function getDomNodePath(el){
   return stack.slice(1).join(' > ');
 }
 module.exports = getDomNodePath;
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 function getScreenProfile(){
   var keys, output;
   if ('undefined' == typeof window || !window.screen) return {};
@@ -373,7 +292,7 @@ function getScreenProfile(){
   return output;
 }
 module.exports = getScreenProfile;
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 function getUniqueId(){
   var str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
   return str.replace(/[xy]/g, function(c) {
@@ -382,7 +301,7 @@ function getUniqueId(){
   });
 }
 module.exports = getUniqueId;
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 function getWindowProfile(){
   var body, html, output;
   if ('undefined' == typeof document) return {};
@@ -406,7 +325,7 @@ module.exports = getWindowProfile;
   Notes:
     document.documentElement.offsetHeight/Width is a workaround for IE8 and below, where window.innerHeight/Width is undefined
 */
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var Emitter = require('component-emitter');
 var JSON2 = require('JSON2');
 var each = require('./utils/each');
@@ -510,7 +429,7 @@ Keen.log = function(message) {
   }
 };
 module.exports = Keen;
-},{"./utils/each":16,"./utils/queue":19,"JSON2":22,"component-emitter":24}],12:[function(require,module,exports){
+},{"./utils/each":15,"./utils/queue":19,"JSON2":22,"component-emitter":24}],11:[function(require,module,exports){
 var Keen = require('./index');
 var base64 = require('./utils/base64');
 var each = require('./utils/each');
@@ -771,7 +690,7 @@ function sendBeacon(url, callback){
   };
   img.src = url + '&c=clv1';
 }
-},{"./extend-events":4,"./index":11,"./utils/base64":13,"./utils/each":16,"JSON2":22}],13:[function(require,module,exports){
+},{"./extend-events":3,"./index":10,"./utils/base64":12,"./utils/each":15,"JSON2":22}],12:[function(require,module,exports){
 module.exports = {
   map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
   encode: function (n) {
@@ -818,7 +737,7 @@ module.exports = {
     }
   }
 };
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var Cookies = require('cookies-js');
 var JSON2 = require('JSON2');
 var extend = require('./extend');
@@ -860,7 +779,7 @@ cookie.prototype.options = function(obj){
   this.config.options = (typeof obj === 'object') ? obj : {};
   return this;
 };
-},{"./extend":17,"JSON2":22,"cookies-js":25}],15:[function(require,module,exports){
+},{"./extend":16,"JSON2":22,"cookies-js":25}],14:[function(require,module,exports){
 var JSON2 = require('JSON2');
 module.exports = deepExtend;
 function deepExtend(target){
@@ -888,7 +807,7 @@ function deepExtend(target){
 function clone(input){
   return JSON2.parse(JSON2.stringify(input))
 }
-},{"JSON2":22}],16:[function(require,module,exports){
+},{"JSON2":22}],15:[function(require,module,exports){
 module.exports = each;
 function each(o, cb, s){
   var n;
@@ -913,7 +832,7 @@ function each(o, cb, s){
   }
   return 1;
 }
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = function(target){
   for (var i = 1; i < arguments.length; i++) {
     for (var prop in arguments[i]){
@@ -922,7 +841,172 @@ module.exports = function(target){
   }
   return target;
 };
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
+var Emitter = require('component-emitter');
+var Sizzle = require('sizzle');
+var each = require('./each');
+/*
+  var myClickerCatcher = Keen.utils.listener(".nav li > a");
+  myClicker.on("click", function(e){
+  });
+  myClicker.once("click", function(e){ });
+  myClicker.off("click");
+  myClicker.off();
+*/
+module.exports = function(ctx){
+  ctx.domListeners = ctx.domListeners || {
+    /*
+    'click': {
+      '.nav li > a': [fn, fn, fn]
+    }
+    */
+  };
+  function eventHandler(eventType){
+    return function(e){
+      var evt, target;
+      evt = e || window.event;
+      target = evt.target || evt.srcElement;
+      if ('undefined' === ctx.domListeners[eventType]) return;
+      each(ctx.domListeners[eventType], function(handlers, key){
+        if (Sizzle.matches(key, [target]).length) {
+          each(handlers, function(fn, i){
+            if ('click' === eventType && 'A' === target.nodeName) {
+              deferClickEvent(evt, target, fn);
+            }
+            else if ('submit' === eventType && 'FORM' === target.nodeName) {
+              deferFormSubmit(evt, target, fn);
+            }
+            else {
+              fn(evt);
+            }
+          });
+        }
+        else if ('window' === key) {
+          each(handlers, function(fn, i){
+            fn(evt);
+          });
+        }
+        return;
+      });
+    };
+  }
+  function listener(str){
+    if (!str) return;
+    if (this instanceof listener === false) {
+      return new listener(str);
+    }
+    this.selector = str;
+    return this;
+  }
+  listener.prototype.on = function(str, fn){
+    var self = this;
+    if (arguments.length !== 2 || 'string' !== typeof str || 'function' !== typeof fn) return this;
+    if ('undefined' === typeof ctx.domListeners[str]) {
+      addListener(str, eventHandler(str));
+      ctx.domListeners[str] = {};
+    }
+    ctx.domListeners[str][self.selector] = ctx.domListeners[str][self.selector] || [];
+    ctx.domListeners[str][self.selector].push(fn);
+    return self;
+  };
+  listener.prototype.once = function(str, fn){
+    var self = this;
+    function on() {
+      self.off(str, on);
+      return fn.apply(self, arguments);
+    }
+    on.fn = fn;
+    self.on(str, on);
+    return self;
+  };
+  listener.prototype.off = function(str, fn){
+    var self = this, survivors = [];
+    if (arguments.length === 2) {
+      each(ctx.domListeners[str][self.selector], function(handler, i){
+        if (handler === fn || handler.fn === fn) return;
+        survivors.push(handler);
+      });
+      ctx.domListeners[str][self.selector] = survivors;
+    }
+    else if (arguments.length === 1) {
+      try {
+        delete ctx.domListeners[str][self.selector];
+      }
+      catch(e){
+        ctx.domListeners[str][self.selector] = [];
+      }
+    }
+    else {
+      each(ctx.domListeners, function(hash, eventType){
+        try {
+          delete ctx.domListeners[eventType][self.selector];
+        }
+        catch(e){
+          ctx.domListeners[eventType][self.selector] = function(){};
+        }
+      });
+    }
+    return self;
+  };
+  return listener;
+}
+function addListener(eventType, fn){
+  if (document.addEventListener) {
+    document.addEventListener(eventType, fn, false);
+  } else {
+    document.attachEvent("on" + eventType, fn);
+  }
+}
+function deferClickEvent(evt, anchor, callback){
+  var timeout = 500,
+      targetAttr,
+      cbResponse;
+  if (anchor.getAttribute !== void 0) {
+    targetAttr = anchor.getAttribute("target");
+  } else if (anchor.target) {
+    targetAttr = anchor.target;
+  }
+  cbResponse = callback(evt);
+  if (('boolean' === typeof cbResponse && cbResponse === false) || evt.defaultPrevented || evt.returnValue === false) {
+    if (evt.preventDefault) {
+      evt.preventDefault();
+    }
+    evt.returnValue = false;
+    return false;
+  }
+  else if (targetAttr !== '_blank' && targetAttr !== 'blank' && !evt.metaKey) {
+    if (evt.preventDefault) {
+      evt.preventDefault();
+    }
+    evt.returnValue = false;
+    setTimeout(function(){
+      window.location = anchor.href;
+    }, timeout);
+  }
+  return false;
+}
+function deferFormSubmit(evt, form, callback){
+  var timeout = 500;
+  cbResponse = callback(evt);
+  if (('boolean' === typeof cbResponse && cbResponse === false) || evt.defaultPrevented || evt.returnValue === false) {
+    if (evt.preventDefault) {
+      evt.preventDefault();
+    }
+    evt.returnValue = false;
+    return false;
+  }
+  else {
+    if (evt.preventDefault) {
+      evt.preventDefault();
+    }
+    evt.returnValue = false;
+    setTimeout(function(){
+      form.submit();
+    }, timeout);
+  }
+  return false;
+}
+},{"./each":15,"component-emitter":24,"sizzle":26}],18:[function(require,module,exports){
 function parseParams(str){
   var urlParams = {},
       match,

@@ -20,13 +20,13 @@ Here's what has been done so far:
 * [x] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
 * [x] `Keen.utils.cookie()` for managing simple cookies
 * [x] `Keen.utils.timer()` for managing a simple timer
-* [x] `Keen.listenTo` for listening to common user/window events
+* [x] `Keen.utils.listener()` for listening to common DOM events
 * [x] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
 * [x] Top-level `Keen` settings for debugging and disabling event transmission
 
 Here's what needs to be done next:
 
-* [ ] Validate `Keen.listenTo` form submit binding on IE8
+* [ ] Validate `Keen.utils.listener()` form submit binding on IE8
 * [ ] Expose `A` element click event and `FORM` element submit event timeouts (default: 500ms)
 
 
@@ -85,17 +85,6 @@ client.extendEvents({});
 client.extendEvents(function(){
   return {}
 });
-
-// Listen to DOM events
-Keen.listenTo({
-  'click .nav a': function(e){
-    // you have 500ms.. record an event!
-  }
-});
-
-// Accessor methods not yet built-
-// Keen.deferDomEvents('A', 'click', 500);
-// Keen.deferDomEvents('FORM', 'submit', 500);
 
 
 // Miscellaneous
@@ -379,41 +368,60 @@ Also check out declarative binding demo here: http://jsfiddle.net/hm514aj8/10/
 
 ```javascript
 // Listen to DOM events
-Keen.listenTo({
-	// Form submits and clicks will be delayed (configurable)
 
-	'submit form#my-fancy-form': function(e){
-		client.recordEvent('signup');
-	},
 
-	'click .nav > a': function(e){
-		client.recordEvent('user_action', { type: 'click' });
-	},
+// Create a new element listener
+var navLinks = Keen.utils.listener(".nav li > a");
 
-	'mouseover .nav > a.login': function(e){
-		client.recordEvent('user_action', { type: 'mouseover' });
-	}
+// Listen for a given event
+navLinks.on("click", function(e){
+  // You have 500ms to record an event!
 });
 
-Keen.listenTo({ 'submit form': function(e){ ... } });
+// Listen for event once
+myClicker.once("click", function(e){
+  // First click!
+});
 
-// Override DOM event timeouts (defaults shown)
-Keen.deferDomEvents('A', 'click', 500);
-Keen.deferDomEvents('FORM', 'submit', 500);
+// Cancel a given event listener
+function clickHandler(e){
+  // do something!
+}
+myClicker.on('click', clickHandler);
+myClicker.off('click', clickHandler);
+
+// Cancel all listeners for a given event
+myClicker.off('click');
+// .. or all events
+myClicker.off();
+
+
+var formListener = Keen.utils.listener('form#signup');
+formListener.on('submit', function(e){
+  client.recordEvent('signup', {
+    // record signup data
+  });
+});
+
+// TODO: Override DOM event timeouts (defaults shown)
+// Keen.deferDomEvents('A', 'click', 500);
+// Keen.deferDomEvents('FORM', 'submit', 500);
 
 ```
 
 #### Window events
 
 ```javascript
-Keen.listenTo({
-	'hashchange window': function(e){
-		// user clicked an internal anchor (eg: /#some-heading)
-	},
-	'scroll window': function(e){
-		// user scrolled the page
-	}
-});
+var winListener = Keen.utils.listener('window')
+  .once('scroll', function(e){
+    // user is interacting with the page
+  })
+  .on('hashchange', function(e){
+    // user clicked an internal anchor (eg: /#some-heading)
+  })
+  .on('resize', function(e){
+    // ...
+  });
 ```
 
 **Generally supported events:**
@@ -610,22 +618,23 @@ var browserProfile = Keen.helpers.getBrowserProfile();
 
 ```javascript
 var client = new Keen.Client({});
+var formListener = Keen.utils.listener('form#signup');
+var navLinks = Keen.utils.listener('.nav li > a');
 
-Keen.listenTo({
-	'submit form#signup': function(e){
-		var userEmail = document.getElementById('signup-email').value;
-		client.recordEvent('user signup', {
-			'interaction': {
-				'type': 'submit'
-			},
-			'visitor': {
-				'email': userEmail
-			}
-		});
-	},
-	'click .nav a': function(e){
-		// Clicked a nav link!
-	}
+formListener.on('submit', function(e){
+  var userEmail = document.getElementById('signup-email').value;
+  client.recordEvent('user signup', {
+    'interaction': {
+      'type': 'submit'
+    },
+    'visitor': {
+      'email': userEmail
+    }
+  });
+});
+
+navLinks.on('click', function(e){
+  // 500ms to kick out an event!
 });
 
 client.extendEvents(function(){
