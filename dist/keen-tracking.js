@@ -945,17 +945,18 @@ module.exports = function(ctx){
   };
   function eventHandler(eventType){
     return function(e){
-      var evt = e ? e : window.event,
-          target, callback;
+      var evt, target;
+      evt = e || window.event;
+      target = evt.target || evt.srcElement;
       if ('undefined' === ctx.domListeners[eventType]) return;
       each(ctx.domListeners[eventType], function(handlers, key){
-        if (Sizzle.matches(key, [evt.target]).length) {
+        if (Sizzle.matches(key, [target]).length) {
           each(handlers, function(fn, i){
-            if ('click' === eventType && 'A' === evt.target.nodeName) {
-              deferClickEvent(evt, evt.target, fn);
+            if ('click' === eventType && 'A' === target.nodeName) {
+              deferClickEvent(evt, target, fn);
             }
-            else if ('submit' === eventType && 'FORM' === evt.target.nodeName) {
-              deferFormSubmit(evt, evt.target, fn);
+            else if ('submit' === eventType && 'FORM' === target.nodeName) {
+              deferFormSubmit(evt, target, fn);
             }
             else {
               fn(evt);
@@ -1032,10 +1033,10 @@ module.exports = function(ctx){
   return listener;
 }
 function addListener(eventType, fn){
-  if (window.addEventListener) {
-    window.addEventListener(eventType, fn, false);
+  if (document.addEventListener) {
+    document.addEventListener(eventType, fn, false);
   } else {
-    window.attachEvent("on" + eventType, fn);
+    document.attachEvent("on" + eventType, fn);
   }
 }
 function deferClickEvent(evt, anchor, callback){
@@ -1049,12 +1050,16 @@ function deferClickEvent(evt, anchor, callback){
   }
   cbResponse = callback(evt);
   if (('boolean' === typeof cbResponse && cbResponse === false) || evt.defaultPrevented || evt.returnValue === false) {
-    evt.preventDefault();
+    if (evt.preventDefault) {
+      evt.preventDefault();
+    }
     evt.returnValue = false;
     return false;
   }
   else if (targetAttr !== '_blank' && targetAttr !== 'blank' && !evt.metaKey) {
-    evt.preventDefault();
+    if (evt.preventDefault) {
+      evt.preventDefault();
+    }
     evt.returnValue = false;
     setTimeout(function(){
       window.location = anchor.href;
@@ -1066,12 +1071,16 @@ function deferFormSubmit(evt, form, callback){
   var timeout = 500;
   cbResponse = callback(evt);
   if (('boolean' === typeof cbResponse && cbResponse === false) || evt.defaultPrevented || evt.returnValue === false) {
-    evt.preventDefault();
+    if (evt.preventDefault) {
+      evt.preventDefault();
+    }
     evt.returnValue = false;
     return false;
   }
   else {
-    evt.preventDefault();
+    if (evt.preventDefault) {
+      evt.preventDefault();
+    }
     evt.returnValue = false;
     setTimeout(function(){
       form.submit();

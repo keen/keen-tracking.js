@@ -6,6 +6,7 @@ var listener = require('../../../../lib/utils/listener')(Keen);
 describe('Keen.utils.listener', function() {
 
   beforeEach(function(){
+    this.timeout(5000);
     Keen.debug = true;
   });
 
@@ -79,29 +80,21 @@ describe('Keen.utils.listener', function() {
   });
 
 
-  it('should set and handle multiple `<a>` click events set with .on("click", fn)', function(done){
-    var listenToThis = listener('body a#listen-to-anchor'),
-        count = 0;
-
+  it('should set and handle `<a>` click events set with .on("click", fn)', function(done){
+    var listenToThis = listener('body a#listen-to-anchor');
     listenToThis.on('click', callback);
 
     function callback(e){
       // Keen.log('click a#listen-to-anchor');
-      count++;
-      if (count === 3) {
-        done();
-        listenToThis.off('click', callback);
-      }
+      done();
       return false;
     }
 
     setTimeout(function(){
       var a = document.createElement("A");
       a.id = 'listen-to-anchor';
-      a.style.display = 'none';
+      a.href = './index.html';
       document.body.appendChild(a);
-      a.click();
-      a.click();
       a.click();
     }, 1000);
   });
@@ -133,7 +126,7 @@ describe('Keen.utils.listener', function() {
     setTimeout(function(){
       var a = document.createElement('A');
       a.id = 'listen-to-anchor-once';
-      a.style.display = 'none';
+      a.href = './index.html';
       document.body.appendChild(a);
       a.click();
     }, 1000);
@@ -143,9 +136,7 @@ describe('Keen.utils.listener', function() {
   if(!document.addEventListener) return;
 
   it('should handle `<form>` submit events', function(done){
-    var form, input, listen;
-
-    listen = listener('form#listen-to-form');
+    var listen = listener('form#listen-to-form');
     listen.on('submit', function(e){
       Keen.log('submit form#listen-to-form');
       done();
@@ -153,11 +144,11 @@ describe('Keen.utils.listener', function() {
     });
 
     setTimeout(function(){
-      form = document.createElement('FORM');
+      var form = document.createElement('FORM');
       form.id = 'listen-to-form';
-      form.style.display = 'none';
+      form.action = "./";
 
-      input = window.input = document.createElement('INPUT');
+      var input = window.input = document.createElement('INPUT');
       input.id = 'listen-to-form-btn';
       input.type = 'submit';
 
@@ -165,6 +156,7 @@ describe('Keen.utils.listener', function() {
       document.body.appendChild(form);
 
       input.click();
+      // form.submit();
     }, 1000);
 
   });
