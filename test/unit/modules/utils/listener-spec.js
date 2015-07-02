@@ -18,6 +18,15 @@ describe('Keen.utils.listener', function() {
     assert.isObject(Keen.domListeners);
   });
 
+  it('should create a Keen.listenTo function that creates unassigned listeners', function(){
+    assert.isFunction(Keen.listenTo);
+    Keen.listenTo({
+      'event element': function(e){}
+    });
+    assert.isObject(Keen.domListeners['event']);
+    assert.isArray(Keen.domListeners['event']['element']);
+  });
+
   it('should set window events', function(){
     var win = listener('window');
     var eventTypes = [
