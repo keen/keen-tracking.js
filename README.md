@@ -1,122 +1,62 @@
 # keen-tracking.js [![Build Status](https://travis-ci.org/keen/keen-tracking.js.svg?branch=master)](https://travis-ci.org/keen/keen-tracking.js)
 
-**Important:** This project is not yet released. We're building this in public, in open collaboration with our customers and community members! Below is a sketch of planned functionality. [Learn more about contributing to this project](./CONTRIBUTING.md).
+**Important:** This project is not yet released. We're building this in public, in open collaboration with our customers and community members!
 
-### Vision quest
+**Also important:** This library has several key differences from [keen-js](https://github.com/keen/keen-js), including method names and [client initialization](#connect). Read on to learn more!
 
 Why are we splitting this functionality out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases bring more heartache than nirvana.
 
-Once this project is ready, we'll import and replace existing tracking functionality within keen-js. This *could* get messy :) If you have any ideas for how to make this purely awesome instead, jump on in and join the fun!
+This [example setup](#example-setup) demonstrates how to put this library to work.
 
-### Roadmap
+**Getting started:**
 
-Here's what has been done so far:
+If you haven't done so already, login to Keen IO to create a project. The Project ID and API Keys are available on the Project Overview page. You will need these for the next steps.
 
-* [x] `Keen.Client` instance and accessors
-* [x] `Keen.helpers`: a collection of helpers to return common data model fragments
-* [x] `Keen.utils`: a collection of handy utilities like `each` and `parseParams`
-* [x] `#recordEvent` and `#recordEvents` methods for sending single/multiple events
-* [x] `#deferEvent` and `#deferEvents` methods for managing a queue of events that are processed at a configurable interval
-* [x] `#extendEvent` and `#extendEvents` methods for augmenting events before recording
-* [x] `Keen.utils.cookie()` for managing simple cookies
-* [x] `Keen.utils.timer()` for managing a simple timer
-* [x] `Keen.utils.listener()` for listening to common DOM events
-* [x] `Keen.listenTo()` convenience for constructing listeners
-* [x] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
-* [x] Top-level `Keen` settings for debugging and disabling event transmission
+* [Install the library](#install-the-library)
+* [Connect](#connect) a new client instance for each project
+* [Record events](#record-events) to the API individually or in batches
+* [Defer events](#defer-events) to be recorded at a given interval, or when the queue reaches a given capacity
+* [Extend events](#extend-events) to build intricate, useful data models and ease instrumentation
 
-Here's what needs to be done next:
+**Helpful utilities:**
 
-* [ ] Validate `Keen.utils.listener()` form submit binding on IE8
-* [ ] Expose `A` element click event and `FORM` element submit event timeouts (default: 500ms)
+* [Cookies](#cookies) (browser-only) for persisting data from one page to the next
+* [Listeners](#listeners) (browser-only) for capturing and taking action during common DOM events like click, scroll, and submit
+* [Timers](#timers) for tracking time before and between user or system interactions
 
+**Helpful helpers:**
 
-*Ready to get started?* Run the following commands to get this dev project set up locally:
+* [Datetime index](#datetime-index) for decomposing a date object into a set of properties like "hour_of_day" or "day_of_month"
+* [Unique ID](#unique-id) for generating UUIDs
+* [DOM node path](#dom-node-path) for returning the xPath for a given DOM element
+* [Screen profile](#screen-profile) for generating a set of properties describing the current device screen, like "height", "availHeight", and "orientation"
+* [Window profile](#window-profile) for generating a set of properties describing the current window, like "height", "scrollHeight", and "ratio" to screen dimensions
+* [Browser profile](#browser-profile) for generating a set of properties describing the current browser, like "useragent", "online" status, and "language", plus [screen](#screen-profile) and [window](#window-profile) profiles
 
-```ssh
-# Clone the repo
-$ git clone https://github.com/keen/keen-tracking.js.git && cd keen-tracking.js
+**Additional resources:**
 
-# Install common dependencies
-$ npm install
+* [Example setup](#example-setup) demonstrates how to put all of this to work
+* [Debugging](#debugging) options can make life a little easier
+* [Contributing](#contributing) is awesome and we hope you do!
+* [Custom builds](#custom-builds) are encouraged as well - have fun!
 
-# Install browser dependencies for tests
-$ bower install
+**Support:**
 
-# Build and launch project site
-$ gulp
+Need a hand with something? Shoot us an email at [contact@keen.io](mailto:contact@keen.io). We're always happy to help, or just hear what you're building! Here are a few other resources worth checking out:
 
-# Build and launch with tests
-$ gulp with-tests
-
-# View test results at http://localhost:9000
-```
-
-### Overview
-
-```javascript
-var client = new Keen.Client(object);
-
-// Config accessors
-client.projectId('PROJECT_ID');
-client.writeKey('WRITE_KEY');
-
-// Record events
-client.recordEvent('collection', {}, function(err, res){ });
-client.recordEvents({ 'collection': [{}] }, function(err, res){ });
-
-// Defer events for batch upload at a configurable interval
-client.deferEvent('collection', {});
-client.deferEvents({ 'collection': [{}] });
-
-// Force-clear the deferred queue
-client.recordDeferredEvents();
-
-// Configure deferred queue
-client.queueCapacity(5000);
-client.queueInterval(15000);
-
-// Extend each event body for one or all collections
-// Accepts a static object or function that returns an object
-client.extendEvent('collection', {});
-client.extendEvent('collection', function(){
-  return {}
-});
-client.extendEvents({});
-client.extendEvents(function(){
-  return {}
-});
+* [API status](http://status.keen.io/)
+* [API reference](https://keen.io/docs/api)
+* [How-to guides](https://keen.io/guides)
+* [Data modeling guide](https://keen.io/guides/data-modeling-guide/)
+* [Slack (public)](http://slack.keen.io/)
 
 
-// Miscellaneous
-
-// Track errors and messages in the dev console
-Keen.debug = true;
-
-// Disable event writes to the API
-Keen.enabled = false;
-
-// Observe what's happening
-client.on('recordEvent', Keen.log);
-client.on('recordEvents', Keen.log);
-client.on('deferEvent', Keen.log);
-client.on('deferEvents', Keen.log);
-client.on('recordDeferredEvents', Keen.log);
-client.on('extendEvent', Keen.log);
-client.on('extendEvents', Keen.log);
-```
 
 
-### Getting started
+## Install the library
 
-* Project ID
-* API Write Key
+This library is best loaded asynchronously with the copy-paste technique outlined below, but can also be installed via [npm](https://www.npmjs.com/package/keen-tracking) or [bower](http://bower.io/search/?q=keen-tracking):
 
-### Install the library
-
-*Currently unpublished.. but not far off!*
-
-<!--
 ```ssh
 # via npm
 $ npm install keen-tracking
@@ -124,9 +64,6 @@ $ npm install keen-tracking
 # or bower
 $ bower install keen-tracking
 ```
--->
-
-#### Asynchronous loading
 
 Copy/paste this snippet of JavaScript above the </head> tag of your page to load the tracking library asynchronously. This technique sneaks the library into your page without significantly impacting page load speed.
 
@@ -139,14 +76,19 @@ Copy/paste this snippet of JavaScript above the </head> tag of your page to load
 
 // Executes when the library is loaded and ready
 Keen.ready(function(){
+
+  // Create a new client instance
 	var client = new Keen.Client({
 		projectId: 'YOUR_PROJECT_ID',
 		writeKey: 'YOUR_WRITE_KEY'
 	});
+
+  // Record an event!
 	client.recordEvent('pageviews', {
 		// Define your event data model
 		title: document.title
 	});
+
 });
 </script>
 ```
@@ -178,17 +120,13 @@ modules.MyKeenBuild.ready(function(){
 
 **Important:** This update brings an important change to note. In past versions of keen-js, we shimmed tracking-methods so you could begin using them immediately without the `.ready()` callback wrapper. This created a lot of strange edge cases and version conflicts. Now, everything must be initialized from within the `.ready(function(){ ... })` wrapper.
 
-#### Synchronous loading
-
-You can also load the library synchronously:
-
-```html
-<!-- Currently not available in our CDN (coming soon!) -->
-<script src='https://d26b395fwzu5fz.cloudfront.net/0.0.1/keen-tracking.min.js'></script>
-```
 
 
-### Configure a new client for each project
+
+
+## Connect
+
+The client instance is the core of the library and will be required for all API-related functionality. The `client` variable defined below will also be used throughout this document.
 
 ```javascript
 var client = new Keen.Client({
@@ -205,10 +143,9 @@ var client = new Keen.Client({
 	*/
 });
 
-// Callback used by examples
-function callback(err, res){
-	console.log(err, res);
-};
+// Optional accessor methods are available too
+client.projectId('PROJECT_ID');
+client.writeKey('WRITE_KEY');
 ```
 
 **Important notes about client configuration options:**
@@ -218,37 +155,106 @@ function callback(err, res){
 * `requestType`: this option sets a default for GET requests, which is only supported when recording single events. There are limits to the URL string length of a request, so if this limit is exceeded we'll attempt to execute a POST instead, using XHR. In rare cases where XHR isn't supported, the request will fail.
 
 
-### Record events
 
-These methods push single or multiple events to their respective API endpoints.
+
+## Record events
+
+These methods push single or multiple events to their respective API endpoints. Wondering what you should record? Browse our [data modeling guide](https://keen.io/guides/data-modeling-guide/), and let us know if you don't find what you're looking for.
+
+### Record a single event
+
+Here is an example for recording a "purchases" event. Note that dollar amounts are tracked in cents:
 
 ```javascript
-// Single event
-client.recordEvent('transaction', { value: 123 }, callback);
+// Create a data object with the properties you want to record
+var purchaseEvent = {
+  item: "golden gadget",  
+  price: 2550, // track dollars as cents
+  referrer: document.referrer,
+  keen: {
+    timestamp: new Date().toISOString()
+  }
+};
 
-// Multiple events
-client.recordEvents({
-	'transaction': [ { value: 123 } ],
-	'purchase': [
-		{ value: 123 },
-		{ value: 456 },
-		{ value: 789 }
-	],
-	'pageview': [ { value: 012 } ]
-}, callback);
+client.recordEvent('purchase', purchaseEvent, function(err, res){
+  if (err) {
+    // there was an error!
+  }
+  else {
+    // see sample response below
+  }
+});
+```
+
+**API response for recording a single event:**
+
+```jsonp
+{
+  "created": true
+}
+```
+
+### Record multiple events
+
+Here is an example for how to record multiple events with a single API call. Note that dollar amounts are tracked in cents:
+
+```javascript
+var multipleEvents = {
+  "purchases": [
+    { item: "golden gadget", price: 2550, transaction_id: "f029342" },
+    { item: "a different gadget", price: 1775, transaction_id: "f029342" }
+  ],
+  "transactions": [
+    {
+      id: "f029342",
+      items: 2,
+      total: 4325
+    }
+  ]
+};
+
+// Send multiple events to several collections
+client.addEvents(multipleEvents, function(err, res){
+  if (err) {
+    // there was an error!
+  }
+  else {
+    // see sample response below
+  }
+});
+```
+
+**API response for recording multiple events:**
+
+```json
+{
+  "purchases": [
+    {
+      "success": true
+    },
+    {
+      "success": true
+    }
+  ],
+  "transactions": [
+    {
+      "success": true
+    }
+  ]
+}
 ```
 
 
-### Defer events
+## Defer events
 
-These methods handle an internal queue of events, which is pushed to the Events resource endpoint on a given interval.
+These methods handle an internal queue of events, which is pushed to the [events](https://keen.io/docs/api/#record-multiple-events) API resource on a given interval (default: 15 seconds), or when the queue reaches a maximum capacity (default: 5000).
 
 ```javascript
-// Single event
-client.deferEvent('transaction', {});
+// Single event from the previous example
+client.deferEvent('purchase', purchaseEvent);
 
-// Multiple events
-client.deferEvents({ 'Name': [{},{}] });
+// Multiple events from the previous example
+client.deferEvents(multipleEvents);
 
 // Flush the deferred queue
 client.recordDeferredEvents();
@@ -263,7 +269,7 @@ client.queueInterval(); // 15
 ```
 
 
-### Extend events
+## Extend events
 
 These methods extend the event body of every event sent through `recordEvent()` or `recordEvents()`, for all or specified collections, and accepts either a predefined object (static) or a function that returns an object (dynamic). This returned object is then grafted into the original event body with a deep-extend operation that seamlessly blends nested objects.
 
@@ -292,7 +298,7 @@ var userProps = {
 };
 
 // Include a predefined 'user' object with every purchase event
-client.extendEvent('purchase', {
+client.extendEvent('purchases', {
 	'user': userProps
 });
 
@@ -339,7 +345,7 @@ client.extendEvents(function(){
 });
 
 //
-client.recordEvent('pageview');
+client.recordEvent('pageviews');
 
 /* Resulting event body:
 {
@@ -361,11 +367,52 @@ client.recordEvent('pageview');
 ```
 
 
-### DOM Element tracking
+## Utilities
 
-This method surfaces events from user interactions. Form submits and clicks will be delayed by 500ms, unless the event is cancelled within a given listener's callback.
+These utilities
 
-<!-- Also check out declarative binding demo here: http://jsfiddle.net/hm514aj8/10/ -->
+### Cookies
+
+`Keen.utils.cookie(key)` finds or creates a cookie with a given key (string) value, and returns an object with several methods for managing the data contained in that cookie.
+
+```javascript
+var session = Keen.utils.cookie('visitor-stats');
+
+// Set a single value
+session.set('user_id', '222323843234');
+
+// Set multiple values
+session.set({
+	user_id: '222323843234',
+	first_referrer: 'https://github.com/keen/keen-tracking.js'
+})
+
+// Get a single value
+session.get('user_id'); // '222323843234'
+
+// Get all values
+session.get(); // { user_id: '222323843234' }
+
+// Expire the cookie
+session.expire();
+
+// Set options on the cookie
+session.options({
+	domain: '...',
+	secure: true
+});
+```
+
+This utility uses [ScottHamper's](https://github.com/ScottHamper) wonderfully simple [Cookies.js](https://github.com/ScottHamper/Cookies) library. Read all options for Cookies.js [here](https://github.com/ScottHamper/Cookies#cookiessetkey-value--options).
+
+
+### Listeners
+
+`Keen.utils.listener()` helps surface common DOM element events like "click", "scroll", and "submit". There is also a `Keen.listenTo()` method for quickly setting a series of listeners (below)
+
+**Important:** Form submits and clicks will be delayed by 500ms, unless the event is cancelled within a given listener's callback.
+
+<!-- Should we add this? http://jsfiddle.net/hm514aj8/10/ -->
 
 ```javascript
 // Listen to DOM events
@@ -430,7 +477,6 @@ Keen.utils.listener('.nav li > a').off('click');
 Keen.utils.listener('form#signup').off('submit');
 ```
 
-
 #### Window events
 
 ```javascript
@@ -462,7 +508,6 @@ var winListener = Keen.utils.listener('window')
 
 **Important note about `<a>` and `<form>` elements:** `<a>` tag **clicks** (when navigating away from the current page) and `<form>` **submits** are deferred for 500ms to allow for quick, asynchronous API calls.
 
-
 **`window` events:**
 
 * blur
@@ -480,47 +525,14 @@ var winListener = Keen.utils.listener('window')
 
 
 
-### Cookies
-
-This utility uses [ScottHamper's](https://github.com/ScottHamper) wonderfully simple [Cookies.js](https://github.com/ScottHamper/Cookies) library.
-
-```javascript
-var session = Keen.utils.cookie('visitor-stats');
-
-// Set a single value
-session.set('user_id', '222323843234');
-
-// Set multiple values
-session.set({
-	user_id: '222323843234',
-	first_referrer: 'https://github.com/keen/keen-tracking.js'
-})
-
-// Get a single value
-session.get('user_id'); // '222323843234'
-
-// Get all values
-session.get(); // { user_id: '222323843234' }
-
-// Expire the cookie
-session.expire();
-
-// Set options on the cookie
-session.options({
-	domain: '...',
-	secure: true
-});
-```
-
-Read all options for Cookies.js [here](https://github.com/ScottHamper/Cookies#cookiessetkey-value--options).
-
-
 ### Timers
+
+`Keen.utils.timer()` creates an object that tracks time, and can be paused, restarted, or initialized with a known value (seconds). It seems simple, but these little do-dads are excellent for recording the duration of sessions or specific interactions.
 
 ```javascript
 var userActivity = Keen.utils.timer();
 
-// Start a timer
+// Start the timer
 userActivity.start();
 
 // Pause the timer
@@ -538,9 +550,13 @@ historicalActivity.pause();
 ```
 
 
-### Helpers
+## Helpers
 
 These helpers are designed to generate useful properties and objects for event data models, and can be used when recording, deferring or extending events.
+
+### Datetime index
+
+`Keen.utils.getDatetimeIndex()` returns a set of properties like "hour_of_day" or "day_of_month". This helper accepts an optional Date object as an argument, otherwise it will construct and return a datetime index object based on "now".
 
 ```javascript
 var datetimeIndex = Keen.helpers.getDatetimeIndex();
@@ -554,18 +570,36 @@ var datetimeIndex = Keen.helpers.getDatetimeIndex();
     "year": 2015
   }
 */
+```
 
+### Unique ID
+
+`Keen.helpers.getUniqueId()` returns a UUID. This is useful in conjunction with `Keen.utils.cookie()` for identifying and tracking unauthenticated site visitors.
+
+```javascript
 var uniqueId = Keen.helpers.getUniqueId();
 /*
   "150caf6b-ef9f-48cd-ae32-43e2f5bb0fe8"
 */
+```
 
+### DOM node path
+
+`Keen.helpers.getDomNodePath(el)` returns the xPath for a given DOM element.
+
+```javascript
 var btn = document.getElementById('signup-button');
 var domNodePath = Keen.helpers.getDomNodePath(btn);
 /*
   "body > div#nav > ul > li:eq(1) > a#signup-button"
 */
+```
 
+### Screen profile
+
+`Keen.utils.getScreenProfile()` returns a set of properties describing the current device screen, like "height", "availHeight", and "orientation".
+
+```javascript
 var screenProfile = Keen.helpers.getScreenProfile();
 /*
   {
@@ -581,7 +615,13 @@ var screenProfile = Keen.helpers.getScreenProfile();
     }
   }
 */
+```
 
+### Window profile
+
+`Keen.utils.getWindowProfile()` returns a set of properties describing the current window, like "height", "scrollHeight", and "ratio" to screen dimensions.
+
+```javascript
 var windowProfile = Keen.helpers.getWindowProfile();
 /*
   {
@@ -594,7 +634,13 @@ var windowProfile = Keen.helpers.getWindowProfile();
     }
   }
 */
+```
 
+### Browser profile
+
+`Keen.utils.getBrowserProfile()` returns a set of properties describing the current browser, like "useragent", "online" status, and "language", plus [screen](#screen-profile) and [window](#window-profile) profiles.
+
+```javascript
 var browserProfile = Keen.helpers.getBrowserProfile();
 /*
   {
@@ -639,39 +685,93 @@ var browserProfile = Keen.helpers.getBrowserProfile();
 ## Example Setup
 
 ```javascript
-var client = new Keen.Client({});
-var formListener = Keen.utils.listener('form#signup');
-var navLinks = Keen.utils.listener('.nav li > a');
-
-formListener.on('submit', function(e){
-  var userEmail = document.getElementById('signup-email').value;
-  client.recordEvent('user signup', {
-    'interaction': {
-      'type': 'submit'
-    },
-    'visitor': {
-      'email': userEmail
-    }
-  });
+var client = new Keen.Client({
+  projectId: "MY_PROJECT_ID",
+  writeKey: "MY_WRITE_KEY"
 });
 
-navLinks.on('click', function(e){
-  // 500ms to kick out an event!
+var sessionCookie = Keen.utils.cookie('keen-example-cookie');
+if (!sessionCookie.get('user_id')) {
+  sessionCookie.set('user_id', Keen.helpers.getUniqueId());
+}
+
+var sessionTimer = Keen.utils.timer();
+sessionTimer.start();
+
+Keen.listenTo({
+  'form#signup': function(e){
+    // 500ms to record an event
+    var userEmail = document.getElementById('signup-email').value;
+    client.recordEvent('user signup', {
+      visitor: {
+        email: userEmail
+      }
+    });
+  },
+  'click .nav li > a': function(e){
+    // 500ms to record an event
+    client.recordEvent('leave page');
+  }
 });
+
+// THE BIG DATA MODEL!
 
 client.extendEvents(function(){
 	return {
-		'page': {
+		page: {
 			title: document.title,
-			href: document.href
+			url: document.href
+      // info: {} (add-on)
 		},
-		'tech': Keen.helpers.getBrowserProfile(),
-		'time': Keen.helpers.getDatetimeIndex(),
-		'visitor': {
-			'id': Keen.helpers.getUniqueId()
+    referrer: {
+      url: document.referrer
+      // info: {} (add-on)
+    },
+		tech: {
+      browser: Keen.helpers.getBrowserProfile(),
+      // info: {} (add-on)
+      ip: '${keen.ip}',
+      ua: '${keen.user_agent}'
+    },
+		time: Keen.helpers.getDatetimeIndex(),
+		visitor: {
+			id: sessionCookie.get('user_id'),
+      time_on_page: sessionTimer.value()
 		},
-		'keen': {
-			'timestamp': new Date().toISOString()
+    // geo: {} (add-on)
+		keen: {
+			timestamp: new Date().toISOString(),
+      addons: [
+        {
+          name: 'keen:ip_to_geo',
+          input: {
+            ip: 'tech.ip'
+          },
+          output: 'geo'
+        },
+        {
+          name: 'keen:ua_parser',
+          input: {
+            ua_string: 'tech.ua'
+          },
+          output: 'tech.info'
+        },
+        {
+          name: 'keen:url_parser',
+          input: {
+            url: 'page.url'
+          },
+          output: 'page.info'
+        },
+        {
+          name: 'keen:referrer_parser',
+          input: {
+            page_url: 'page.url',
+            referrer_url: 'referrer.url'
+          },
+          output: 'referrer.info'
+        }
+      ]
 		}
 	};
 });
@@ -679,9 +779,20 @@ client.extendEvents(function(){
 client.recordEvent('pageview');
 ```
 
-### Inspect event stream
+
+
+## Debugging
+
+Dev console errors and messages are turned off by default, but can be activated by setting `Keen.debug = true;`. Additionally, you can disable writing events to the API by setting `Keen.enabled = false;`.
 
 ```javascript
+// Track errors and messages in the dev console
+Keen.debug = true;
+
+// Disable event writes to the API
+Keen.enabled = false;
+
+// Observe what's happening in each method
 client.on('recordEvent', Keen.log);
 client.on('recordEvents', Keen.log);
 client.on('deferEvent', Keen.log);
@@ -689,4 +800,39 @@ client.on('deferEvents', Keen.log);
 client.on('recordDeferredEvents', Keen.log);
 client.on('extendEvent', Keen.log);
 client.on('extendEvents', Keen.log);
+```
+
+## Contributing
+
+This is an open source project and we love involvement from the community! Hit us up with pull requests and issues. The more contributions the better!
+
+**TODO:**
+
+* [ ] Validate `Keen.utils.listener()` form submit binding on IE8
+* [ ] Expose `A` element click event and `FORM` element submit event timeouts (default: 500ms)
+
+[Learn more about contributing to this project](./CONTRIBUTING.md).
+
+
+## Custom builds
+
+Run the following commands to get this dev project set up locally:
+
+```ssh
+# Clone the repo
+$ git clone https://github.com/keen/keen-tracking.js.git && cd keen-tracking.js
+
+# Install common dependencies
+$ npm install
+
+# Install browser dependencies for tests
+$ bower install
+
+# Build and launch project site
+$ gulp
+
+# Build and launch with tests
+$ gulp with-tests
+
+# View test results at http://localhost:9000
 ```
