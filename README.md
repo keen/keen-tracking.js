@@ -168,21 +168,21 @@ Here is an example for recording a "purchases" event. Note that dollar amounts a
 ```javascript
 // Create a data object with the properties you want to record
 var purchaseEvent = {
-  item: "golden gadget",  
-  price: 2550, // track dollars as cents
-  referrer: document.referrer,
-  keen: {
-    timestamp: new Date().toISOString()
-  }
+	item: "golden gadget",  
+	price: 2550, // track dollars as cents
+	referrer: document.referrer,
+	keen: {
+		timestamp: new Date().toISOString()
+	}
 };
 
 client.recordEvent('purchase', purchaseEvent, function(err, res){
-  if (err) {
-    // there was an error!
-  }
-  else {
-    // see sample response below
-  }
+	if (err) {
+		// there was an error!
+	}
+	else {
+		// see sample response below
+	}
 });
 ```
 
@@ -190,7 +190,7 @@ client.recordEvent('purchase', purchaseEvent, function(err, res){
 
 ```jsonp
 {
-  "created": true
+	"created": true
 }
 ```
 
@@ -200,27 +200,27 @@ Here is an example for how to record multiple events with a single API call. Not
 
 ```javascript
 var multipleEvents = {
-  "purchases": [
-    { item: "golden gadget", price: 2550, transaction_id: "f029342" },
-    { item: "a different gadget", price: 1775, transaction_id: "f029342" }
-  ],
-  "transactions": [
-    {
-      id: "f029342",
-      items: 2,
-      total: 4325
-    }
-  ]
+	purchases: [
+		{ item: "golden gadget", price: 2550, transaction_id: "f029342" },
+		{ item: "a different gadget", price: 1775, transaction_id: "f029342" }
+	],
+	transactions: [
+		{
+			id: "f029342",
+			items: 2,
+			total: 4325
+		}
+	]
 };
 
 // Send multiple events to several collections
 client.addEvents(multipleEvents, function(err, res){
-  if (err) {
-    // there was an error!
-  }
-  else {
-    // see sample response below
-  }
+	if (err) {
+		// there was an error!
+	}
+	else {
+		// see sample response below
+	}
 });
 ```
 
@@ -228,19 +228,19 @@ client.addEvents(multipleEvents, function(err, res){
 
 ```json
 {
-  "purchases": [
-    {
-      "success": true
-    },
-    {
-      "success": true
-    }
-  ],
-  "transactions": [
-    {
-      "success": true
-    }
-  ]
+	"purchases": [
+		{
+			"success": true
+		},
+		{
+			"success": true
+		}
+	],
+	"transactions": [
+		{
+			"success": true
+		}
+	]
 }
 ```
 
@@ -422,12 +422,12 @@ var navLinks = Keen.utils.listener(".nav li > a");
 
 // Listen for a given event
 navLinks.on("click", function(e){
-  // You have 500ms to record an event!
+	// You have 500ms to record an event!
 });
 
 // Listen for event once
 myClicker.once("click", function(e){
-  // First click!
+	// First click!
 });
 
 // Cancel a given event listener
@@ -461,12 +461,12 @@ This is a convenience function for quickly creating multiple listeners. These li
 
 ```javascript
 Keen.listenTo({
-  'click .nav li > a': function(e){
-    // You have 500ms to record an event!
-  },
-  'submit form#signup': function(e){
-    // Record a signup event
-  }
+	'click .nav li > a': function(e){
+		// You have 500ms to record an event!
+	},
+	'submit form#signup': function(e){
+		// Record a signup event
+	}
 });
 ```
 
@@ -481,15 +481,15 @@ Keen.utils.listener('form#signup').off('submit');
 
 ```javascript
 var winListener = Keen.utils.listener('window')
-  .once('scroll', function(e){
-    // user is interacting with the page
-  })
-  .on('hashchange', function(e){
-    // user clicked an internal anchor (eg: /#some-heading)
-  })
-  .on('resize', function(e){
-    // ...
-  });
+	.once('scroll', function(e){
+		// user is interacting with the page
+	})
+	.on('hashchange', function(e){
+		// user clicked an internal anchor (eg: /#some-heading)
+	})
+	.on('resize', function(e){
+		// ...
+	});
 ```
 
 **Generally supported events:**
@@ -561,14 +561,14 @@ These helpers are designed to generate useful properties and objects for event d
 ```javascript
 var datetimeIndex = Keen.helpers.getDatetimeIndex();
 /*
-  // Monday, June 29th, 2015
-  {
-    "hour_of_day": 14,
-    "day_of_week": 2,
-    "day_of_month": 29,
-    "month": 6,
-    "year": 2015
-  }
+// Monday, June 29th, 2015
+{
+	"hour_of_day": 14,
+	"day_of_week": 2,
+	"day_of_month": 29,
+	"month": 6,
+	"year": 2015
+}
 */
 ```
 
@@ -578,9 +578,7 @@ var datetimeIndex = Keen.helpers.getDatetimeIndex();
 
 ```javascript
 var uniqueId = Keen.helpers.getUniqueId();
-/*
-  "150caf6b-ef9f-48cd-ae32-43e2f5bb0fe8"
-*/
+// "150caf6b-ef9f-48cd-ae32-43e2f5bb0fe8"
 ```
 
 ### DOM node path
@@ -590,9 +588,7 @@ var uniqueId = Keen.helpers.getUniqueId();
 ```javascript
 var btn = document.getElementById('signup-button');
 var domNodePath = Keen.helpers.getDomNodePath(btn);
-/*
-  "body > div#nav > ul > li:eq(1) > a#signup-button"
-*/
+// "body > div#nav > ul > li:eq(1) > a#signup-button"
 ```
 
 ### Screen profile
@@ -602,18 +598,18 @@ var domNodePath = Keen.helpers.getDomNodePath(btn);
 ```javascript
 var screenProfile = Keen.helpers.getScreenProfile();
 /*
-  {
-    "height": 900,
-    "width": 1440,
-    "colorDepth": 24,
-    "pixelDepth": 24,
-    "availHeight": 878,
-    "availWidth": 1436,
-    "orientation": {
-      "angle": 0,
-      "type": "landscape"
-    }
-  }
+{
+	"height": 900,
+	"width": 1440,
+	"colorDepth": 24,
+	"pixelDepth": 24,
+	"availHeight": 878,
+	"availWidth": 1436,
+	"orientation": {
+		"angle": 0,
+		"type": "landscape"
+	}
+}
 */
 ```
 
@@ -624,15 +620,15 @@ var screenProfile = Keen.helpers.getScreenProfile();
 ```javascript
 var windowProfile = Keen.helpers.getWindowProfile();
 /*
-  {
-    "height": 436,
-    "width": 1209,
-    "scrollHeight": 13834,
-    "ratio": {
-      "height": 0.5,
-      "width": 0.84
-    }
-  }
+{
+	"height": 436,
+	"width": 1209,
+	"scrollHeight": 13834,
+	"ratio": {
+		"height": 0.5,
+		"width": 0.84
+	}
+}
 */
 ```
 
@@ -644,40 +640,40 @@ var windowProfile = Keen.helpers.getWindowProfile();
 var browserProfile = Keen.helpers.getBrowserProfile();
 /*
   {
-    "cookies": true,
-    "codeName": "Mozilla",
-    "language": "en-US",
-    "name": "Netscape",
-    "online": true,
-    "platform": "MacIntel",
-    "useragent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36",
-    "version": "5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36",
+	"cookies": true,
+	"codeName": "Mozilla",
+	"language": "en-US",
+	"name": "Netscape",
+	"online": true,
+	"platform": "MacIntel",
+	"useragent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36",
+	"version": "5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36",
 
-    // includes Keen.helpers.getScreenProfile();
-    "screen": {
-      "height": 900,
-      "width": 1440,
-      "colorDepth": 24,
-      "pixelDepth": 24,
-      "availHeight": 878,
-      "availWidth": 1436,
-      "orientation": {
-        "angle": 0,
-        "type": "landscape"
-      }
-    },
+    	// includes Keen.helpers.getScreenProfile();
+	"screen": {
+		"height": 900,
+		"width": 1440,
+		"colorDepth": 24,
+		"pixelDepth": 24,
+		"availHeight": 878,
+		"availWidth": 1436,
+		"orientation": {
+			"angle": 0,
+			"type": "landscape"
+		}
+    	},
 
-    // includes Keen.helpers.getWindowProfile();
-    "window": {
-      "height": 436,
-      "width": 1209,
-      "scrollHeight": 13834,
-      "ratio": {
-        "height": 0.5,
-        "width": 0.84
-      }
-    }
-  }
+	// includes Keen.helpers.getWindowProfile();
+	"window": {
+		"height": 436,
+		"width": 1209,
+		"scrollHeight": 13834,
+		"ratio": {
+			"height": 0.5,
+			"width": 0.84
+		}
+	}
+}
 */
 ```
 
@@ -686,32 +682,32 @@ var browserProfile = Keen.helpers.getBrowserProfile();
 
 ```javascript
 var client = new Keen.Client({
-  projectId: "MY_PROJECT_ID",
-  writeKey: "MY_WRITE_KEY"
+	projectId: "MY_PROJECT_ID",
+	writeKey: "MY_WRITE_KEY"
 });
 
 var sessionCookie = Keen.utils.cookie('keen-example-cookie');
 if (!sessionCookie.get('user_id')) {
-  sessionCookie.set('user_id', Keen.helpers.getUniqueId());
+	sessionCookie.set('user_id', Keen.helpers.getUniqueId());
 }
 
 var sessionTimer = Keen.utils.timer();
 sessionTimer.start();
 
 Keen.listenTo({
-  'form#signup': function(e){
-    // 500ms to record an event
-    var userEmail = document.getElementById('signup-email').value;
-    client.recordEvent('user signup', {
-      visitor: {
-        email: userEmail
-      }
-    });
-  },
-  'click .nav li > a': function(e){
-    // 500ms to record an event
-    client.recordEvent('leave page');
-  }
+	'form#signup': function(e){
+		// 500ms to record an event
+		var userEmail = document.getElementById('signup-email').value;
+		client.recordEvent('user signup', {
+			visitor: {
+				email: userEmail
+			}
+		});
+	},
+	'click .nav li > a': function(e){
+		// 500ms to record an event
+		client.recordEvent('leave page');
+	}
 });
 
 // THE BIG DATA MODEL!
@@ -721,57 +717,57 @@ client.extendEvents(function(){
 		page: {
 			title: document.title,
 			url: document.href
-      // info: {} (add-on)
+			// info: {} (add-on)
 		},
-    referrer: {
-      url: document.referrer
-      // info: {} (add-on)
-    },
+		referrer: {
+			url: document.referrer
+			// info: {} (add-on)
+		},
 		tech: {
-      browser: Keen.helpers.getBrowserProfile(),
-      // info: {} (add-on)
-      ip: '${keen.ip}',
-      ua: '${keen.user_agent}'
-    },
+			browser: Keen.helpers.getBrowserProfile(),
+			// info: {} (add-on)
+			ip: '${keen.ip}',
+			ua: '${keen.user_agent}'
+		},
 		time: Keen.helpers.getDatetimeIndex(),
 		visitor: {
 			id: sessionCookie.get('user_id'),
-      time_on_page: sessionTimer.value()
+			time_on_page: sessionTimer.value()
 		},
-    // geo: {} (add-on)
+		// geo: {} (add-on)
 		keen: {
 			timestamp: new Date().toISOString(),
-      addons: [
-        {
-          name: 'keen:ip_to_geo',
-          input: {
-            ip: 'tech.ip'
-          },
-          output: 'geo'
-        },
-        {
-          name: 'keen:ua_parser',
-          input: {
-            ua_string: 'tech.ua'
-          },
-          output: 'tech.info'
-        },
-        {
-          name: 'keen:url_parser',
-          input: {
-            url: 'page.url'
-          },
-          output: 'page.info'
-        },
-        {
-          name: 'keen:referrer_parser',
-          input: {
-            page_url: 'page.url',
-            referrer_url: 'referrer.url'
-          },
-          output: 'referrer.info'
-        }
-      ]
+			addons: [
+        		{
+				name: 'keen:ip_to_geo',
+				input: {
+					ip: 'tech.ip'
+				},
+				output: 'geo'
+			},
+			{
+				name: 'keen:ua_parser',
+				input: {
+					ua_string: 'tech.ua'
+				},
+				output: 'tech.info'
+			},
+			{
+				name: 'keen:url_parser',
+				input: {
+					url: 'page.url'
+				},
+				output: 'page.info'
+			},
+			{
+				name: 'keen:referrer_parser',
+				input: {
+					page_url: 'page.url',
+					referrer_url: 'referrer.url'
+				},
+				output: 'referrer.info'
+			}
+			]
 		}
 	};
 });
