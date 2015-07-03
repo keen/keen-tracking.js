@@ -21,6 +21,7 @@ Here's what has been done so far:
 * [x] `Keen.utils.cookie()` for managing simple cookies
 * [x] `Keen.utils.timer()` for managing a simple timer
 * [x] `Keen.utils.listener()` for listening to common DOM events
+* [x] `Keen.listenTo()` convenience for constructing listeners
 * [x] Asynchronous loading, similar to keen-js setup, though hopefully smaller and easier to extend
 * [x] Top-level `Keen` settings for debugging and disabling event transmission
 
@@ -362,15 +363,14 @@ client.recordEvent('pageview');
 
 ### DOM Element tracking
 
-This method surfaces events from user interactions. Form submits and clicks will be delayed by default (configurable).
+This method surfaces events from user interactions. Form submits and clicks will be delayed by 500ms, unless the event is cancelled within a given listener's callback.
 
-Also check out declarative binding demo here: http://jsfiddle.net/hm514aj8/10/
+<!-- Also check out declarative binding demo here: http://jsfiddle.net/hm514aj8/10/ -->
 
 ```javascript
 // Listen to DOM events
 
-
-// Create a new element listener
+// Create a new element listener (assigned)
 var navLinks = Keen.utils.listener(".nav li > a");
 
 // Listen for a given event
@@ -406,8 +406,30 @@ formListener.on('submit', function(e){
 // TODO: Override DOM event timeouts (defaults shown)
 // Keen.deferDomEvents('A', 'click', 500);
 // Keen.deferDomEvents('FORM', 'submit', 500);
-
 ```
+
+#### Keen.listenTo()
+
+This is a convenience function for quickly creating multiple listeners. These listeners are constructed with the `Keen.utils.listener` utility, so the behavior will be identical to calling `Keen.utils.listener(selector).on(eventType, callback);`.
+
+```javascript
+Keen.listenTo({
+  'click .nav li > a': function(e){
+    // You have 500ms to record an event!
+  },
+  'submit form#signup': function(e){
+    // Record a signup event
+  }
+});
+```
+
+This technique does not return a reference to the listener, but can be deactivated by defining a listener with the same selector and calling the `.off(eventType)` event:
+
+```JavaScript
+Keen.utils.listener('.nav li > a').off('click');
+Keen.utils.listener('form#signup').off('submit');
+```
+
 
 #### Window events
 
