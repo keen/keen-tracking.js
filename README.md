@@ -1,5 +1,9 @@
 # keen-tracking.js [![Build Status](https://travis-ci.org/keen/keen-tracking.js.svg?branch=master)](https://travis-ci.org/keen/keen-tracking.js)
 
+**Important:** This project is not yet released. We're building this in public, in open collaboration with our customers and community members!
+
+**Also important:** This library has several key differences from [keen-js](https://github.com/keen/keen-js), including method names and [client initialization](#connect). Read on to learn more!
+
 Why are we splitting this functionality out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases bring more heartache than nirvana.
 
 This [example setup](#example-setup) demonstrates how to put this library to work.
