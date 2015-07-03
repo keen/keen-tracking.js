@@ -77,13 +77,13 @@ Copy/paste this snippet of JavaScript above the </head> tag of your page to load
 // Executes when the library is loaded and ready
 Keen.ready(function(){
 
-  // Create a new client instance
+	// Create a new client instance
 	var client = new Keen.Client({
 		projectId: 'YOUR_PROJECT_ID',
 		writeKey: 'YOUR_WRITE_KEY'
 	});
 
-  // Record an event!
+	// Record an event!
 	client.recordEvent('pageviews', {
 		// Define your event data model
 		title: document.title
@@ -202,15 +202,15 @@ Here is an example for how to record multiple events with a single API call. Not
 var multipleEvents = {
 	purchases: [
 		{
-      item: 'golden gadget',
-      price: 2550,
-      transaction_id: 'f029342'
-    },
+			item: 'golden gadget',
+			price: 2550,
+			transaction_id: 'f029342'
+		},
 		{
-      item: 'a different gadget',
-      price: 1775,
-      transaction_id: 'f029342'
-    }
+			item: 'a different gadget',
+			price: 1775,
+			transaction_id: 'f029342'
+		}
 	],
 	transactions: [
 		{
@@ -438,7 +438,7 @@ myClicker.once('click', function(e){
 
 // Cancel a given event listener
 function clickHandler(e){
-  // do something!
+	// do something!
 }
 myClicker.on('click', clickHandler);
 myClicker.off('click', clickHandler);
@@ -655,7 +655,7 @@ var browserProfile = Keen.helpers.getBrowserProfile();
 	'useragent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36',
 	'version': '5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36',
 
-    	// includes Keen.helpers.getScreenProfile();
+	// includes Keen.helpers.getScreenProfile();
 	'screen': {
 		'height': 900,
 		'width': 1440,
@@ -667,7 +667,7 @@ var browserProfile = Keen.helpers.getBrowserProfile();
 			'angle': 0,
 			'type': 'landscape'
 		}
-    	},
+	},
 
 	// includes Keen.helpers.getWindowProfile();
 	'window': {
