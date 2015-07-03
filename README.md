@@ -168,7 +168,7 @@ Here is an example for recording a "purchases" event. Note that dollar amounts a
 ```javascript
 // Create a data object with the properties you want to record
 var purchaseEvent = {
-	item: "golden gadget",  
+	item: 'golden gadget',
 	price: 2550, // track dollars as cents
 	referrer: document.referrer,
 	keen: {
@@ -201,12 +201,20 @@ Here is an example for how to record multiple events with a single API call. Not
 ```javascript
 var multipleEvents = {
 	purchases: [
-		{ item: "golden gadget", price: 2550, transaction_id: "f029342" },
-		{ item: "a different gadget", price: 1775, transaction_id: "f029342" }
+		{
+      item: 'golden gadget',
+      price: 2550,
+      transaction_id: 'f029342'
+    },
+		{
+      item: 'a different gadget',
+      price: 1775,
+      transaction_id: 'f029342'
+    }
 	],
 	transactions: [
 		{
-			id: "f029342",
+			id: 'f029342',
 			items: 2,
 			total: 4325
 		}
@@ -369,8 +377,6 @@ client.recordEvent('pageviews');
 
 ## Utilities
 
-These utilities
-
 ### Cookies
 
 `Keen.utils.cookie(key)` finds or creates a cookie with a given key (string) value, and returns an object with several methods for managing the data contained in that cookie.
@@ -418,15 +424,15 @@ This utility uses [ScottHamper's](https://github.com/ScottHamper) wonderfully si
 // Listen to DOM events
 
 // Create a new element listener (assigned)
-var navLinks = Keen.utils.listener(".nav li > a");
+var navLinks = Keen.utils.listener('.nav li > a');
 
 // Listen for a given event
-navLinks.on("click", function(e){
+navLinks.on('click', function(e){
 	// You have 500ms to record an event!
 });
 
 // Listen for event once
-myClicker.once("click", function(e){
+myClicker.once('click', function(e){
 	// First click!
 });
 
@@ -563,11 +569,11 @@ var datetimeIndex = Keen.helpers.getDatetimeIndex();
 /*
 // Monday, June 29th, 2015
 {
-	"hour_of_day": 14,
-	"day_of_week": 2,
-	"day_of_month": 29,
-	"month": 6,
-	"year": 2015
+	'hour_of_day': 14,
+	'day_of_week': 2,
+	'day_of_month': 29,
+	'month': 6,
+	'year': 2015
 }
 */
 ```
@@ -578,7 +584,7 @@ var datetimeIndex = Keen.helpers.getDatetimeIndex();
 
 ```javascript
 var uniqueId = Keen.helpers.getUniqueId();
-// "150caf6b-ef9f-48cd-ae32-43e2f5bb0fe8"
+// '150caf6b-ef9f-48cd-ae32-43e2f5bb0fe8'
 ```
 
 ### DOM node path
@@ -588,7 +594,7 @@ var uniqueId = Keen.helpers.getUniqueId();
 ```javascript
 var btn = document.getElementById('signup-button');
 var domNodePath = Keen.helpers.getDomNodePath(btn);
-// "body > div#nav > ul > li:eq(1) > a#signup-button"
+// 'body > div#nav > ul > li:eq(1) > a#signup-button'
 ```
 
 ### Screen profile
@@ -599,15 +605,15 @@ var domNodePath = Keen.helpers.getDomNodePath(btn);
 var screenProfile = Keen.helpers.getScreenProfile();
 /*
 {
-	"height": 900,
-	"width": 1440,
-	"colorDepth": 24,
-	"pixelDepth": 24,
-	"availHeight": 878,
-	"availWidth": 1436,
-	"orientation": {
-		"angle": 0,
-		"type": "landscape"
+	'height': 900,
+	'width': 1440,
+	'colorDepth': 24,
+	'pixelDepth': 24,
+	'availHeight': 878,
+	'availWidth': 1436,
+	'orientation': {
+		'angle': 0,
+		'type': 'landscape'
 	}
 }
 */
@@ -621,12 +627,12 @@ var screenProfile = Keen.helpers.getScreenProfile();
 var windowProfile = Keen.helpers.getWindowProfile();
 /*
 {
-	"height": 436,
-	"width": 1209,
-	"scrollHeight": 13834,
-	"ratio": {
-		"height": 0.5,
-		"width": 0.84
+	'height': 436,
+	'width': 1209,
+	'scrollHeight': 13834,
+	'ratio': {
+		'height': 0.5,
+		'width': 0.84
 	}
 }
 */
@@ -640,37 +646,37 @@ var windowProfile = Keen.helpers.getWindowProfile();
 var browserProfile = Keen.helpers.getBrowserProfile();
 /*
   {
-	"cookies": true,
-	"codeName": "Mozilla",
-	"language": "en-US",
-	"name": "Netscape",
-	"online": true,
-	"platform": "MacIntel",
-	"useragent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36",
-	"version": "5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36",
+	'cookies': true,
+	'codeName': 'Mozilla',
+	'language': 'en-US',
+	'name': 'Netscape',
+	'online': true,
+	'platform': 'MacIntel',
+	'useragent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36',
+	'version': '5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36',
 
     	// includes Keen.helpers.getScreenProfile();
-	"screen": {
-		"height": 900,
-		"width": 1440,
-		"colorDepth": 24,
-		"pixelDepth": 24,
-		"availHeight": 878,
-		"availWidth": 1436,
-		"orientation": {
-			"angle": 0,
-			"type": "landscape"
+	'screen': {
+		'height': 900,
+		'width': 1440,
+		'colorDepth': 24,
+		'pixelDepth': 24,
+		'availHeight': 878,
+		'availWidth': 1436,
+		'orientation': {
+			'angle': 0,
+			'type': 'landscape'
 		}
     	},
 
 	// includes Keen.helpers.getWindowProfile();
-	"window": {
-		"height": 436,
-		"width": 1209,
-		"scrollHeight": 13834,
-		"ratio": {
-			"height": 0.5,
-			"width": 0.84
+	'window': {
+		'height': 436,
+		'width': 1209,
+		'scrollHeight': 13834,
+		'ratio': {
+			'height': 0.5,
+			'width': 0.84
 		}
 	}
 }
@@ -682,8 +688,8 @@ var browserProfile = Keen.helpers.getBrowserProfile();
 
 ```javascript
 var client = new Keen.Client({
-	projectId: "MY_PROJECT_ID",
-	writeKey: "MY_WRITE_KEY"
+	projectId: 'MY_PROJECT_ID',
+	writeKey: 'MY_WRITE_KEY'
 });
 
 var sessionCookie = Keen.utils.cookie('keen-example-cookie');
