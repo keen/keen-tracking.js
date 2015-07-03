@@ -738,35 +738,35 @@ client.extendEvents(function(){
 		keen: {
 			timestamp: new Date().toISOString(),
 			addons: [
-        		{
-				name: 'keen:ip_to_geo',
-				input: {
-					ip: 'tech.ip'
+				{
+					name: 'keen:ip_to_geo',
+					input: {
+						ip: 'tech.ip'
+					},
+					output: 'geo'
 				},
-				output: 'geo'
-			},
-			{
-				name: 'keen:ua_parser',
-				input: {
-					ua_string: 'tech.ua'
+				{
+					name: 'keen:ua_parser',
+					input: {
+						ua_string: 'tech.ua'
+					},
+					output: 'tech.info'
 				},
-				output: 'tech.info'
-			},
-			{
-				name: 'keen:url_parser',
-				input: {
-					url: 'page.url'
+				{
+					name: 'keen:url_parser',
+					input: {
+						url: 'page.url'
+					},
+					output: 'page.info'
 				},
-				output: 'page.info'
-			},
-			{
-				name: 'keen:referrer_parser',
-				input: {
-					page_url: 'page.url',
-					referrer_url: 'referrer.url'
-				},
-				output: 'referrer.info'
-			}
+				{
+					name: 'keen:referrer_parser',
+					input: {
+						page_url: 'page.url',
+						referrer_url: 'referrer.url'
+					},
+					output: 'referrer.info'
+				}
 			]
 		}
 	};
