@@ -21,10 +21,10 @@ describe('Keen.utils.listener', function() {
   it('should create a Keen.listenTo function that creates unassigned listeners', function(){
     assert.isFunction(Keen.listenTo);
     Keen.listenTo({
-      'event element': function(e){}
+      'resize window': function(e){}
     });
-    assert.isObject(Keen.domListeners['event']);
-    assert.isArray(Keen.domListeners['event']['element']);
+    assert.isObject(Keen.domListeners.resize);
+    assert.isArray(Keen.domListeners.resize['window']);
   });
 
   it('should set window events', function(){
@@ -108,16 +108,20 @@ describe('Keen.utils.listener', function() {
       a.href = './index.html';
       document.body.appendChild(a);
 
-      ev = document.createEvent("MouseEvent");
-      ev.initMouseEvent("click",
-          true /* bubble */, true /* cancelable */,
-          window, null,
-          0, 0, 0, 0,
-          false, false, false, false,
-          0, null
-      );
-      a.dispatchEvent(ev);
-      // a.click();
+      if (a.click) {
+        a.click();
+      }
+      else if(document.createEvent) {
+        ev = document.createEvent('MouseEvent');
+        ev.initMouseEvent("click",
+            true /* bubble */, true /* cancelable */,
+            window, null,
+            0, 0, 0, 0,
+            false, false, false, false,
+            0, null
+        );
+        a.dispatchEvent(ev);
+      }
     }, 1000);
   });
 
@@ -137,19 +141,26 @@ describe('Keen.utils.listener', function() {
       a.href = './index.html';
       document.body.appendChild(a);
 
-      ev = document.createEvent("MouseEvent");
-      ev.initMouseEvent("click",
-          true /* bubble */, true /* cancelable */,
-          window, null,
-          0, 0, 0, 0,
-          false, false, false, false,
-          0, null
-      );
-      a.dispatchEvent(ev);
-
-      // a.click();
+      if (a.click) {
+        a.click();
+      }
+      else if(document.createEvent) {
+        ev = document.createEvent('MouseEvent');
+        ev.initMouseEvent("click",
+            true /* bubble */, true /* cancelable */,
+            window, null,
+            0, 0, 0, 0,
+            false, false, false, false,
+            0, null
+        );
+        a.dispatchEvent(ev);
+      }
     }, 1000);
   });
+
+  function createEvent(){
+
+  }
 
   it('should remove specific handlers with .off("click", fn)', function(){
     var listenToThis = listener('body a#on-off');
