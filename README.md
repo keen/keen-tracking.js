@@ -176,7 +176,7 @@ var purchaseEvent = {
 	}
 };
 
-client.recordEvent('purchase', purchaseEvent, function(err, res){
+client.recordEvent('purchases', purchaseEvent, function(err, res){
 	if (err) {
 		// there was an error!
 	}
