@@ -861,6 +861,14 @@ module.exports = function(ctx){
     }
     */
   };
+  ctx.listenTo = ctx.listenTo || function(listenerHash){
+    each(listenerHash, function(callback, key){
+      var split = key.split(' ');
+      var eventType = split[0],
+          selector = split.splice(1).join(' ');
+      return listener(selector).on(eventType, callback);
+    });
+  };
   function eventHandler(eventType){
     return function(e){
       var evt, target;
