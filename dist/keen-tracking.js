@@ -2,7 +2,7 @@
 (function (global){
 ;(function (f) {
   if (typeof define === 'function' && define.amd) {
-    define('keen', [], function(){ return f(); });
+    define(function(){ return f(); });
   }
   if (typeof exports === 'object' && typeof module !== 'undefined') {
     module.exports = f();
