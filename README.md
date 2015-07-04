@@ -838,7 +838,6 @@ This is an open source project and we love involvement from the community! Hit u
 
 **TODO:**
 
-* [ ] Set up RequireJS support and documentation
 * [ ] Validate `Keen.utils.listener()` form submit binding on IE8
 * [ ] Expose `A` element click event and `FORM` element submit event timeouts (default: 500ms)
 
@@ -853,17 +852,14 @@ Run the following commands to get this dev project set up locally:
 # Clone the repo
 $ git clone https://github.com/keen/keen-tracking.js.git && cd keen-tracking.js
 
-# Install common dependencies
+# Install project dependencies
 $ npm install
 
-# Install browser dependencies for tests
-$ bower install
-
-# Build and launch project site
+# Build project with gulp
+# npm install -g gulp
 $ gulp
 
-# Build and launch with tests
+# Build and launch to view test results
 $ gulp with-tests
-
-# View test results at http://localhost:9000
+$ open http://localhost:9000
 ```
