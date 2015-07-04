@@ -810,6 +810,7 @@ This is an open source project and we love involvement from the community! Hit u
 
 **TODO:**
 
+* [ ] Set up RequireJS support and documentation
 * [ ] Validate `Keen.utils.listener()` form submit binding on IE8
 * [ ] Expose `A` element click event and `FORM` element submit event timeouts (default: 500ms)
 
