@@ -120,8 +120,36 @@ modules.MyKeenBuild.ready(function(){
 
 **Important:** This update brings an important change to note. In past versions of keen-js, we shimmed tracking-methods so you could begin using them immediately without the `.ready()` callback wrapper. This created a lot of strange edge cases and version conflicts. Now, everything must be initialized from within the `.ready(function(){ ... })` wrapper.
 
+**RequireJS**
 
+The library is published with an explicitly named module ID of 'keen-tracking'. This presents a light configuration step, but prevents anonymous define() mismatch mayhem.
 
+To use this module, configure a paths record, like so:
+
+```html
+<script data-main="path/to/app.js" src="require.js"></script>
+```
+
+```javascript
+// app.js
+requirejs.config({
+  paths: {
+    'keen-tracking': 'path/to/keen-tracking.js'
+  }
+});
+
+require([
+    'keen-tracking'
+  ], function(KeenAMD) {
+
+    var client = new KeenAMD.Client({
+      projectId: "123",
+      writeKey: "456"
+    });
+});
+```
+
+Also note a global `Keen` object will still be defined. This is meant to ensure the library can initialize in environments where neighboring scripts are unknown or uncontrollable.
 
 
 ## Connect

@@ -40,6 +40,9 @@ gulp.task('build:browserify', function() {
         // Add transformation tasks to the pipeline here.
         .pipe(stripComments({ line: true }))
         .pipe(removeEmptyLines())
+        // Wipe out requirejs cooties in dependencies
+        .pipe(replace('typeof define === \'function\' && define.amd', 'false'))
+        // Set current version
         .pipe(replace('__VERSION__', pkg.version))
         .on('error', util.log)
     .pipe(sourcemaps.write('./'))

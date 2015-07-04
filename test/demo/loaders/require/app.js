@@ -1,5 +1,11 @@
+requirejs.config({
+  paths: {
+    'keen-tracking': '../../../dist/keen-tracking.js'
+  }
+});
+
 require([
-    '../../../dist/keen-tracking.js'
+    'keen-tracking'
   ], function(KeenAMD) {
 
     var client = new KeenAMD.Client({
