@@ -14,11 +14,6 @@
     "gulpfile.js",
     "lib",
     "node_modules",
-    "bower_components",
     "test"
-  ],
-  "devDependencies": {
-    "mocha": "~2.2.4",
-    "requirejs-bower": "~2.1.17"
-  }
+  ]
 }

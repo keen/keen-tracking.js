@@ -34,6 +34,7 @@
     "del": "^1.1.1",
     "gulp": "^3.8.11",
     "gulp-connect": "^2.2.0",
+    "gulp-derequire": "^2.1.0",
     "gulp-mocha": "^2.0.1",
     "gulp-mocha-phantomjs": "^0.6.1",
     "gulp-remove-empty-lines": "0.0.2",
@@ -55,7 +56,7 @@
     "mocha": "^2.2.5",
     "moment": "^2.10.3",
     "nock": "^2.0.1",
-    "proclaim": "^3.2.1",
+    "proclaim": "^3.3.0",
     "sinon": "^1.14.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"

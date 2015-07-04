@@ -4,7 +4,7 @@ module.exports = function(config) {
     frameworks: [ 'mocha', 'sinon' ],
     files: [
       // Include requirejs presence
-      './test/vendor/requirejs-bower',
+      // './test/vendor/require.js',
       './test/unit/build/browserified-tests.js'
     ],
     client: {

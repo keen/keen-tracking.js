@@ -40,9 +40,12 @@ gulp.task('build:browserify', function() {
         // Add transformation tasks to the pipeline here.
         .pipe(stripComments({ line: true }))
         .pipe(removeEmptyLines())
+        // Wipe out requirejs cooties in dependencies
+        .pipe(replace('typeof define === \'function\' && define.amd', 'false'))
+        // Set current version
         .pipe(replace('__VERSION__', pkg.version))
         .on('error', util.log)
-    .pipe(sourcemaps.write('./'))
+      .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./dist/'));
 });
 
@@ -96,7 +99,11 @@ gulp.task('test:browserify', ['test:clean'], function() {
   return b.bundle()
     .pipe(source('browserified-tests.js'))
     .pipe(buffer())
-    .on('error', util.log)
+      // Wipe out requirejs cooties in dependencies
+      .pipe(replace('typeof define === \'function\' && define.amd', 'false'))
+      // Set current version
+      .pipe(replace('__VERSION__', pkg.version))
+      .on('error', util.log)
     .pipe(gulp.dest('./test/unit/build/'));
 });
 
