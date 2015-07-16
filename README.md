@@ -2,7 +2,7 @@
 
 **Important:** This project is not yet released. We're building this in public, in open collaboration with our customers and community members!
 
-Why are we splitting this functionality out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases bring more heartache than nirvana.
+Why are we splitting this functionality out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases bring more heartache than nirvana. **Upgrading from keen-js?** [Read this](#upgrading-from-keen-js).
 
 This [example setup](#example-setup) demonstrates how to put this library to work.
 
@@ -30,6 +30,16 @@ If you haven't done so already, login to Keen IO to create a project. The Projec
 * [Screen profile](#screen-profile) for generating a set of properties describing the current device screen, like "height", "availHeight", and "orientation"
 * [Window profile](#window-profile) for generating a set of properties describing the current window, like "height", "scrollHeight", and "ratio" to screen dimensions
 * [Browser profile](#browser-profile) for generating a set of properties describing the current browser, like "useragent", "online" status, and "language", plus [screen](#screen-profile) and [window](#window-profile) profiles
+
+<a name="upgrading-from-keen-js"></a>
+**Upgrading from keen-js:**
+
+There are several new methods and name changes from keen-js, but fear not! We have included shims and legacy methods to make this library fully backward-compatible with the core functionality of keen-js. Here are the methods and their replacement methods:
+* `addEvent` and `addEvents` are now [`recordEvent`](#record-events) and [`recordEvents`](#record-events)
+* `setGlobalProperties` is now handled by the [`extendEvents`](#extend-events) methods
+* `trackExternalLinks` is now handled by the [DOM listeners](#listeners) utility (browser-only)
+
+If you are starting fresh, DO NOT USE THESE, as we will remove them all eventually. These methods are also flagged with deprecation notices that become visible in the developer console by setting `Keen.debug = true;`.
 
 **Additional resources:**
 
