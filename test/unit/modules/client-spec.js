@@ -4,10 +4,10 @@ var config = require('../helpers/client-config');
 
 // Keen.debug = true;
 
-describe('Keen.Client (browser)', function() {
+describe('Keen (browser)', function() {
 
   beforeEach(function() {
-    this.client = new Keen.Client({
+    this.client = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey,
       protocol: config.protocol,

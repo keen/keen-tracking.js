@@ -12,7 +12,7 @@ describe('.recordEvent(s) methods (browser)', function() {
   describe('.recordEvent', function() {
 
     beforeEach(function() {
-      this.client = new Keen.Client({
+      this.client = new Keen({
         projectId: config.projectId,
         writeKey: config.writeKey,
         requestType: 'xhr',
@@ -102,7 +102,7 @@ describe('.recordEvent(s) methods (browser)', function() {
   describe('.recordEvents', function() {
 
     beforeEach(function() {
-      this.client = new Keen.Client({ projectId: config.projectId, writeKey: config.writeKey, requestType: 'xhr', host: config.host });
+      this.client = new Keen({ projectId: config.projectId, writeKey: config.writeKey, requestType: 'xhr', host: config.host });
       this.batchData = {
         'pageview': [
           { page: 'this one' },

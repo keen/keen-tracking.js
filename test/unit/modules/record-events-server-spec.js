@@ -13,7 +13,7 @@ var mock = require('../helpers/mock-server-requests');
 describe('.recordEvent(s) methods (server)', function() {
 
   beforeEach(function(){
-    this.client = new Keen.Client({
+    this.client = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey
     });

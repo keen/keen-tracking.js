@@ -8,7 +8,7 @@ require([
     'keen-tracking'
   ], function(KeenAMD) {
 
-    var client = new KeenAMD.Client({
+    var client = new KeenAMD({
       projectId: "123",
       writeKey: "456"
     });
