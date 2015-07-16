@@ -41,7 +41,7 @@ There are several new methods and name changes from keen-js, but fear not! We ha
 * `setGlobalProperties` is now handled by the [`extendEvents`](#extend-events) methods
 * `trackExternalLinks` is now handled by the [DOM listeners](#listeners) utility (browser-only)
 
-Please avoid using these deprecated methods, as they will eventually get axed. There are also deprecation messages in place that become visible in the developer console by setting `Keen.debug = true;`.
+Please avoid using these deprecated methods, as they will eventually get axed. Deprecation messages will be visible in the developer console if [debugging](#debugging) is enabled.
 
 **Additional resources:**
 
