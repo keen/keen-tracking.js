@@ -2,8 +2,6 @@
 
 **Important:** This project is not yet released. We're building this in public, in open collaboration with our customers and community members!
 
-**Also important:** This library has several key differences from [keen-js](https://github.com/keen/keen-js), including [client initialization](#connect) and [one very important set of method names](#record-events). Read on to learn more!
-
 Why are we splitting this functionality out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases bring more heartache than nirvana.
 
 This [example setup](#example-setup) demonstrates how to put this library to work.
@@ -78,7 +76,7 @@ Copy/paste this snippet of JavaScript above the </head> tag of your page to load
 Keen.ready(function(){
 
 	// Create a new client instance
-	var client = new Keen.Client({
+	var client = new Keen({
 		projectId: 'YOUR_PROJECT_ID',
 		writeKey: 'YOUR_WRITE_KEY'
 	});
@@ -157,7 +155,7 @@ Also note a global `Keen` object will still be defined. This is meant to ensure 
 The client instance is the core of the library and will be required for all API-related functionality. The `client` variable defined below will also be used throughout this document.
 
 ```javascript
-var client = new Keen.Client({
+var client = new Keen({
 	projectId: 'YOUR_PROJECT_ID',
 	writeKey: 'YOUR_WRITE_KEY',
 
@@ -715,7 +713,7 @@ var browserProfile = Keen.helpers.getBrowserProfile();
 ## Example Setup
 
 ```javascript
-var client = new Keen.Client({
+var client = new Keen({
 	projectId: 'MY_PROJECT_ID',
 	writeKey: 'MY_WRITE_KEY'
 });

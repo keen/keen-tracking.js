@@ -24,9 +24,9 @@
   var each = require('./utils/each');
   var extend = require('./utils/extend');
   var listener = require('./utils/listener')(Keen);
-  extend(Keen.Client.prototype, require('./record-events-browser'));
-  extend(Keen.Client.prototype, require('./defer-events'));
-  extend(Keen.Client.prototype, {
+  extend(Keen.prototype, require('./record-events-browser'));
+  extend(Keen.prototype, require('./defer-events'));
+  extend(Keen.prototype, {
     'extendEvent': require('./extend-events').extendEvent,
     'extendEvents': require('./extend-events').extendEvents
   });
@@ -339,22 +339,15 @@ module.exports = getWindowProfile;
 var Emitter = require('component-emitter');
 var JSON2 = require('JSON2');
 var each = require('./utils/each');
+var extend = require('./utils/extend');
 var queue = require('./utils/queue');
 var root = this;
 var previousKeen = root.Keen;
-var Keen = {
-  debug: false,
-  enabled: true,
-  loaded: false,
-  helpers: {},
-  utils: {},
-  version: '0.0.1'
-};
-Keen.Client = function(cfg){
+var Keen = function(cfg){
   this.configure(cfg);
   Keen.emit('client', this);
-}
-Keen.Client.prototype.configure = function(cfg){
+};
+Keen.prototype.configure = function(cfg){
   var self = this, config = cfg || {}, defaultProtocol;
   if (config['host']) {
     config['host'].replace(/.*?:\/\//g, '');
@@ -385,20 +378,20 @@ Keen.Client.prototype.configure = function(cfg){
   self.emit('ready');
   return self;
 };
-Keen.Client.prototype.projectId = function(str){
+Keen.prototype.projectId = function(str){
   if (!arguments.length) return this.config.projectId;
   this.config.projectId = (str ? String(str) : null);
   return this;
 };
-Keen.Client.prototype.writeKey = function(str){
+Keen.prototype.writeKey = function(str){
   if (!arguments.length) return this.config.writeKey;
   this.config.writeKey = (str ? String(str) : null);
   return this;
 };
-Keen.Client.prototype.writePath = function(str){
+Keen.prototype.writePath = function(str){
   if (!arguments.length) {
     if (!this.projectId()) {
-      this.emit('error', 'Keen.Client is missing a projectId property');
+      this.emit('error', 'Keen is missing a projectId property');
       return;
     }
     return this.config.writePath ? this.config.writePath : ('/3.0/projects/' + this.projectId() + '/events');
@@ -406,10 +399,10 @@ Keen.Client.prototype.writePath = function(str){
   this.config.writePath = (str ? String(str) : null);
   return this;
 };
-Keen.Client.prototype.url = function(path, data){
+Keen.prototype.url = function(path, data){
   var url;
   if (!this.projectId()) {
-    this.emit('error', 'Keen.Client is missing a projectId property');
+    this.emit('error', 'Keen is missing a projectId property');
     return;
   }
   url = this.config.protocol + '://' + this.config.host + '/3.0/projects/' + this.projectId();
@@ -421,6 +414,21 @@ Keen.Client.prototype.url = function(path, data){
   }
   return url;
 };
+Emitter(Keen);
+Emitter(Keen.prototype);
+extend(Keen, {
+  debug: false,
+  enabled: true,
+  loaded: false,
+  helpers: {},
+  utils: {},
+  version: '0.0.1'
+});
+Keen.log = function(message) {
+  if (Keen.debug && typeof console == 'object') {
+    console.log('[Keen IO]', message);
+  }
+};
 function serialize(data){
   var query = [];
   each(data, function(value, key){
@@ -431,15 +439,8 @@ function serialize(data){
   });
   return query.join('&');
 }
-Emitter(Keen);
-Emitter(Keen.Client.prototype);
-Keen.log = function(message) {
-  if (Keen.debug && typeof console == 'object') {
-    console.log('[Keen IO]', message);
-  }
-};
 module.exports = Keen;
-},{"./utils/each":15,"./utils/queue":19,"JSON2":22,"component-emitter":24}],11:[function(require,module,exports){
+},{"./utils/each":15,"./utils/extend":16,"./utils/queue":19,"JSON2":22,"component-emitter":24}],11:[function(require,module,exports){
 var Keen = require('./index');
 var base64 = require('./utils/base64');
 var each = require('./utils/each');
@@ -447,7 +448,9 @@ var extendEvents = require('./extend-events');
 var JSON2 = require('JSON2');
 module.exports = {
   'recordEvent': recordEvent,
-  'recordEvents': recordEvents
+  'recordEvents': recordEvents,
+  'addEvent': recordEvent,
+  'addEvents': recordEvents
 };
 function recordEvent(eventCollection, eventBody, callback){
   var url, data, cb, getRequestUrl, extendedEventBody;

@@ -7,7 +7,7 @@ describe('.extendEvent(s) methods', function() {
   beforeEach(function() {
     Keen.enabled = false;
     Keen.debug = true;
-    this.client = new Keen.Client({
+    this.client = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey,
       requestType: 'xhr',
