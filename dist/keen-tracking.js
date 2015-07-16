@@ -30,6 +30,7 @@
     'extendEvent': require('./extend-events').extendEvent,
     'extendEvents': require('./extend-events').extendEvents
   });
+  Keen.prototype.trackExternalLink = trackExternalLink;
   extend(Keen.helpers, {
     'getBrowserProfile'  : require('./helpers/getBrowserProfile'),
     'getDatetimeIndex'   : require('./helpers/getDatetimeIndex'),
@@ -77,11 +78,11 @@
       return;
     }
     if(document.readyState == null && document.addEventListener){
-      document.addEventListener("DOMContentLoaded", function DOMContentLoaded(){
-        document.removeEventListener("DOMContentLoaded", DOMContentLoaded, false);
-        document.readyState = "complete";
+      document.addEventListener('DOMContentLoaded', function DOMContentLoaded(){
+        document.removeEventListener('DOMContentLoaded', DOMContentLoaded, false);
+        document.readyState = 'complete';
       }, false);
-      document.readyState = "loading";
+      document.readyState = 'loading';
     }
     testDom(fn);
   }
@@ -94,7 +95,58 @@
     else {
       fn();
     }
-  };
+  }
+  function trackExternalLink(jsEvent, eventCollection, payload, timeout, timeoutCallback){
+    this.emit('error', 'This method has been deprecated. Check out DOM listeners: https://github.com/keen/keen-tracking.js#listeners');
+    var evt = jsEvent,
+      target = (evt.currentTarget) ? evt.currentTarget : (evt.srcElement || evt.target),
+      timer = timeout || 500,
+      triggered = false,
+      targetAttr = '',
+      callback,
+      win;
+    if (target.getAttribute !== void 0) {
+      targetAttr = target.getAttribute('target');
+    } else if (target.target) {
+      targetAttr = target.target;
+    }
+    if ((targetAttr == '_blank' || targetAttr == 'blank') && !evt.metaKey) {
+      win = window.open('about:blank');
+      win.document.location = target.href;
+    }
+    if (target.nodeName === 'A') {
+      callback = function(){
+        if(!triggered && !evt.metaKey && (targetAttr !== '_blank' && targetAttr !== 'blank')){
+          triggered = true;
+          window.location = target.href;
+        }
+      };
+    }
+    else if (target.nodeName === 'FORM') {
+      callback = function(){
+        if(!triggered){
+          triggered = true;
+          target.submit();
+        }
+      };
+    }
+    else {
+      this.trigger('error', '#trackExternalLink method not attached to an <a> or <form> DOM element');
+    }
+    if (timeoutCallback) {
+      callback = function(){
+        if(!triggered){
+          triggered = true;
+          timeoutCallback();
+        }
+      };
+    }
+    this.recordEvent(eventCollection, payload, callback);
+    setTimeout(callback, timer);
+    if (!evt.metaKey) {
+      return false;
+    }
+  }
   if (!Array.prototype.indexOf){
     Array.prototype.indexOf = function(elt /*, from*/) {
       var len = this.length >>> 0;
@@ -343,12 +395,12 @@ var extend = require('./utils/extend');
 var queue = require('./utils/queue');
 var root = this;
 var previousKeen = root.Keen;
-var Keen = function(cfg){
-  this.configure(cfg);
+var Keen = function(config){
+  this.configure(config);
   Keen.emit('client', this);
 };
-Keen.prototype.configure = function(cfg){
-  var self = this, config = cfg || {}, defaultProtocol;
+Keen.prototype.configure = function(config){
+  var self = this, defaultProtocol;
   if (config['host']) {
     config['host'].replace(/.*?:\/\//g, '');
   }
@@ -356,14 +408,12 @@ Keen.prototype.configure = function(cfg){
   if ('undefined' !== typeof document && document.all) {
     config['protocol'] = (document.location.protocol !== 'https:') ? 'http' : defaultProtocol;
   }
-  self.config = {
-    projectId   : config.projectId,
-    writeKey    : config.writeKey,
-    host        : config['host']     || 'api.keen.io',
-    protocol    : config['protocol'] || defaultProtocol,
-    requestType : config.requestType || 'jsonp',
-    writePath   : config.writePath,
+  self.config = self.config || {
+    host: 'api.keen.io',
+    protocol: defaultProtocol,
+    requestType: 'jsonp'
   };
+  extend(self.config, config || {});
   self.queue = queue();
   self.queue.on('flush', function(){
     self.recordDeferredEvents();
@@ -414,6 +464,15 @@ Keen.prototype.url = function(path, data){
   }
   return url;
 };
+Keen.prototype.setGlobalProperties = function(props){
+  this.emit('error', 'This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
+  if (!props || typeof props !== 'function') {
+    this.emit('error', 'Invalid value for global properties: ' + props);
+    return;
+  }
+  this.config.globalProperties = props;
+  return this;
+};
 Emitter(Keen);
 Emitter(Keen.prototype);
 extend(Keen, {
@@ -444,18 +503,19 @@ module.exports = Keen;
 var Keen = require('./index');
 var base64 = require('./utils/base64');
 var each = require('./utils/each');
+var extend = require('./utils/extend');
 var extendEvents = require('./extend-events');
 var JSON2 = require('JSON2');
 module.exports = {
   'recordEvent': recordEvent,
   'recordEvents': recordEvents,
-  'addEvent': recordEvent,
-  'addEvents': recordEvents
+  'addEvent': addEvent,
+  'addEvents': addEvents
 };
 function recordEvent(eventCollection, eventBody, callback){
   var url, data, cb, getRequestUrl, extendedEventBody;
   url = this.url('/events/' + encodeURIComponent(eventCollection));
-  data = eventBody || {};
+  data = {};
   cb = callback;
   if (!checkValidation.call(this, cb)) {
     return;
@@ -464,6 +524,10 @@ function recordEvent(eventCollection, eventBody, callback){
     handleValidationError.call(this, 'Collection name must be a string.', cb);
     return;
   }
+  if (this.config.globalProperties) {
+    data = this.config.globalProperties(eventCollection);
+  }
+  extend(data, eventBody);
   extendedEventBody = {};
   extendEvents.getExtendedEventBody(extendedEventBody, this.extensions.events);
   extendEvents.getExtendedEventBody(extendedEventBody, this.extensions.collections[eventCollection]);
@@ -516,6 +580,14 @@ function recordEvents(eventsHash, callback){
     handleValidationError.call(this, 'Incorrect arguments provided to #recordEvents method', cb);
     return;
   }
+  if (this.config.globalProperties) {
+    each(eventsHash, function(events, collection){
+      each(events, function(body, index){
+        var modified = self.config.globalProperties(collection);
+        eventsHash[collection][index] = extend(modified, body);
+      });
+    });
+  }
   extendedEventsHash = {};
   each(eventsHash, function(eventList, eventCollection){
     extendedEventsHash[eventCollection] = extendedEventsHash[eventCollection] || [];
@@ -539,6 +611,14 @@ function recordEvents(eventsHash, callback){
   }
   callback = cb = null;
   return this;
+}
+function addEvent(){
+  this.emit('error', 'This method has been deprecated. Check out #recordEvent: https://github.com/keen/keen-tracking.js#record-a-single-event');
+  recordEvent.apply(this, arguments);
+}
+function addEvents(){
+  this.emit('error', 'This method has been deprecated. Check out #recordEvents: https://github.com/keen/keen-tracking.js#record-multiple-events');
+  recordEvents.apply(this, arguments);
 }
 function checkValidation(callback){
   var cb = callback;
@@ -703,7 +783,7 @@ function sendBeacon(url, callback){
   };
   img.src = url + '&c=clv1';
 }
-},{"./extend-events":3,"./index":10,"./utils/base64":12,"./utils/each":15,"JSON2":22}],12:[function(require,module,exports){
+},{"./extend-events":3,"./index":10,"./utils/base64":12,"./utils/each":15,"./utils/extend":16,"JSON2":22}],12:[function(require,module,exports){
 module.exports = {
   map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
   encode: function (n) {
