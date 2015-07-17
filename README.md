@@ -84,7 +84,7 @@ Copy/paste this snippet of JavaScript above the </head> tag of your page to load
 // Loads the library asynchronously from any URI
 !function(name,path,ctx){
   var latest,prev=name!=='Keen'&&window.Keen?window.Keen:false;ctx[name]=ctx[name]||{ready:function(fn){var h=document.getElementsByTagName('head')[0],s=document.createElement('script'),w=window,loaded;s.onload=s.onerror=s.onreadystatechange=function(){if((s.readyState&&!(/^c|loade/.test(s.readyState)))||loaded){return}s.onload=s.onreadystatechange=null;loaded=1;latest=w.Keen;if(prev){w.Keen=prev}else{try{delete w.Keen}catch(e){w.Keen=void 0}}ctx[name]=latest;ctx[name].ready(fn)};s.async=1;s.src=path;h.parentNode.insertBefore(s,h)}}
-}('Keen','./keen-tracking.js',this);
+}('Keen','https://d26b395fwzu5fz.cloudfront.net/keen-tracking-0.0.1.min.js',this);
 
 // Executes when the library is loaded and ready
 Keen.ready(function(){
@@ -107,7 +107,7 @@ Keen.ready(function(){
 
 This loader works a little differently than all the previous versions we have released.
 
-Notice the last line of the asynchronous loader snippet: `}('Keen', './keen-tracking.js', this);`. These three arguments can be overwritten, allowing you to customize important details about the installation process.
+Notice the last line of the asynchronous loader snippet: `}('Keen', './filename.js', this);`. These three arguments can be overwritten, allowing you to customize important details about the installation process.
 
 1. **Namespace:** Define a custom namespace for the library, instead of the default `Keen`, like `MyCustomKeenBuild`.
 2. **Script URI:** Define the location of the script to load. You don't need to rely on our CDN. You can use your own, or host the file locally.
