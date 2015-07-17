@@ -308,9 +308,6 @@ function getDateTimeIndex(input){
 }
 module.exports = getDateTimeIndex;
 },{}],6:[function(require,module,exports){
-/*!
-  via: http://stackoverflow.com/a/16742828/2511985
-  */
 function getDomNodePath(el){
   if (!el.nodeName) return '';
   var stack = [];

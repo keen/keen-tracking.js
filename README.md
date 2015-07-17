@@ -1,8 +1,8 @@
 # keen-tracking.js [![Build Status](https://travis-ci.org/keen/keen-tracking.js.svg?branch=master)](https://travis-ci.org/keen/keen-tracking.js)
 
-**Important:** This project is not yet released. We're building this in public, in open collaboration with our customers and community members!
+This project contains the most advanced event tracking functionality available for [Keen IO](https://keen.io), and will soon be built directly into [keen-js](https://github.com/keen/keen-js), replacing and upgrading the current tracking capabilities of that library.
 
-Why are we splitting this functionality out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases bring more heartache than nirvana.
+Why did we split this library out of [keen-js](https://github.com/keen/keen-js)? Tracking and Analysis+Dataviz are two distinct workflows and it rarely makes sense for these tools to be duct-taped together. Monolithic codebases bring more heartache than Nirvana.
 
 **Upgrading from keen-js?** [Read this](#upgrading-from-keen-js).
 
@@ -43,6 +43,7 @@ There are several new methods and name changes from keen-js, but fear not! We ha
 
 Please avoid using these deprecated methods, as they will eventually get axed. Deprecation messages will be visible in the developer console if [debugging](#debugging) is enabled.
 
+<a name="additional-resources"></a>
 **Additional resources:**
 
 * [Example setup](#example-setup) demonstrates how to put all of this to work
@@ -50,6 +51,7 @@ Please avoid using these deprecated methods, as they will eventually get axed. D
 * [Contributing](#contributing) is awesome and we hope you do!
 * [Custom builds](#custom-builds) are encouraged as well - have fun!
 
+<a name="support"></a>
 **Support:**
 
 Need a hand with something? Shoot us an email at [contact@keen.io](mailto:contact@keen.io). We're always happy to help, or just hear what you're building! Here are a few other resources worth checking out:
@@ -856,7 +858,7 @@ This is an open source project and we love involvement from the community! Hit u
 
 ## Custom builds
 
-Run the following commands to get this dev project set up locally:
+Run the following commands to install and build this project:
 
 ```ssh
 # Clone the repo
