@@ -19,7 +19,7 @@ describe('.recordEvent(s) methods (browser)', function() {
         host: config.host,
         protocol: config.protocol
       });
-      this.postUrl = this.client.url('/events/' + config.collection);
+      this.postUrl = this.client.url('/' + config.collection);
 
       // Hack for IE9 request shim
       if ('undefined' !== typeof document && document.all) {
@@ -52,7 +52,7 @@ describe('.recordEvent(s) methods (browser)', function() {
 
       it('should send a GET request to the API using XHR', function() {
         var count = 0;
-        this.server.respondWith( 'GET', this.postUrl, [ 200, { 'Content-Type': 'application/json'}, config.responses['success'] ] );
+        this.server.respondWith( 'POST', this.postUrl, [ 200, { 'Content-Type': 'application/json'}, config.responses['success'] ] );
         this.client.recordEvent(config.collection, config.properties, function(err, res){
           count++;
           assert.isNull(err);
@@ -69,7 +69,7 @@ describe('.recordEvent(s) methods (browser)', function() {
           // assert.deepEqual(err, JSON.parse(config.responses['error']));
           assert.isNull(res);
         });
-        this.server.respondWith( 'GET', this.postUrl, [ 500, { 'Content-Type': 'application/json'}, config.responses['error'] ] );
+        this.server.respondWith( 'POST', this.postUrl, [ 500, { 'Content-Type': 'application/json'}, config.responses['error'] ] );
         this.server.respond();
       });
 
