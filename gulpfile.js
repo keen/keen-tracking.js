@@ -32,7 +32,7 @@ gulp.task('build', ['build:browserify', 'build:minify', 'test:browserify']);
 gulp.task('build:browserify', function() {
   var b = browserify({
     entries: './lib/browser.js',
-    debug: true
+    debug: false
   });
   return b.bundle()
     .pipe(source( pkg.name + '.js'))
@@ -155,7 +155,7 @@ gulp.task('test:sauce', ['build', 'test:browserify'], function(){
   });
 });
 
-gulp.task('deploy', ['test:mocha', 'test:phantom'], function() {
+gulp.task('deploy', ['test:mocha', 'test:karma'], function() {
 
   if (!process.env.AWS_KEY || !process.env.AWS_SECRET) {
     throw 'AWS credentials are required!';
@@ -164,7 +164,7 @@ gulp.task('deploy', ['test:mocha', 'test:phantom'], function() {
   var publisher = aws.create({
     key: process.env.AWS_KEY,
     secret: process.env.AWS_SECRET,
-    bucket: pkg.name
+    bucket: 'keen-js' // pkg.name
   });
 
   var cacheLife = (1000 * 60 * 60 * 24 * 365); // 1 year
@@ -183,7 +183,8 @@ gulp.task('deploy', ['test:mocha', 'test:phantom'], function() {
     ])
     .pipe(rename(function(path) {
       path.dirname += '/';
-      path.basename += '-' + pkg['version'];
+      var name = pkg.name + '-' + pkg.version;
+      path.basename = (path.basename.indexOf('min') > -1) ? name + '.min' : name;
     }))
     .pipe(aws.gzip())
     .pipe(publisher.publish(headers, { force: true }))

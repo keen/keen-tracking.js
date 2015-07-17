@@ -3,6 +3,7 @@
 .git*
 *.log
 *.md
+.awspublish-keen-js
 
 bower.json
 gulpfile.js
