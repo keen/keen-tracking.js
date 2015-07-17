@@ -1,43 +1,47 @@
-# Thanks for Contributing!
+# We <3 Contributions!
 
-Run the following commands to get this project set up locally.
+This is an open source project and we love involvement from the community! Hit us up with pull requests and issues. The more contributions the better!
+
+**TODO:**
+
+* [ ] Validate `Keen.utils.listener()` form submit binding on IE8
+* [ ] Expose `A` element click event and `FORM` element submit event timeouts (default: 500ms)
+
+Run the following commands to install and build this project:
 
 ```ssh
 # Clone the repo
 $ git clone https://github.com/keen/keen-tracking.js.git && cd keen-tracking.js
 
-# Install common dependencies
+# Install project dependencies
 $ npm install
 
-# Install browser dependencies for tests
-$ bower install
-
-# Build and launch project site
+# Build project with gulp
+# npm install -g gulp
 $ gulp
 
-# Build and launch with tests
+# Build and launch to view test results
 $ gulp with-tests
-
-# View test results at http://localhost:9000
+$ open http://localhost:9000
 ```
 
 ## Pull Request Template
 
 Please use the PR template below.
 
-```markdown
-#### What does this PR do?
+*****
 
-* awesome stuff
-* really cool feature
-* refactor X
+**What does this PR do?**
 
-#### How should this be manually tested? (if appropriate)
+* added the coolest feature ever
+* refactored [Dustin's](https://github.com/dustinlarimer) gross code
+* added tests (ahhh!! thank you!!)
+
+**How should this be tested? (if appropriate)**
 
 * run `gulp with-tests`
-* tests run at `localhost:9999/`
+* confirm tests pass
 
-#### Are there any related issues open?
+**Are there any related issues open?**
 
-#### Screenshots (if appropriate)
-```
+*****

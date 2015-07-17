@@ -12,6 +12,10 @@
   "ignore": [
     "**/.*",
     "gulpfile.js",
+    "karma.conf.js",
+    ".travis.yml",
+    ".gitignore",
+    ".npmignore",
     "lib",
     "node_modules",
     "test"
