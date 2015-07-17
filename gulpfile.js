@@ -1,7 +1,8 @@
 var gulp = require('gulp'),
     pkg = require('./package.json');
 
-var browserify = require('browserify'),
+var aws = require('gulp-awspublish'),
+    browserify = require('browserify'),
     buffer = require('vinyl-buffer'),
     compress = require('gulp-yuicompressor')
     connect = require('gulp-connect'),
@@ -152,6 +153,43 @@ gulp.task('test:sauce', ['build', 'test:browserify'], function(){
     singleRun  : true,
     action     : 'run'
   });
+});
+
+gulp.task('deploy', ['test:mocha', 'test:phantom'], function() {
+
+  if (!process.env.AWS_KEY || !process.env.AWS_SECRET) {
+    throw 'AWS credentials are required!';
+  }
+
+  var publisher = aws.create({
+    key: process.env.AWS_KEY,
+    secret: process.env.AWS_SECRET,
+    bucket: pkg.name
+  });
+
+  var cacheLife = (1000 * 60 * 60 * 24 * 365); // 1 year
+
+  var headers = {
+    // Cache policy (1000 * 60 * 60 * 1) // 1 hour
+    // 'Cache-Control': 'max-age=3600000, public',
+    // 'Expires': new Date(Date.now() + 3600000).toUTCString()
+    'Cache-Control': 'max-age=' + cacheLife + ', public',
+    'Expires': new Date(Date.now() + cacheLife).toUTCString()
+  };
+
+  return gulp.src([
+      './dist/keen-tracking.js',
+      './dist/keen-tracking.min.js'
+    ])
+    .pipe(rename(function(path) {
+      path.dirname += '/';
+      path.basename += '-' + pkg['version'];
+    }))
+    .pipe(aws.gzip())
+    .pipe(publisher.publish(headers, { force: true }))
+    .pipe(publisher.cache())
+    .pipe(aws.reporter());
+
 });
 
 gulp.task('watch-with-tests', function() {
