@@ -452,7 +452,7 @@ Keen.prototype.url = function(path, data){
     this.emit('error', 'Keen is missing a projectId property');
     return;
   }
-  url = this.config.protocol + '://' + this.config.host + '/3.0/projects/' + this.projectId();
+  url = this.config.protocol + '://' + this.config.host;
   if (path) {
     url += path;
   }
@@ -510,8 +510,8 @@ module.exports = {
   'addEvents': addEvents
 };
 function recordEvent(eventCollection, eventBody, callback){
-  var url, data, cb, getRequestUrl, extendedEventBody;
-  url = this.url('/events/' + encodeURIComponent(eventCollection));
+  var url, data, cb, getRequestUrl, getRequestUrlOkLength, extendedEventBody;
+  url = this.url(this.writePath() + encodeURIComponent(eventCollection));
   data = {};
   cb = callback;
   if (!checkValidation.call(this, cb)) {
@@ -534,36 +534,41 @@ function recordEvent(eventCollection, eventBody, callback){
     handleValidationError.call(this, 'Keen.enabled is set to false.', cb);
     return false;
   }
-  getRequestUrl = this.url('/events/' + encodeURIComponent(eventCollection), {
+  getRequestUrl = this.url(this.writePath() + '/' + encodeURIComponent(eventCollection), {
     api_key  : this.writeKey(),
     data     : base64.encode(JSON2.stringify(extendedEventBody)),
     modified : new Date().getTime()
   });
-  if (getRequestUrl.length < getUrlMaxLength()) {
-    switch (this.config.requestType) {
-      case 'xhr':
-        sendXhr.call(this, 'GET', getRequestUrl, null, null, cb);
-        break;
-      case 'beacon':
+  getRequestUrlOkLength = getRequestUrl.length < getUrlMaxLength();
+  switch (this.config.requestType) {
+    case 'xhr':
+      sendXhr.call(this, 'POST', url, extendedEventBody, cb);
+      break;
+    case 'beacon':
+      if (getRequestUrlOkLength) {
         sendBeacon.call(this, getRequestUrl, cb);
-        break;
-      default:
+      }
+      else {
+        attemptPostXhr.call(this, url, extendedEventBody,
+            'Beacon URL length exceeds current browser limit, and XHR is not supported.', cb)
+      }
+      break;
+    default:
+      if (getRequestUrlOkLength) {
         sendJSONp.call(this, getRequestUrl, cb);
-        break;
-    }
-  }
-  else if (getXhr()) {
-    sendXhr.call(this, 'POST', url, extendedEventBody, cb);
-  }
-  else {
-    handleValidationError.call(this, 'URL length exceeds current browser limit, and XHR is not supported.');
+      }
+      else {
+        attemptPostXhr.call(this, url, extendedEventBody,
+            'JSONp URL length exceeds current browser limit, and XHR is not supported.', cb)
+      }
+      break;
   }
   callback = cb = null;
   return this;
 }
 function recordEvents(eventsHash, callback){
   var self = this, url, cb, extendedEventsHash;
-  url = this.url('/events');
+  url = this.url(this.writePath());
   cb = callback;
   callback = null;
   if (!checkValidation.call(this, cb)) {
@@ -645,6 +650,14 @@ function getUrlMaxLength(){
     }
   }
   return 16000;
+}
+function attemptPostXhr(url, data, noXhrError, callback) {
+  if (getXhr()) {
+    sendXhr.call(this, 'POST', url, data, callback);
+  }
+  else {
+    handleValidationError.call(this, noXhrError);
+  }
 }
 function sendXhr(method, url, data, callback){
   var self = this;

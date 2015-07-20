@@ -46,7 +46,7 @@ describe('Keen (browser)', function() {
   describe('#url', function(){
 
     beforeEach(function() {
-      this.matchUrlBase = this.client.config.protocol + '://' + this.client.config.host + this.client.writePath();
+      this.matchUrlBase = this.client.config.protocol + '://' + this.client.config.host;
 
       // Hack for IE9 request shim
       if ('undefined' !== typeof document && document.all) {

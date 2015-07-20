@@ -19,7 +19,7 @@ describe('.recordEvent(s) methods (browser)', function() {
         host: config.host,
         protocol: config.protocol
       });
-      this.postUrl = this.client.url('/' + config.collection);
+      this.postUrl = this.client.url(this.client.writePath() + '/' + config.collection);
 
       // Hack for IE9 request shim
       if ('undefined' !== typeof document && document.all) {
@@ -147,7 +147,7 @@ describe('.recordEvent(s) methods (browser)', function() {
     describe('via XHR/CORS (if supported)', function(){
 
       beforeEach(function() {
-        this.postUrl = this.client.url('/events');
+        this.postUrl = this.client.url(this.client.writePath());
         this.server = sinon.fakeServer.create();
       });
 
@@ -157,7 +157,7 @@ describe('.recordEvent(s) methods (browser)', function() {
 
       if ('withCredentials' in new XMLHttpRequest()) {
 
-        it('should send a GET request to the API using XHR', function() {
+        it('should send a POST request to the API using XHR', function() {
           var count = 0;
           this.client.recordEvents(this.batchData, function(err, res){
             count++;
@@ -166,7 +166,7 @@ describe('.recordEvent(s) methods (browser)', function() {
             assert.isNull(res);
             assert.equal(count, 1);
           });
-          this.server.respondWith( 'GET', this.postUrl, [ 200, { 'Content-Type': 'application/json'}, config.responses['success'] ] );
+          this.server.respondWith( 'POST', this.postUrl, [ 200, { 'Content-Type': 'application/json'}, config.responses['success'] ] );
           this.server.respond();
         });
 
@@ -179,7 +179,7 @@ describe('.recordEvent(s) methods (browser)', function() {
             assert.isNull(res);
             assert.equal(count, 1);
           });
-          this.server.respondWith( 'GET', this.postUrl, [ 500, { 'Content-Type': 'application/json'}, config.responses['error'] ] );
+          this.server.respondWith( 'POST', this.postUrl, [ 500, { 'Content-Type': 'application/json'}, config.responses['error'] ] );
           this.server.respond();
         });
 
