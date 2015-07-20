@@ -9,16 +9,19 @@ describe('Keen (browser)', function() {
   beforeEach(function() {
     this.client = new Keen({
       projectId: config.projectId,
-      writeKey: config.writeKey,
-      protocol: config.protocol,
-      host: config.host
+      writeKey: config.writeKey
     });
-    this.matchUrlBase = config.protocol + '://' + config.host + '/3.0/projects/' + config.projectId;
+  });
 
-    // Hack for IE9 request shim
-    if ('undefined' !== typeof document && document.all) {
-      this.matchUrlBase = this.matchUrlBase.replace('https', 'http');
-    }
+  describe('client defaults', function() {
+
+    it('should have sensible values', function(){
+      assert.equal(this.client.config.host, 'api.keen.io');
+      //assert.equal(this.client.config.protocol, 'https');
+      assert.equal(this.client.config.requestType, 'jsonp');
+      assert.equal(this.client.writePath(), '/3.0/projects/' + config.projectId + '/events');
+    });
+
   });
 
   describe('#configure', function(){
@@ -28,17 +31,28 @@ describe('Keen (browser)', function() {
         projectId: '123',
         writeKey: '456',
         protocol: 'http',
-        host: 'none'
+        host: 'none',
+        writePath: '/customWritePath'
       });
       assert.equal(this.client.projectId(), '123');
       assert.equal(this.client.writeKey(), '456');
-      assert.equal(this.client.config.protocol, 'http');
       assert.equal(this.client.config.host, 'none');
+      assert.equal(this.client.config.protocol, 'http');
+      assert.equal(this.client.writePath(), '/customWritePath');
     });
 
   });
 
   describe('#url', function(){
+
+    beforeEach(function() {
+      this.matchUrlBase = this.client.config.protocol + '://' + this.client.config.host + this.client.writePath();
+
+      // Hack for IE9 request shim
+      if ('undefined' !== typeof document && document.all) {
+        this.matchUrlBase = this.matchUrlBase.replace('https', 'http');
+      }
+    });
 
     it('should return a base URL when no arguments are provided', function(){
       assert.equal(this.client.url(), this.matchUrlBase);
