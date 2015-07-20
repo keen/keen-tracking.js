@@ -509,11 +509,12 @@ module.exports = {
   'addEvent': addEvent,
   'addEvents': addEvents
 };
-function recordEvent(eventCollection, eventBody, callback){
-  var url, data, cb, getRequestUrl, getRequestUrlOkLength, extendedEventBody;
-  url = this.url(this.writePath() + encodeURIComponent(eventCollection));
+function recordEvent(eventCollection, eventBody, callback, async){
+  var url, data, cb, getRequestUrl, getRequestUrlOkLength, extendedEventBody, isAsync;
+  url = this.url(this.writePath() + '/' + encodeURIComponent(eventCollection));
   data = {};
   cb = callback;
+  isAsync = ('boolean' === typeof async) ? async : true;
   if (!checkValidation.call(this, cb)) {
     return;
   }
@@ -540,28 +541,35 @@ function recordEvent(eventCollection, eventBody, callback){
     modified : new Date().getTime()
   });
   getRequestUrlOkLength = getRequestUrl.length < getUrlMaxLength();
-  switch (this.config.requestType) {
-    case 'xhr':
-      sendXhr.call(this, 'POST', url, extendedEventBody, cb);
-      break;
-    case 'beacon':
-      if (getRequestUrlOkLength) {
-        sendBeacon.call(this, getRequestUrl, cb);
-      }
-      else {
-        attemptPostXhr.call(this, url, extendedEventBody,
-            'Beacon URL length exceeds current browser limit, and XHR is not supported.', cb)
-      }
-      break;
-    default:
-      if (getRequestUrlOkLength) {
-        sendJSONp.call(this, getRequestUrl, cb);
-      }
-      else {
-        attemptPostXhr.call(this, url, extendedEventBody,
-            'JSONp URL length exceeds current browser limit, and XHR is not supported.', cb)
-      }
-      break;
+  if (isAsync) {
+    switch (this.config.requestType) {
+      case 'xhr':
+        sendXhr.call(this, 'POST', url, extendedEventBody, cb);
+        break;
+      case 'beacon':
+        if (getRequestUrlOkLength) {
+          sendBeacon.call(this, getRequestUrl, cb);
+        }
+        else {
+          attemptPostXhr.call(this, url, extendedEventBody,
+              'Beacon URL length exceeds current browser limit, and XHR is not supported.', cb)
+        }
+        break;
+      default:
+        if (getRequestUrlOkLength) {
+          sendJSONp.call(this, getRequestUrl, cb);
+        }
+        else {
+          attemptPostXhr.call(this, url, extendedEventBody,
+              'JSONp URL length exceeds current browser limit, and XHR is not supported.', cb)
+        }
+        break;
+    }
+  }
+  else {
+    if (getRequestUrlOkLength) {
+      sendSynchronousXhr(getRequestUrl);
+    }
   }
   callback = cb = null;
   return this;
@@ -700,6 +708,13 @@ function sendXhr(method, url, data, callback){
   }
   if (method.toUpperCase() === 'POST') {
     xhr.send(payload);
+  }
+}
+function sendSynchronousXhr(url){
+  var xhr = getXhr();
+  if (xhr) {
+    xhr.open('GET', url, false);
+    xhr.send(null);
   }
 }
 function getXhr() {

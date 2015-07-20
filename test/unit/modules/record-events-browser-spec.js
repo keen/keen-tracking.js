@@ -19,7 +19,7 @@ describe('.recordEvent(s) methods (browser)', function() {
         host: config.host,
         protocol: config.protocol
       });
-      this.postUrl = this.client.url(this.client.writePath() + '/' + config.collection);
+      this.postUrl = this.client.url(this.client.writePath() + '/' + encodeURIComponent(config.collection));
 
       // Hack for IE9 request shim
       if ('undefined' !== typeof document && document.all) {
@@ -50,26 +50,33 @@ describe('.recordEvent(s) methods (browser)', function() {
 
     describe('via XHR/CORS (if supported)', function(){
 
-      it('should send a GET request to the API using XHR', function() {
+      it('should send a POST request to the API using XHR', function() {
         var count = 0;
-        this.server.respondWith( 'POST', this.postUrl, [ 200, { 'Content-Type': 'application/json'}, config.responses['success'] ] );
+        var headers = {
+          'Content-Type': 'application/json'
+        };
+        this.server.respondWith( 'POST', this.postUrl, [ 201, headers, config.responses['success'] ] );
         this.client.recordEvent(config.collection, config.properties, function(err, res){
           count++;
           assert.isNull(err);
           assert.isNotNull(res);
           assert.equal(count, 1);
-          // assert.deepEqual(res, JSON.parse(config.responses['success']));
         });
         this.server.respond();
       });
 
       it('should call the error callback on error', function() {
+        var count = 0;
+        var headers = {
+          'Content-Type': 'application/json'
+        };
         this.client.recordEvent(config.collection, config.properties, function(err, res){
+          count++;
           assert.isNotNull(err);
-          // assert.deepEqual(err, JSON.parse(config.responses['error']));
           assert.isNull(res);
+          assert.equal(count, 1);
         });
-        this.server.respondWith( 'POST', this.postUrl, [ 500, { 'Content-Type': 'application/json'}, config.responses['error'] ] );
+        this.server.respondWith( 'POST', this.postUrl, [ 500, headers, config.responses['error'] ] );
         this.server.respond();
       });
 
@@ -162,11 +169,11 @@ describe('.recordEvent(s) methods (browser)', function() {
           this.client.recordEvents(this.batchData, function(err, res){
             count++;
             // assert.deepEqual(err, JSON.parse(config.responses['error']));
-            assert.isNotNull(err);
-            assert.isNull(res);
+            assert.isNull(err);
+            assert.isNotNull(res);
             assert.equal(count, 1);
           });
-          this.server.respondWith( 'POST', this.postUrl, [ 200, { 'Content-Type': 'application/json'}, config.responses['success'] ] );
+          this.server.respondWith( 'POST', this.postUrl, [ 201, { 'Content-Type': 'application/json'}, config.responses['success'] ] );
           this.server.respond();
         });
 

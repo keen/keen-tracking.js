@@ -95,6 +95,7 @@ describe('Keen.utils.listener', function() {
     this.timeout(5000);
 
     function callback(e){
+      e.preventDefault();
       // Keen.log('click a#listen-to-anchor');
       done();
       return false;
