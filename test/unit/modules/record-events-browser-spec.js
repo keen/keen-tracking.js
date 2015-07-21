@@ -21,7 +21,7 @@ describe('.recordEvent(s) methods (browser)', function() {
       this.postUrl = this.client.url(this.client.writePath() + '/' + encodeURIComponent(config.collection));
 
       // Hack for IE9 request shim
-      if ('undefined' !== typeof document && document.all) {
+      if (('undefined' !== typeof document && document.all) || window.mochaPhantomJS) {
         this.postUrl = this.postUrl.replace('https', 'http');
       }
     });
