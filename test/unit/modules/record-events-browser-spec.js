@@ -18,12 +18,6 @@ describe('.recordEvent(s) methods (browser)', function() {
         host: config.host,
         protocol: config.protocol
       });
-      this.postUrl = this.client.url(this.client.writePath() + '/' + encodeURIComponent(config.collection));
-
-      // Hack for IE9 request shim
-      if ('undefined' !== typeof document && document.all) {
-        this.postUrl = this.postUrl.replace('https', 'http');
-      }
     });
 
     it('should not send events if set to \'false\'', function(){
@@ -83,8 +77,9 @@ describe('.recordEvent(s) methods (browser)', function() {
         writeKey: config.writeKey,
         requestType: 'xhr',
         host: config.host,
-        protocol: config.protocol 
+        protocol: config.protocol
       });
+
       this.batchData = {
         'pageview': [
           { page: 'this one' },
@@ -127,10 +122,6 @@ describe('.recordEvent(s) methods (browser)', function() {
     });
 
     describe('via XHR/CORS (if supported)', function(){
-
-      beforeEach(function() {
-        this.postUrl = this.client.url(this.client.writePath());
-      });
 
       it('should send a POST request to the API using XHR', function() {
         var count = 0;
