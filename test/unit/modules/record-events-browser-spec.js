@@ -51,6 +51,7 @@ describe('.recordEvent(s) methods (browser)', function() {
         };
         this.client.recordEvent(config.collection + '_succeed', config.properties, function(err, res){
           count++;
+          console.log(err, res);
           assert.isNull(err);
           assert.isNotNull(res);
           assert.equal(count, 1);
