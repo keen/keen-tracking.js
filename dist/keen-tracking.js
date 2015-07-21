@@ -24,6 +24,8 @@
   var each = require('./utils/each');
   var extend = require('./utils/extend');
   var listener = require('./utils/listener')(Keen);
+  var root = 'undefined' !== typeof window ? window : this;
+  var previousKeen = root.Keen;
   extend(Keen.prototype, require('./record-events-browser'));
   extend(Keen.prototype, require('./defer-events'));
   extend(Keen.prototype, {
@@ -390,8 +392,6 @@ var JSON2 = require('JSON2');
 var each = require('./utils/each');
 var extend = require('./utils/extend');
 var queue = require('./utils/queue');
-var root = this;
-var previousKeen = root.Keen;
 var Keen = function(config){
   this.configure(config);
   Keen.emit('client', this);
