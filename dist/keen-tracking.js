@@ -24,6 +24,8 @@
   var each = require('./utils/each');
   var extend = require('./utils/extend');
   var listener = require('./utils/listener')(Keen);
+  var root = 'undefined' !== typeof window ? window : this;
+  var previousKeen = root.Keen;
   extend(Keen.prototype, require('./record-events-browser'));
   extend(Keen.prototype, require('./defer-events'));
   extend(Keen.prototype, {
@@ -390,8 +392,6 @@ var JSON2 = require('JSON2');
 var each = require('./utils/each');
 var extend = require('./utils/extend');
 var queue = require('./utils/queue');
-var root = this;
-var previousKeen = root.Keen;
 var Keen = function(config){
   this.configure(config);
   Keen.emit('client', this);
@@ -452,7 +452,7 @@ Keen.prototype.url = function(path, data){
     this.emit('error', 'Keen is missing a projectId property');
     return;
   }
-  url = this.config.protocol + '://' + this.config.host + '/3.0/projects/' + this.projectId();
+  url = this.config.protocol + '://' + this.config.host;
   if (path) {
     url += path;
   }
@@ -478,7 +478,7 @@ extend(Keen, {
   loaded: false,
   helpers: {},
   utils: {},
-  version: '0.0.1'
+  version: '0.0.2'
 });
 Keen.log = function(message) {
   if (Keen.debug && typeof console == 'object') {
@@ -509,11 +509,12 @@ module.exports = {
   'addEvent': addEvent,
   'addEvents': addEvents
 };
-function recordEvent(eventCollection, eventBody, callback){
-  var url, data, cb, getRequestUrl, extendedEventBody;
-  url = this.url('/events/' + encodeURIComponent(eventCollection));
+function recordEvent(eventCollection, eventBody, callback, async){
+  var url, data, cb, getRequestUrl, getRequestUrlOkLength, extendedEventBody, isAsync;
+  url = this.url(this.writePath() + '/' + encodeURIComponent(eventCollection));
   data = {};
   cb = callback;
+  isAsync = ('boolean' === typeof async) ? async : true;
   if (!checkValidation.call(this, cb)) {
     return;
   }
@@ -534,36 +535,48 @@ function recordEvent(eventCollection, eventBody, callback){
     handleValidationError.call(this, 'Keen.enabled is set to false.', cb);
     return false;
   }
-  getRequestUrl = this.url('/events/' + encodeURIComponent(eventCollection), {
+  getRequestUrl = this.url(this.writePath() + '/' + encodeURIComponent(eventCollection), {
     api_key  : this.writeKey(),
     data     : base64.encode(JSON2.stringify(extendedEventBody)),
     modified : new Date().getTime()
   });
-  if (getRequestUrl.length < getUrlMaxLength()) {
+  getRequestUrlOkLength = getRequestUrl.length < getUrlMaxLength();
+  if (isAsync) {
     switch (this.config.requestType) {
       case 'xhr':
-        sendXhr.call(this, 'GET', getRequestUrl, null, null, cb);
+        sendXhr.call(this, 'POST', url, extendedEventBody, cb);
         break;
       case 'beacon':
-        sendBeacon.call(this, getRequestUrl, cb);
+        if (getRequestUrlOkLength) {
+          sendBeacon.call(this, getRequestUrl, cb);
+        }
+        else {
+          attemptPostXhr.call(this, url, extendedEventBody,
+              'Beacon URL length exceeds current browser limit, and XHR is not supported.', cb)
+        }
         break;
       default:
-        sendJSONp.call(this, getRequestUrl, cb);
+        if (getRequestUrlOkLength) {
+          sendJSONp.call(this, getRequestUrl, cb);
+        }
+        else {
+          attemptPostXhr.call(this, url, extendedEventBody,
+              'JSONp URL length exceeds current browser limit, and XHR is not supported.', cb)
+        }
         break;
     }
   }
-  else if (getXhr()) {
-    sendXhr.call(this, 'POST', url, extendedEventBody, cb);
-  }
   else {
-    handleValidationError.call(this, 'URL length exceeds current browser limit, and XHR is not supported.');
+    if (getRequestUrlOkLength) {
+      sendSynchronousXhr(getRequestUrl);
+    }
   }
   callback = cb = null;
   return this;
 }
 function recordEvents(eventsHash, callback){
   var self = this, url, cb, extendedEventsHash;
-  url = this.url('/events');
+  url = this.url(this.writePath());
   cb = callback;
   callback = null;
   if (!checkValidation.call(this, cb)) {
@@ -646,6 +659,14 @@ function getUrlMaxLength(){
   }
   return 16000;
 }
+function attemptPostXhr(url, data, noXhrError, callback) {
+  if (getXhr()) {
+    sendXhr.call(this, 'POST', url, data, callback);
+  }
+  else {
+    handleValidationError.call(this, noXhrError);
+  }
+}
 function sendXhr(method, url, data, callback){
   var self = this;
   var payload;
@@ -687,6 +708,13 @@ function sendXhr(method, url, data, callback){
   }
   if (method.toUpperCase() === 'POST') {
     xhr.send(payload);
+  }
+}
+function sendSynchronousXhr(url){
+  var xhr = getXhr();
+  if (xhr) {
+    xhr.open('GET', url, false);
+    xhr.send(null);
   }
 }
 function getXhr() {

@@ -36,12 +36,21 @@ If you haven't done so already, login to Keen IO to create a project. The Projec
 <a name="upgrading-from-keen-js"></a>
 **Upgrading from keen-js:**
 
-There are several new methods and name changes from keen-js, but fear not! We have included shims and legacy methods to make this library fully backward-compatible with the core functionality of keen-js. Here are the methods and their replacement methods:
+There are several new methods and name changes from keen-js, but fear not! We have included shims and legacy methods to make this library fully backward-compatible with the core functionality of keen-js, aside from one breaking change to the `client.url()` method (detailed below). Here are the methods and their replacement methods:
 * `addEvent` and `addEvents` are now [`recordEvent`](#record-a-single-event) and [`recordEvents`](#record-multiple-events)
 * `setGlobalProperties` is now handled by the [`extendEvents`](#extend-events) methods
 * `trackExternalLinks` is now handled by the [DOM listeners](#listeners) utility (browser-only)
 
 Please avoid using these deprecated methods, as they will eventually get axed. Deprecation messages will be visible in the developer console if [debugging](#debugging) is enabled.
+
+**Breaking change from keen-js:** the previous implementation of `client.url()` automatically included `https://api.keen.io/3.0/projects/PROJECT_ID` + a `path` argument ('/events/whatever'), which severely limited its value. It now only returns `https://api.keen.io` + the path argument.
+
+You can also now pass in an object to append a serialized query string to the result, like so:
+
+```javascript
+var url = client.url('/3.0/projects', { key: 'value'} );
+// https://api.keen.io/3.0/projects?key=value
+```
 
 <a name="additional-resources"></a>
 **Additional resources:**

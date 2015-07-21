@@ -210,19 +210,6 @@ gulp.task('test:cli', ['test:mocha', 'test:phantom']);
 
 function getCustomLaunchers(){
   return {
-    sl_ios: {
-      base: 'SauceLabs',
-      browserName: 'iPhone',
-      platform: 'OS X 10.9',
-      version: '8.1'
-    },
-    sl_android: {
-      base: 'SauceLabs',
-      browserName: 'android',
-      platform: 'Linux',
-      version: '4.4'
-    },
-
     sl_ie_11: {
       base: 'SauceLabs',
       browserName: 'internet explorer',
@@ -246,12 +233,26 @@ function getCustomLaunchers(){
       browserName: 'internet explorer',
       platform: 'Windows XP',
       version: '8'
-    }
+    },
+
     // sl_ie_7: {
     //   base: 'SauceLabs',
     //   browserName: 'internet explorer',
     //   platform: 'Windows XP',
     //   version: '7'
     // }
+
+    sl_ios: {
+      base: 'SauceLabs',
+      browserName: 'iPhone',
+      platform: 'OS X 10.10',
+      version: '8.1'
+    },
+    sl_android: {
+      base: 'SauceLabs',
+      browserName: 'android',
+      platform: 'Linux',
+      version: '4.4'
+    }
   };
 }
