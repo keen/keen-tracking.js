@@ -771,7 +771,7 @@ client.extendEvents(function(){
 	return {
 		page: {
 			title: document.title,
-			url: document.href
+			url: document.location.href
 			// info: {} (add-on)
 		},
 		referrer: {
