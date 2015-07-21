@@ -21,7 +21,7 @@ describe('.recordEvent(s) methods (browser)', function() {
       this.postUrl = this.client.url(this.client.writePath() + '/' + encodeURIComponent(config.collection));
 
       // Hack for IE9 request shim
-      if (('undefined' !== typeof document && document.all) || window.mochaPhantomJS) {
+      if ('undefined' !== typeof document && document.all) {
         this.postUrl = this.postUrl.replace('https', 'http');
       }
     });
@@ -78,7 +78,13 @@ describe('.recordEvent(s) methods (browser)', function() {
   describe('.recordEvents', function() {
 
     beforeEach(function() {
-      this.client = new Keen({ projectId: config.projectId, writeKey: config.writeKey, requestType: 'xhr', host: config.host });
+      this.client = new Keen({
+        projectId: config.projectId,
+        writeKey: config.writeKey,
+        requestType: 'xhr',
+        host: config.host,
+        protocol: config.protocol 
+      });
       this.batchData = {
         'pageview': [
           { page: 'this one' },
