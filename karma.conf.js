@@ -1,7 +1,7 @@
 module.exports = function(config) {
   config.set({
     browsers: [ 'Chrome', 'Firefox', 'Safari' ],
-    frameworks: [ 'mocha', 'sinon' ],
+    frameworks: [ 'mocha' ],
     files: [
       // Include requirejs presence
       // './test/vendor/require.js',

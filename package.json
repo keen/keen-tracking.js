@@ -1,6 +1,6 @@
 {
   "name": "keen-tracking",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "browser": "lib/browser.js",
   "repository": {
@@ -53,13 +53,11 @@
     "karma-requirejs": "^0.2.2",
     "karma-safari-launcher": "^0.1.1",
     "karma-sauce-launcher": "^0.2.11",
-    "karma-sinon": "^1.0.4",
     "mocha": "^2.2.5",
     "moment": "^2.10.3",
     "nock": "^2.0.1",
     "phantomjs": "^1.9.17",
     "proclaim": "^3.3.0",
-    "sinon": "^1.14.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }

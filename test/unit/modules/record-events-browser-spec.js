@@ -1,6 +1,5 @@
 var assert = require('proclaim');
 var JSON2 = require('JSON2');
-var sinon = require('sinon');
 
 var Keen = require('../../../lib/browser');
 var config = require('../helpers/client-config');
@@ -25,11 +24,6 @@ describe('.recordEvent(s) methods (browser)', function() {
       if ('undefined' !== typeof document && document.all) {
         this.postUrl = this.postUrl.replace('https', 'http');
       }
-      this.server = sinon.fakeServer.create();
-    });
-
-    afterEach(function(){
-      this.server.restore();
     });
 
     it('should not send events if set to \'false\'', function(){
@@ -55,54 +49,29 @@ describe('.recordEvent(s) methods (browser)', function() {
         var headers = {
           'Content-Type': 'application/json'
         };
-        this.server.respondWith( 'POST', this.postUrl, [ 201, headers, config.responses['success'] ] );
-        this.client.recordEvent(config.collection, config.properties, function(err, res){
+        this.client.recordEvent(config.collection + '_succeed', config.properties, function(err, res){
           count++;
           assert.isNull(err);
           assert.isNotNull(res);
           assert.equal(count, 1);
         });
-        this.server.respond();
       });
 
-      it('should call the error callback on error', function() {
+      it('should fire the callback on error', function() {
         var count = 0;
         var headers = {
           'Content-Type': 'application/json'
         };
-        this.client.recordEvent(config.collection, config.properties, function(err, res){
+        this.client.config.writeKey = 'nope';
+        this.client.recordEvent(config.collection + '_error', config.properties, function(err, res){
           count++;
           assert.isNotNull(err);
           assert.isNull(res);
           assert.equal(count, 1);
         });
-        this.server.respondWith( 'POST', this.postUrl, [ 500, headers, config.responses['error'] ] );
-        this.server.respond();
       });
 
     });
-
-    // describe('via JSONP to a fake server', function(){
-    //   beforeEach(function() {
-    //     this.client = new Keen({
-    //       projectId: config.projectId,
-    //       writeKey: config.writeKey,
-    //       host: config.host,
-    //       requestType: 'jsonp'
-    //     });
-    //   });
-    // });
-    //
-    // describe('via Image Beacon to a fake server', function(){
-    //   beforeEach(function() {
-    //     this.client = new Keen({
-    //       projectId: config.projectId,
-    //       writeKey: config.writeKey,
-    //       host: config.host,
-    //       requestType: 'beacon'
-    //     });
-    //   });
-    // });
 
   });
 
@@ -155,42 +124,28 @@ describe('.recordEvent(s) methods (browser)', function() {
 
       beforeEach(function() {
         this.postUrl = this.client.url(this.client.writePath());
-        this.server = sinon.fakeServer.create();
       });
 
-      afterEach(function(){
-        this.server.restore();
+      it('should send a POST request to the API using XHR', function() {
+        var count = 0;
+        this.client.recordEvents(this.batchData, function(err, res){
+          count++;
+          assert.isNull(err);
+          assert.isNotNull(res);
+          assert.equal(count, 1);
+        });
       });
 
-      if ('withCredentials' in new XMLHttpRequest()) {
-
-        it('should send a POST request to the API using XHR', function() {
-          var count = 0;
-          this.client.recordEvents(this.batchData, function(err, res){
-            count++;
-            // assert.deepEqual(err, JSON.parse(config.responses['error']));
-            assert.isNull(err);
-            assert.isNotNull(res);
-            assert.equal(count, 1);
-          });
-          this.server.respondWith( 'POST', this.postUrl, [ 201, { 'Content-Type': 'application/json'}, config.responses['success'] ] );
-          this.server.respond();
+      it('should call the error callback on error', function() {
+        var count = 0;
+        this.client.config.writeKey = 'nope';
+        this.client.recordEvents(this.batchData, function(err, res){
+          count++;
+          assert.isNotNull(err);
+          assert.isNull(res);
+          assert.equal(count, 1);
         });
-
-        it('should call the error callback on error', function() {
-          var count = 0;
-          this.client.recordEvents(this.batchData, function(err, res){
-            count++;
-            // assert.deepEqual(err, JSON.parse(config.responses['error']));
-            assert.isNotNull(err);
-            assert.isNull(res);
-            assert.equal(count, 1);
-          });
-          this.server.respondWith( 'POST', this.postUrl, [ 500, { 'Content-Type': 'application/json'}, config.responses['error'] ] );
-          this.server.respond();
-        });
-
-      }
+      });
 
     });
 

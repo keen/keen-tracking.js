@@ -95,7 +95,6 @@ describe('Keen.utils.listener', function() {
     this.timeout(5000);
 
     function callback(e){
-      e.preventDefault();
       // Keen.log('click a#listen-to-anchor');
       done();
       return false;
@@ -113,7 +112,7 @@ describe('Keen.utils.listener', function() {
         a.click();
       }
       else if(document.createEvent) {
-        ev = document.createEvent('MouseEvent');
+        ev = document.createEvent("MouseEvent");
         ev.initMouseEvent("click",
             true /* bubble */, true /* cancelable */,
             window, null,
@@ -128,11 +127,15 @@ describe('Keen.utils.listener', function() {
 
   it('should set and handle `<a>` click events set with .once("click", fn)', function(done){
     var listen = listener('a#listen-to-anchor-once');
-    listen.once('click', function(e){
+    listen.once('click', callback);
+
+    this.timeout(5000);
+
+    function callback(e){
       // Keen.log('click a#listen-to-anchor-once');
       done();
       return false;
-    });
+    }
 
     setTimeout(function(){
       var ev, a;
@@ -158,10 +161,6 @@ describe('Keen.utils.listener', function() {
       }
     }, 1000);
   });
-
-  function createEvent(){
-
-  }
 
   it('should remove specific handlers with .off("click", fn)', function(){
     var listenToThis = listener('body a#on-off');
