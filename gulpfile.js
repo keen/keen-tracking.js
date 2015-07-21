@@ -118,7 +118,11 @@ gulp.task('test:mocha', ['test:browserify'], function () {
 
 gulp.task('test:phantom', ['build', 'test:browserify'], function () {
   return gulp.src('./test/unit/index.html')
-    .pipe(mochaPhantomJS())
+    .pipe(mochaPhantomJS({
+      phantomjs: {
+        ignoreSslErrors: true
+      }
+    }))
     .once('error', function () {
       process.exit(1);
     })
