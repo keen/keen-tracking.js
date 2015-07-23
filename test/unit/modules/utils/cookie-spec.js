@@ -35,8 +35,17 @@ describe('Keen.utils.cookie', function() {
 
   describe('.get', function(){
 
-    it('should return an empty object', function(){
+    it('should return an empty object when no key name is provided and no data has been stored', function(){
       assert.deepEqual(this.cookie.get(), {});
+    });
+
+    it('should return stored key', function(){
+      this.cookie.set('mocha-test-getter', 123);
+      assert.deepEqual(this.cookie.get('mocha-test-getter'), 123);
+    });
+
+    it('should return null when requesting an unstored key', function(){
+      assert.isNull(this.cookie.get('mocha-null'));
     });
 
   });
@@ -99,6 +108,14 @@ describe('Keen.utils.cookie', function() {
     it('should get options for cookies', function(){
       this.cookie.options({ secure: false });
       assert.deepEqual(this.cookie.options(), { secure: false });
+    });
+
+  });
+
+  describe('.enabled', function(){
+
+    it('should return a boolean value', function(){
+      assert.isBoolean(this.cookie.enabled());
     });
 
   });

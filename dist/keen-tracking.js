@@ -873,11 +873,19 @@ function cookie(str){
   return this;
 }
 cookie.prototype.get = function(str){
-  var data = Cookies.get(this.config.key) ? JSON2.parse( decodeURIComponent(Cookies.get(this.config.key)) ) : {};
-  return (str && typeof data[str] !== 'undefined') ? data[str] : data;
+  var data = {};
+  if (Cookies.get(this.config.key)) {
+    data = JSON2.parse( decodeURIComponent(Cookies.get(this.config.key)) );
+  }
+  if (str) {
+    return ('undefined' !== typeof data[str]) ? data[str] : null;
+  }
+  else {
+    return data;
+  }
 };
 cookie.prototype.set = function(str, value){
-  if (!arguments.length) return this;
+  if (!arguments.length || !this.enabled()) return this;
   if ('string' === typeof str && arguments.length === 2) {
     this.data[str] = value ? value : null;
   }
@@ -896,6 +904,9 @@ cookie.prototype.options = function(obj){
   if (!arguments.length) return this.config.options;
   this.config.options = (typeof obj === 'object') ? obj : {};
   return this;
+};
+cookie.prototype.enabled = function(){
+  return Cookies.enabled;
 };
 },{"./extend":16,"JSON2":22,"cookies-js":25}],14:[function(require,module,exports){
 var JSON2 = require('JSON2');

@@ -431,32 +431,39 @@ client.recordEvent('pageviews');
 `Keen.utils.cookie(key)` finds or creates a cookie with a given key (string) value, and returns an object with several methods for managing the data contained in that cookie.
 
 ```javascript
-var session = Keen.utils.cookie('visitor-stats');
+var sessionCookie = Keen.utils.cookie('visitor-stats');
 
 // Set a single value
-session.set('user_id', '222323843234');
+sessionCookie.set('user_id', '222323843234');
 
 // Set multiple values
-session.set({
+sessionCookie.set({
 	user_id: '222323843234',
 	first_referrer: 'https://github.com/keen/keen-tracking.js'
 })
 
-// Get a single value
-session.get('user_id'); // '222323843234'
+// Get a single value, if it exists
+sessionCookie.get('user_id');
+// Returns '222323843234' or null
 
 // Get all values
-session.get(); // { user_id: '222323843234' }
+sessionCookie.get();
+// Returns { user_id: '222323843234' }
+
+sessionCookie.enabled();
+// Returns true or false
 
 // Expire the cookie
-session.expire();
+sessionCookie.expire();
 
 // Set options on the cookie
-session.options({
+sessionCookie.options({
 	domain: '...',
 	secure: true
 });
 ```
+
+**Important:** Some browsers do not allow cookies to be created or accessed from a local file (`file://dev/index.html`), which can make local development and testing problematic. `.set()` and `.get()` methods will only function correctly when cookies are enabled.
 
 This utility uses [ScottHamper's](https://github.com/ScottHamper) wonderfully simple [Cookies.js](https://github.com/ScottHamper/Cookies) library. Read all options for Cookies.js [here](https://github.com/ScottHamper/Cookies#cookiessetkey-value--options).
 
