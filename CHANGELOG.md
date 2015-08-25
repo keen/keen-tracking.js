@@ -6,6 +6,13 @@
 **BREAKING:**
 -->
 
+<a name="0.0.5></a>
+# 0.0.5
+
+**FIXED:**
+* Define noop func when no callback is provided (fixes #34)
+
+
 <a name="0.0.4></a>
 # 0.0.4
 

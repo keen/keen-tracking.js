@@ -478,7 +478,7 @@ extend(Keen, {
   loaded: false,
   helpers: {},
   utils: {},
-  version: '0.0.4'
+  version: '0.0.5'
 });
 Keen.log = function(message) {
   if (Keen.debug && typeof console == 'object') {
