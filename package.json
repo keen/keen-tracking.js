@@ -1,7 +1,7 @@
 {
   "name": "keen-tracking",
-  "version": "0.0.3",
-  "main": "index.js",
+  "version": "0.0.4",
+  "main": "lib/server.js",
   "browser": "lib/browser.js",
   "repository": {
     "type": "git",
@@ -23,9 +23,9 @@
     "node": "0.10.x"
   },
   "dependencies": {
-    "JSON2": "^0.1.0",
     "component-emitter": "^1.2.0",
-    "cookies-js": "^1.2.1"
+    "cookies-js": "^1.2.1",
+    "json3": "^3.3.2"
   },
   "devDependencies": {
     "browserify": "^9.0.8",

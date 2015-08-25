@@ -1,5 +1,5 @@
 var assert = require('proclaim');
-var JSON2 = require('JSON2');
+var json = require('../../../lib/utils/json');
 
 var Keen = require('../../../lib/browser');
 var config = require('../helpers/client-config');
@@ -90,7 +90,7 @@ describe('.recordEvent(s) methods (browser)', function() {
           { page: 'same again' }
         ]
       };
-      this.batchResponse = JSON2.stringify({
+      this.batchResponse = json.stringify({
         click: [
           { 'success': true }
         ],

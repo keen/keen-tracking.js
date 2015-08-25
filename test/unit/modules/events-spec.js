@@ -1,5 +1,5 @@
 var assert = require('proclaim');
-var Keen = require('../../../index');
+var Keen = require('../../../lib/server');
 
 describe('Keen event emitter system', function(){
 

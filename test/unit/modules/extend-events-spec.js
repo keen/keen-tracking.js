@@ -1,5 +1,5 @@
 var assert = require('proclaim');
-var Keen = require('../../../index');
+var Keen = require('../../../lib/server');
 var config = require('../helpers/client-config');
 
 describe('.extendEvent(s) methods', function() {

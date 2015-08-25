@@ -1,7 +1,20 @@
 <!--
-<a name="unreleased"></a>
-# Unreleased
+<a name="{version}"></a>
+# {version}
+**FIXED:**
+**NEW:**
+**BREAKING:**
 -->
+
+<a name="0.0.4></a>
+# 0.0.4
+
+**FIXED:**
+* Fix reference to proper lib file for server usage (#32)
+
+**NEW:**
+* Upgrade internal JSON dep to JSON3 (#33)
+
 
 <a name="0.0.3"></a>
 # 0.0.3
