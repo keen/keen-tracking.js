@@ -86,7 +86,7 @@ $ npm install keen-tracking
 $ bower install keen-tracking
 ```
 
-Copy/paste this snippet of JavaScript above the </head> tag of your page to load the tracking library asynchronously. This technique sneaks the library into your page without significantly impacting page load speed.
+Copy/paste this snippet of JavaScript above the `</head>` tag of your page to load the tracking library asynchronously. This technique sneaks the library into your page without significantly impacting page load speed.
 
 ```html
 <script>
