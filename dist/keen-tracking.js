@@ -392,77 +392,124 @@ var json = require('./utils/json');
 var each = require('./utils/each');
 var extend = require('./utils/extend');
 var queue = require('./utils/queue');
-var Keen = function(config){
+var K = function(config){
+  var self = this;
   this.configure(config);
-  Keen.emit('client', this);
-};
-Keen.prototype.configure = function(config){
-  var self = this, defaultProtocol;
-  if (config['host']) {
-    config['host'].replace(/.*?:\/\//g, '');
-  }
-  defaultProtocol = 'https';
-  if ('undefined' !== typeof document && document.all) {
-    config['protocol'] = (document.location.protocol !== 'https:') ? 'http' : defaultProtocol;
-  }
-  self.config = self.config || {
-    host: 'api.keen.io',
-    protocol: defaultProtocol,
-    requestType: 'jsonp'
-  };
-  extend(self.config, config || {});
-  self.queue = queue();
-  self.queue.on('flush', function(){
-    self.recordDeferredEvents();
-  });
-  self.extensions = {
+  extend(this.config.resources, K.resources);
+  this.extensions = {
     events: [],
     collections: {}
   };
-  if (Keen.debug) {
-    self.on('error', Keen.log);
+  this.queue = queue();
+  this.queue.on('flush', function(){
+    self.recordDeferredEvents();
+  });
+  if (K.debug) {
+    this.on('error', K.log);
   }
-  self.emit('ready');
+  this.emit('ready');
+  K.emit('client', this);
+};
+Emitter(K);
+Emitter(K.prototype);
+extend(K, {
+  debug: false,
+  enabled: true,
+  loaded: false,
+  helpers: {},
+  resources: {
+    'base'      : '{protocol}://{host}',
+    'version'   : '{protocol}://{host}/3.0',
+    'projects'  : '{protocol}://{host}/3.0/projects',
+    'projectId' : '{protocol}://{host}/3.0/projects/{projectId}',
+    'events'    : '{protocol}://{host}/3.0/projects/{projectId}/events'
+  },
+  utils: {},
+  version: '0.0.5'
+});
+K.log = function(message) {
+  if (K.debug && typeof console == 'object') {
+    console.log('[Keen IO]', message);
+  }
+};
+K.prototype.configure = function(cfg){
+  var self = this,
+      config = cfg || {},
+      defaultProtocol = 'https';
+  this.config = this.config || {
+    projectId: undefined,
+    writeKey: undefined,
+    host: 'api.keen.io',
+    protocol: defaultProtocol,
+    requestType: 'jsonp',
+    resources: {},
+    writePath: undefined
+  };
+  if ('undefined' !== typeof document && document.all) {
+    config['protocol'] = (document.location.protocol !== 'https:') ? 'http' : defaultProtocol;
+  }
+  if (config['host']) {
+    config['host'].replace(/.*?:\/\//g, '');
+  }
+  extend(this.config, config);
   return self;
 };
-Keen.prototype.projectId = function(str){
+K.prototype.projectId = function(str){
   if (!arguments.length) return this.config.projectId;
   this.config.projectId = (str ? String(str) : null);
   return this;
 };
-Keen.prototype.writeKey = function(str){
+K.prototype.writeKey = function(str){
   if (!arguments.length) return this.config.writeKey;
   this.config.writeKey = (str ? String(str) : null);
   return this;
 };
-Keen.prototype.writePath = function(str){
-  if (!arguments.length) {
-    if (!this.projectId()) {
-      this.emit('error', 'Keen is missing a projectId property');
-      return;
-    }
-    return this.config.writePath ? this.config.writePath : ('/3.0/projects/' + this.projectId() + '/events');
+K.prototype.resources = function(obj){
+  if (!arguments.length) return this.config.resources;
+  var self = this;
+  if (typeof obj === 'object') {
+    each(obj, function(value, key){
+      self.config.resources[key] = (value ? value : null);
+    });
   }
-  this.config.writePath = (str ? String(str) : null);
   return this;
 };
-Keen.prototype.url = function(path, data){
-  var url;
-  if (!this.projectId()) {
-    this.emit('error', 'Keen is missing a projectId property');
-    return;
+K.prototype.url = function(name){
+  var args = Array.prototype.slice.call(arguments, 1),
+      baseUrl = K.resources.base || '{protocol}://{host}',
+      path;
+  if (name && typeof name === 'string') {
+    if (this.config.resources[name]) {
+      path = this.config.resources[name];
+    }
+    else {
+      path = baseUrl + name;
+    }
   }
-  url = this.config.protocol + '://' + this.config.host;
-  if (path) {
-    url += path;
+  else {
+    path = baseUrl;
   }
-  if (data) {
-    url += '?' + serialize(data);
-  }
-  return url;
+  each(this.config, function(value, key){
+    if (typeof value !== 'object') {
+      path = path.replace('{' + key + '}', value);
+    }
+  });
+  each(args, function(arg, i){
+    if (typeof arg === 'string') {
+      path += '/' + arg;
+    }
+    else if (typeof arg === 'object') {
+      path += '?';
+      each(arg, function(value, key){
+        path += key + '=' + value + '&';
+      });
+      path = path.slice(0, -1);
+    }
+  });
+  return path;
 };
-Keen.prototype.setGlobalProperties = function(props){
-  this.emit('error', 'This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
+K.prototype.setGlobalProperties = function(props){
+  K.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
   if (!props || typeof props !== 'function') {
     this.emit('error', 'Invalid value for global properties: ' + props);
     return;
@@ -470,20 +517,15 @@ Keen.prototype.setGlobalProperties = function(props){
   this.config.globalProperties = props;
   return this;
 };
-Emitter(Keen);
-Emitter(Keen.prototype);
-extend(Keen, {
-  debug: false,
-  enabled: true,
-  loaded: false,
-  helpers: {},
-  utils: {},
-  version: '0.0.5'
-});
-Keen.log = function(message) {
-  if (Keen.debug && typeof console == 'object') {
-    console.log('[Keen IO]', message);
+K.prototype.writePath = function(str){
+  K.log('This method has been deprecated. Use client.url(\'events\') instead.');
+  if (!arguments.length) return this.config.writePath;
+  if (!this.projectId()) {
+    this.emit('error', 'Client instance is missing a projectId property');
+    return this.config.writePath || ('/3.0/projects/' + this.projectId() + '/events');
   }
+  this.config.writePath = str ? String(str) : ('/3.0/projects/' + this.projectId() + '/events');
+  return this;
 };
 function serialize(data){
   var query = [];
@@ -495,7 +537,7 @@ function serialize(data){
   });
   return query.join('&');
 }
-module.exports = Keen;
+module.exports = K;
 },{"./utils/each":15,"./utils/extend":16,"./utils/json":17,"./utils/queue":20,"component-emitter":22}],11:[function(require,module,exports){
 var Keen = require('./index');
 var base64 = require('./utils/base64');
@@ -511,7 +553,7 @@ module.exports = {
 };
 function recordEvent(eventCollection, eventBody, callback, async){
   var url, data, cb, getRequestUrl, getRequestUrlOkLength, extendedEventBody, isAsync;
-  url = this.url(this.writePath() + '/' + encodeURIComponent(eventCollection));
+  url = this.url('events', encodeURIComponent(eventCollection));
   data = {};
   cb = callback;
   isAsync = ('boolean' === typeof async) ? async : true;
@@ -535,7 +577,7 @@ function recordEvent(eventCollection, eventBody, callback, async){
     handleValidationError.call(this, 'Keen.enabled is set to false.', cb);
     return false;
   }
-  getRequestUrl = this.url(this.writePath() + '/' + encodeURIComponent(eventCollection), {
+  getRequestUrl = this.url('events', encodeURIComponent(eventCollection), {
     api_key  : this.writeKey(),
     data     : base64.encode( json.stringify(extendedEventBody) ),
     modified : new Date().getTime()
@@ -576,7 +618,7 @@ function recordEvent(eventCollection, eventBody, callback, async){
 }
 function recordEvents(eventsHash, callback){
   var self = this, url, cb, extendedEventsHash;
-  url = this.url(this.writePath());
+  url = this.url('events');
   cb = callback;
   callback = null;
   if (!checkValidation.call(this, cb)) {
