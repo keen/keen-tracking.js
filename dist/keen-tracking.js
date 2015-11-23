@@ -425,7 +425,7 @@ extend(K, {
     'events'    : '{protocol}://{host}/3.0/projects/{projectId}/events'
   },
   utils: {},
-  version: '0.0.5'
+  version: '0.1.0'
 });
 K.log = function(message) {
   if (K.debug && typeof console == 'object') {
