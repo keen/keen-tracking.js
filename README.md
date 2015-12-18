@@ -100,7 +100,7 @@ client.url('new');
 <a name="support"></a>
 **Support:**
 
-Need a hand with something? Shoot us an email at [contact@keen.io](mailto:contact@keen.io). We're always happy to help, or just hear what you're building! Here are a few other resources worth checking out:
+Need a hand with something? Shoot us an email at [team@keen.io](mailto:team@keen.io). We're always happy to help, or just hear what you're building! Here are a few other resources worth checking out:
 
 * [API status](http://status.keen.io/)
 * [API reference](https://keen.io/docs/api)
