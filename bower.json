@@ -1,6 +1,6 @@
 {
   "name": "keen-tracking",
-  "main": "./dist/keen-tracking.min.js",
+  "main": "dist/keen-tracking.js",
   "homepage": "https://github.com/keen/keen-tracking.js",
   "authors": [
     "Dustin Larimer <dustin@keen.io>",
@@ -9,6 +9,17 @@
     "Alex Kleissner <alex@keen.io>"
   ],
   "license": "MIT",
+  "keywords": [
+    "analytics",
+    "metrics",
+    "tracking",
+    "logging",
+    "stats",
+    "pageviews",
+    "keen",
+    "keen.io",
+    "keen-io"
+  ],
   "ignore": [
     "**/.*",
     "gulpfile.js",
@@ -18,6 +29,13 @@
     ".npmignore",
     "lib",
     "node_modules",
-    "test"
+    "test",
+    "bower_components"
+  ],
+  "description": "Data Collection SDK for Keen IO",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
   ]
 }

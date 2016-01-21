@@ -6,6 +6,20 @@
 **BREAKING:**
 -->
 
+<a name="0.1.1></a>
+# 0.1.1
+
+**CHANGE:**
+* Publish to bower
+
+
+<a name="0.1.0></a>
+# 0.1.0
+
+**CHANGE:**
+* Reworked `.url()` method to use resource templates, with an internal collection that makes specific API URLS easy to request and customize.
+
+
 <a name="0.0.5></a>
 # 0.0.5
 
