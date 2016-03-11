@@ -1,39 +1,19 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
-;(function (f) {
-  if ('undefined' !== typeof define && define.amd && typeof define === 'function') {
-    define('keen-tracking', [], function(){ return f(); });
-  }
-  if (typeof exports === 'object' && typeof module !== 'undefined') {
-    module.exports = f();
-  }
-  var g = null;
-  if (typeof window !== 'undefined') {
-    g = window;
-  } else if (typeof global !== 'undefined') {
-    g = global;
-  } else if (typeof self !== 'undefined') {
-    g = self;
-  }
-  if (g) {
-    g.Keen = f();
-  }
-})(function() {
+(function(env) {
   'use strict';
-  var Keen = require('./');
+  var K = require('./');
   var each = require('./utils/each');
   var extend = require('./utils/extend');
-  var listener = require('./utils/listener')(Keen);
-  var root = 'undefined' !== typeof window ? window : this;
-  var previousKeen = root.Keen;
-  extend(Keen.prototype, require('./record-events-browser'));
-  extend(Keen.prototype, require('./defer-events'));
-  extend(Keen.prototype, {
+  var listener = require('./utils/listener')(K);
+  extend(K.prototype, require('./record-events-browser'));
+  extend(K.prototype, require('./defer-events'));
+  extend(K.prototype, {
     'extendEvent': require('./extend-events').extendEvent,
     'extendEvents': require('./extend-events').extendEvents
   });
-  Keen.prototype.trackExternalLink = trackExternalLink;
-  extend(Keen.helpers, {
+  K.prototype.trackExternalLink = trackExternalLink;
+  extend(K.helpers, {
     'getBrowserProfile'  : require('./helpers/getBrowserProfile'),
     'getDatetimeIndex'   : require('./helpers/getDatetimeIndex'),
     'getDomNodePath'     : require('./helpers/getDomNodePath'),
@@ -41,16 +21,13 @@
     'getUniqueId'        : require('./helpers/getUniqueId'),
     'getWindowProfile'   : require('./helpers/getWindowProfile')
   });
-  extend(Keen.utils, {
+  extend(K.utils, {
     'cookie'     : require('./utils/cookie'),
     'deepExtend' : require('./utils/deepExtend'),
-    'each'       : each,
-    'extend'     : extend,
     'listener'   : listener,
-    'parseParams': require('./utils/parseParams'),
     'timer'      : require('./utils/timer')
   });
-  Keen.listenTo = function(listenerHash){
+  K.listenTo = function(listenerHash){
     each(listenerHash, function(callback, key){
       var split = key.split(' ');
       var eventType = split[0],
@@ -58,24 +35,20 @@
       return listener(selector).on(eventType, callback);
     });
   };
-  Keen.noConflict = function(){
-    root.Keen = previousKeen;
-    return Keen;
-  };
-  Keen.ready = function(fn){
-    if (Keen.loaded) {
+  K.ready = function(fn){
+    if (K.loaded) {
       fn();
     }
     else {
-      Keen.once('ready', fn);
+      K.once('ready', fn);
     }
   };
   domReady(function(){
-    Keen.loaded = true;
-    Keen.emit('ready');
+    K.loaded = true;
+    K.emit('ready');
   });
   function domReady(fn){
-    if (Keen.loaded || 'undefined' === typeof document) {
+    if (K.loaded || 'undefined' === typeof document) {
       fn();
       return;
     }
@@ -166,11 +139,20 @@
       return -1;
     };
   }
-  module.exports = Keen;
-  return Keen;
-});
+  if (env) {
+    env.Keen = K;
+  }
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = K;
+  }
+  if (typeof define !== 'undefined' && define.amd) {
+    define('keen-tracking', [], function(){
+      return K;
+    });
+  }
+}).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./":10,"./defer-events":2,"./extend-events":3,"./helpers/getBrowserProfile":4,"./helpers/getDatetimeIndex":5,"./helpers/getDomNodePath":6,"./helpers/getScreenProfile":7,"./helpers/getUniqueId":8,"./helpers/getWindowProfile":9,"./record-events-browser":11,"./utils/cookie":13,"./utils/deepExtend":14,"./utils/each":15,"./utils/extend":16,"./utils/listener":18,"./utils/parseParams":19,"./utils/timer":21}],2:[function(require,module,exports){
+},{"./":10,"./defer-events":2,"./extend-events":3,"./helpers/getBrowserProfile":4,"./helpers/getDatetimeIndex":5,"./helpers/getDomNodePath":6,"./helpers/getScreenProfile":7,"./helpers/getUniqueId":8,"./helpers/getWindowProfile":9,"./record-events-browser":11,"./utils/cookie":13,"./utils/deepExtend":14,"./utils/each":15,"./utils/extend":16,"./utils/listener":18,"./utils/timer":20}],2:[function(require,module,exports){
 var Keen = require('./index');
 var each = require('./utils/each');
 var queue = require('./utils/queue');
@@ -238,7 +220,7 @@ function handleValidationError(message){
   var err = 'Event(s) not deferred: ' + message;
   this.emit('error', err);
 }
-},{"./index":10,"./utils/each":15,"./utils/queue":20}],3:[function(require,module,exports){
+},{"./index":10,"./utils/each":15,"./utils/queue":19}],3:[function(require,module,exports){
 var deepExtend = require('./utils/deepExtend');
 var each = require('./utils/each');
 module.exports = {
@@ -387,126 +369,27 @@ module.exports = getWindowProfile;
     document.documentElement.offsetHeight/Width is a workaround for IE8 and below, where window.innerHeight/Width is undefined
 */
 },{}],10:[function(require,module,exports){
-var Emitter = require('component-emitter');
-var json = require('./utils/json');
-var each = require('./utils/each');
-var extend = require('./utils/extend');
-var queue = require('./utils/queue');
-var K = function(config){
-  var self = this;
-  this.configure(config);
-  extend(this.config.resources, K.resources);
-  this.extensions = {
+var K = require('keen-core');
+var each = require('./utils/each'),
+    extend = require('./utils/extend'),
+    json = require('./utils/json'),
+    queue = require('./utils/queue');
+K.helpers = K.helpers || {};
+K.resources.events = '{protocol}://{host}/3.0/projects/{projectId}/events';
+K.on('client', function(client){
+  client.extensions = {
     events: [],
     collections: {}
   };
-  this.queue = queue();
-  this.queue.on('flush', function(){
-    self.recordDeferredEvents();
+  client.queue = queue();
+  client.queue.on('flush', function(){
+    client.recordDeferredEvents();
   });
-  if (K.debug) {
-    this.on('error', K.log);
-  }
-  this.emit('ready');
-  K.emit('client', this);
-};
-Emitter(K);
-Emitter(K.prototype);
-extend(K, {
-  debug: false,
-  enabled: true,
-  loaded: false,
-  helpers: {},
-  resources: {
-    'base'      : '{protocol}://{host}',
-    'version'   : '{protocol}://{host}/3.0',
-    'projects'  : '{protocol}://{host}/3.0/projects',
-    'projectId' : '{protocol}://{host}/3.0/projects/{projectId}',
-    'events'    : '{protocol}://{host}/3.0/projects/{projectId}/events'
-  },
-  utils: {},
-  version: '0.1.1'
 });
-K.log = function(message) {
-  if (K.debug && typeof console == 'object') {
-    console.log('[Keen IO]', message);
-  }
-};
-K.prototype.configure = function(cfg){
-  var self = this,
-      config = cfg || {},
-      defaultProtocol = 'https';
-  this.config = this.config || {
-    projectId: undefined,
-    writeKey: undefined,
-    host: 'api.keen.io',
-    protocol: defaultProtocol,
-    requestType: 'jsonp',
-    resources: {},
-    writePath: undefined
-  };
-  if ('undefined' !== typeof document && document.all) {
-    config['protocol'] = (document.location.protocol !== 'https:') ? 'http' : defaultProtocol;
-  }
-  if (config['host']) {
-    config['host'].replace(/.*?:\/\//g, '');
-  }
-  extend(this.config, config);
-  return self;
-};
-K.prototype.projectId = function(str){
-  if (!arguments.length) return this.config.projectId;
-  this.config.projectId = (str ? String(str) : null);
-  return this;
-};
 K.prototype.writeKey = function(str){
   if (!arguments.length) return this.config.writeKey;
   this.config.writeKey = (str ? String(str) : null);
   return this;
-};
-K.prototype.resources = function(obj){
-  if (!arguments.length) return this.config.resources;
-  var self = this;
-  if (typeof obj === 'object') {
-    each(obj, function(value, key){
-      self.config.resources[key] = (value ? value : null);
-    });
-  }
-  return this;
-};
-K.prototype.url = function(name){
-  var args = Array.prototype.slice.call(arguments, 1),
-      baseUrl = K.resources.base || '{protocol}://{host}',
-      path;
-  if (name && typeof name === 'string') {
-    if (this.config.resources[name]) {
-      path = this.config.resources[name];
-    }
-    else {
-      path = baseUrl + name;
-    }
-  }
-  else {
-    path = baseUrl;
-  }
-  each(this.config, function(value, key){
-    if (typeof value !== 'object') {
-      path = path.replace('{' + key + '}', value);
-    }
-  });
-  each(args, function(arg, i){
-    if (typeof arg === 'string') {
-      path += '/' + arg;
-    }
-    else if (typeof arg === 'object') {
-      path += '?';
-      each(arg, function(value, key){
-        path += key + '=' + value + '&';
-      });
-      path = path.slice(0, -1);
-    }
-  });
-  return path;
 };
 K.prototype.setGlobalProperties = function(props){
   K.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
@@ -517,28 +400,8 @@ K.prototype.setGlobalProperties = function(props){
   this.config.globalProperties = props;
   return this;
 };
-K.prototype.writePath = function(str){
-  K.log('This method has been deprecated. Use client.url(\'events\') instead.');
-  if (!arguments.length) return this.config.writePath;
-  if (!this.projectId()) {
-    this.emit('error', 'Client instance is missing a projectId property');
-    return this.config.writePath || ('/3.0/projects/' + this.projectId() + '/events');
-  }
-  this.config.writePath = str ? String(str) : ('/3.0/projects/' + this.projectId() + '/events');
-  return this;
-};
-function serialize(data){
-  var query = [];
-  each(data, function(value, key){
-    if ('string' !== typeof value) {
-      value = json.stringify(value);
-    }
-    query.push(key + '=' + encodeURIComponent(value));
-  });
-  return query.join('&');
-}
 module.exports = K;
-},{"./utils/each":15,"./utils/extend":16,"./utils/json":17,"./utils/queue":20,"component-emitter":22}],11:[function(require,module,exports){
+},{"./utils/each":15,"./utils/extend":16,"./utils/json":17,"./utils/queue":19,"keen-core":24}],11:[function(require,module,exports){
 var Keen = require('./index');
 var base64 = require('./utils/base64');
 var each = require('./utils/each');
@@ -851,53 +714,8 @@ function sendBeacon(url, callback){
   img.src = url + '&c=clv1';
 }
 },{"./extend-events":3,"./index":10,"./utils/base64":12,"./utils/each":15,"./utils/extend":16,"./utils/json":17}],12:[function(require,module,exports){
-module.exports = {
-  map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-  encode: function (n) {
-    "use strict";
-    var o = "", i = 0, m = this.map, i1, i2, i3, e1, e2, e3, e4;
-    n = this.utf8.encode(n);
-    while (i < n.length) {
-      i1 = n.charCodeAt(i++); i2 = n.charCodeAt(i++); i3 = n.charCodeAt(i++);
-      e1 = (i1 >> 2); e2 = (((i1 & 3) << 4) | (i2 >> 4)); e3 = (isNaN(i2) ? 64 : ((i2 & 15) << 2) | (i3 >> 6));
-      e4 = (isNaN(i2) || isNaN(i3)) ? 64 : i3 & 63;
-      o = o + m.charAt(e1) + m.charAt(e2) + m.charAt(e3) + m.charAt(e4);
-    } return o;
-  },
-  decode: function (n) {
-    "use strict";
-    var o = "", i = 0, m = this.map, cc = String.fromCharCode, e1, e2, e3, e4, c1, c2, c3;
-    n = n.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-    while (i < n.length) {
-      e1 = m.indexOf(n.charAt(i++)); e2 = m.indexOf(n.charAt(i++));
-      e3 = m.indexOf(n.charAt(i++)); e4 = m.indexOf(n.charAt(i++));
-      c1 = (e1 << 2) | (e2 >> 4); c2 = ((e2 & 15) << 4) | (e3 >> 2);
-      c3 = ((e3 & 3) << 6) | e4;
-      o = o + (cc(c1) + ((e3 != 64) ? cc(c2) : "")) + (((e4 != 64) ? cc(c3) : ""));
-    } return this.utf8.decode(o);
-  },
-  utf8: {
-    encode: function (n) {
-      "use strict";
-      var o = "", i = 0, cc = String.fromCharCode, c;
-      while (i < n.length) {
-        c = n.charCodeAt(i++); o = o + ((c < 128) ? cc(c) : ((c > 127) && (c < 2048)) ?
-        (cc((c >> 6) | 192) + cc((c & 63) | 128)) : (cc((c >> 12) | 224) + cc(((c >> 6) & 63) | 128) + cc((c & 63) | 128)));
-        } return o;
-    },
-    decode: function (n) {
-      "use strict";
-      var o = "", i = 0, cc = String.fromCharCode, c2, c;
-      while (i < n.length) {
-        c = n.charCodeAt(i);
-        o = o + ((c < 128) ? [cc(c), i++][0] : ((c > 191) && (c < 224)) ?
-        [cc(((c & 31) << 6) | ((c2 = n.charCodeAt(i + 1)) & 63)), (i += 2)][0] :
-        [cc(((c & 15) << 12) | (((c2 = n.charCodeAt(i + 1)) & 63) << 6) | ((c3 = n.charCodeAt(i + 2)) & 63)), (i += 3)][0]);
-      } return o;
-    }
-  }
-};
-},{}],13:[function(require,module,exports){
+module.exports = require('keen-core/lib/utils/base64');
+},{"keen-core/lib/utils/base64":25}],13:[function(require,module,exports){
 var Cookies = require('cookies-js');
 var json = require('./json');
 var extend = require('./extend');
@@ -950,7 +768,7 @@ cookie.prototype.options = function(obj){
 cookie.prototype.enabled = function(){
   return Cookies.enabled;
 };
-},{"./extend":16,"./json":17,"cookies-js":23}],14:[function(require,module,exports){
+},{"./extend":16,"./json":17,"cookies-js":22}],14:[function(require,module,exports){
 var json = require('./json');
 module.exports = deepExtend;
 function deepExtend(target){
@@ -979,42 +797,12 @@ function clone(input){
   return json.parse( json.stringify(input) );
 }
 },{"./json":17}],15:[function(require,module,exports){
-module.exports = each;
-function each(o, cb, s){
-  var n;
-  if (!o){
-    return 0;
-  }
-  s = !s ? o : s;
-  if (o instanceof Array){
-    for (n=0; n<o.length; n++) {
-      if (cb.call(s, o[n], n, o) === false){
-        return 0;
-      }
-    }
-  } else {
-    for (n in o){
-      if (o.hasOwnProperty(n)) {
-        if (cb.call(s, o[n], n, o) === false){
-          return 0;
-        }
-      }
-    }
-  }
-  return 1;
-}
-},{}],16:[function(require,module,exports){
-module.exports = function(target){
-  for (var i = 1; i < arguments.length; i++) {
-    for (var prop in arguments[i]){
-      target[prop] = arguments[i][prop];
-    }
-  }
-  return target;
-};
-},{}],17:[function(require,module,exports){
+module.exports = require('keen-core/lib/utils/each');
+},{"keen-core/lib/utils/each":26}],16:[function(require,module,exports){
+module.exports = require('keen-core/lib/utils/extend');
+},{"keen-core/lib/utils/extend":27}],17:[function(require,module,exports){
 module.exports = ('undefined' !== typeof window && window.JSON) ? window.JSON : require("json3");
-},{"json3":24}],18:[function(require,module,exports){
+},{"json3":23}],18:[function(require,module,exports){
 var Emitter = require('component-emitter');
 var each = require('./each');
 /*
@@ -1186,21 +974,7 @@ function deferFormSubmit(evt, form, callback){
   }
   return false;
 }
-},{"./each":15,"component-emitter":22}],19:[function(require,module,exports){
-function parseParams(str){
-  var urlParams = {},
-      match,
-      pl     = /\+/g, 
-      search = /([^&=]+)=?([^&]*)/g,
-      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-      query  = str.split("?")[1];
-  while (!!(match=search.exec(query))) {
-    urlParams[decode(match[1])] = decode(match[2]);
-  }
-  return urlParams;
-};
-module.exports = parseParams;
-},{}],20:[function(require,module,exports){
+},{"./each":15,"component-emitter":21}],19:[function(require,module,exports){
 var Emitter = require('component-emitter');
 module.exports = queue;
 function queue(){
@@ -1230,7 +1004,7 @@ function checkQueue(){
   }
 }
 Emitter(queue.prototype);
-},{"component-emitter":22}],21:[function(require,module,exports){
+},{"component-emitter":21}],20:[function(require,module,exports){
 module.exports = timer;
 function timer(num){
   if (this instanceof timer === false) {
@@ -1258,7 +1032,7 @@ timer.prototype.clear = function(){
   this.count = 0;
   return this;
 };
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * Expose `Emitter`.
  */
@@ -1391,9 +1165,9 @@ Emitter.prototype.listeners = function(event){
 Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /* * Cookies.js - 1.2.1 * https://github.com/ScottHamper/Cookies * * This is free and unencumbered software released into the public domain. */(function (global, undefined) {    'use strict';    var factory = function (window) {        if (typeof window.document !== 'object') {            throw new Error('Cookies.js requires a `window` with a `document` object');        }        var Cookies = function (key, value, options) {            return arguments.length === 1 ?                Cookies.get(key) : Cookies.set(key, value, options);        };        Cookies._document = window.document;        Cookies._cacheKeyPrefix = 'cookey.';        Cookies._maxExpireDate = new Date('Fri, 31 Dec 9999 23:59:59 UTC');        Cookies.defaults = {            path: '/',            secure: false        };        Cookies.get = function (key) {            if (Cookies._cachedDocumentCookie !== Cookies._document.cookie) {                Cookies._renewCache();            }            return Cookies._cache[Cookies._cacheKeyPrefix + key];        };        Cookies.set = function (key, value, options) {            options = Cookies._getExtendedOptions(options);            options.expires = Cookies._getExpiresDate(value === undefined ? -1 : options.expires);            Cookies._document.cookie = Cookies._generateCookieString(key, value, options);            return Cookies;        };        Cookies.expire = function (key, options) {            return Cookies.set(key, undefined, options);        };        Cookies._getExtendedOptions = function (options) {            return {                path: options && options.path || Cookies.defaults.path,                domain: options && options.domain || Cookies.defaults.domain,                expires: options && options.expires || Cookies.defaults.expires,                secure: options && options.secure !== undefined ?  options.secure : Cookies.defaults.secure            };        };        Cookies._isValidDate = function (date) {            return Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime());        };        Cookies._getExpiresDate = function (expires, now) {            now = now || new Date();            if (typeof expires === 'number') {                expires = expires === Infinity ?                    Cookies._maxExpireDate : new Date(now.getTime() + expires * 1000);            } else if (typeof expires === 'string') {                expires = new Date(expires);            }            if (expires && !Cookies._isValidDate(expires)) {                throw new Error('`expires` parameter cannot be converted to a valid Date instance');            }            return expires;        };        Cookies._generateCookieString = function (key, value, options) {            key = key.replace(/[^#$&+\^`|]/g, encodeURIComponent);            key = key.replace(/\(/g, '%28').replace(/\)/g, '%29');            value = (value + '').replace(/[^!#$&-+\--:<-\[\]-~]/g, encodeURIComponent);            options = options || {};            var cookieString = key + '=' + value;            cookieString += options.path ? ';path=' + options.path : '';            cookieString += options.domain ? ';domain=' + options.domain : '';            cookieString += options.expires ? ';expires=' + options.expires.toUTCString() : '';            cookieString += options.secure ? ';secure' : '';            return cookieString;        };        Cookies._getCacheFromString = function (documentCookie) {            var cookieCache = {};            var cookiesArray = documentCookie ? documentCookie.split('; ') : [];            for (var i = 0; i < cookiesArray.length; i++) {                var cookieKvp = Cookies._getKeyValuePairFromCookieString(cookiesArray[i]);                if (cookieCache[Cookies._cacheKeyPrefix + cookieKvp.key] === undefined) {                    cookieCache[Cookies._cacheKeyPrefix + cookieKvp.key] = cookieKvp.value;                }            }            return cookieCache;        };        Cookies._getKeyValuePairFromCookieString = function (cookieString) {            var separatorIndex = cookieString.indexOf('=');            separatorIndex = separatorIndex < 0 ? cookieString.length : separatorIndex;            return {                key: decodeURIComponent(cookieString.substr(0, separatorIndex)),                value: decodeURIComponent(cookieString.substr(separatorIndex + 1))            };        };        Cookies._renewCache = function () {            Cookies._cache = Cookies._getCacheFromString(Cookies._document.cookie);            Cookies._cachedDocumentCookie = Cookies._document.cookie;        };        Cookies._areEnabled = function () {            var testKey = 'cookies.js';            var areEnabled = Cookies.set(testKey, 1).get(testKey) === '1';            Cookies.expire(testKey);            return areEnabled;        };        Cookies.enabled = Cookies._areEnabled();        return Cookies;    };    var cookiesExport = typeof global.document === 'object' ? factory(global) : factory;    if (false) {        define(function () { return cookiesExport; });    } else if (typeof exports === 'object') {        if (typeof module === 'object' && typeof module.exports === 'object') {            exports = module.exports = cookiesExport;        }        exports.Cookies = cookiesExport;    } else {        global.Cookies = cookiesExport;    }})(typeof window === 'undefined' ? this : window);
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (global){
 /*! JSON v3.3.2 | http://bestiejs.github.io/json3 | Copyright 2012-2014, Kit Cambridge | http://kit.mit-license.org */
 ;(function () {
@@ -1980,6 +1754,230 @@ Emitter.prototype.hasListeners = function(event){
   }
 }).call(this);
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],24:[function(require,module,exports){
+(function (global){
+var each = require('./utils/each'),
+    extend = require('./utils/extend'),
+    parseParams = require('./utils/parse-params');
+var Emitter = require('component-emitter');
+(function(env){
+  var initialKeen = typeof env.Keen !== 'undefined' ? env.Keen : undefined;
+  function Core(props){
+    if (this instanceof Core === false) {
+      return new Core(props);
+    }
+    this.configure(props);
+    if (Core.debug) {
+      this.on('error', Core.log);
+    }
+    this.emit('ready');
+    Core.emit('client', this);
+  }
+  Emitter(Core);
+  Emitter(Core.prototype);
+  extend(Core, {
+    debug: false,
+    enabled: true,
+    loaded: false,
+    resources: {
+      'base'      : '{protocol}://{host}',
+      'version'   : '{protocol}://{host}/3.0',
+      'projects'  : '{protocol}://{host}/3.0/projects',
+      'projectId' : '{protocol}://{host}/3.0/projects/{projectId}'
+    },
+    utils: {
+      'each'        : each,
+      'extend'      : extend,
+      'parseParams' : parseParams
+    },
+    version: '0.1.1'
+  });
+  Core.log = function(str){
+    if (Core.debug && typeof console === 'object') {
+      console.log('[Keen]', str);
+    }
+  };
+  Core.noConflict = function(){
+    env.Keen = initialKeen;
+    return Core;
+  };
+  Core.prototype.configure = function(obj){
+    var config = obj || {};
+    this.config = this.config || {
+      projectId    : undefined,
+      writeKey     : undefined,
+      host         : 'api.keen.io',
+      protocol     : 'https',
+      requestType  : 'jsonp',
+      resources    : extend({}, Core.resources)
+    };
+    if ('undefined' !== typeof document && document.all) {
+      config.protocol = (document.location.protocol !== 'https:') ? 'http' : 'https';
+    }
+    if (config.host) {
+      config.host.replace(/.*?:\/\//g, '');
+    }
+    extend(this.config, config);
+    return this;
+  };
+  Core.prototype.projectId = function(str){
+    if (!arguments.length) return this.config.projectId;
+    this.config.projectId = (str ? String(str) : null);
+    return this;
+  };
+  Core.prototype.resources = function(obj){
+    if (!arguments.length) return this.config.resources;
+    var self = this;
+    if (typeof obj === 'object') {
+      each(obj, function(value, key){
+        self.config.resources[key] = (value ? value : null);
+      });
+    }
+    return self;
+  };
+  Core.prototype.url = function(name){
+    var args = Array.prototype.slice.call(arguments, 1),
+        baseUrl = Core.resources.base || '{protocol}://{host}',
+        path;
+    if (name && typeof name === 'string') {
+      if (this.config.resources[name]) {
+        path = this.config.resources[name];
+      }
+      else {
+        path = baseUrl + name;
+      }
+    }
+    else {
+      path = baseUrl;
+    }
+    each(this.config, function(value, key){
+      if (typeof value !== 'object') {
+        path = path.replace('{' + key + '}', value);
+      }
+    });
+    each(args, function(arg, i){
+      if (typeof arg === 'string') {
+        path += '/' + arg;
+      }
+      else if (typeof arg === 'object') {
+        path += '?';
+        each(arg, function(value, key){
+          path += key + '=' + value + '&';
+        });
+        path = path.slice(0, -1);
+      }
+    });
+    return path;
+  };
+  if (env) {
+    env.Keen = Core;
+  }
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Core;
+  }
+  if (typeof define !== 'undefined' && define.amd) {
+    define('keen-core', [], function(){
+      return Core;
+    });
+  }
+}).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./utils/each":26,"./utils/extend":27,"./utils/parse-params":28,"component-emitter":21}],25:[function(require,module,exports){
+module.exports = {
+  map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+  encode: function (n) {
+    "use strict";
+    var o = "", i = 0, m = this.map, i1, i2, i3, e1, e2, e3, e4;
+    n = this.utf8.encode(n);
+    while (i < n.length) {
+      i1 = n.charCodeAt(i++); i2 = n.charCodeAt(i++); i3 = n.charCodeAt(i++);
+      e1 = (i1 >> 2); e2 = (((i1 & 3) << 4) | (i2 >> 4)); e3 = (isNaN(i2) ? 64 : ((i2 & 15) << 2) | (i3 >> 6));
+      e4 = (isNaN(i2) || isNaN(i3)) ? 64 : i3 & 63;
+      o = o + m.charAt(e1) + m.charAt(e2) + m.charAt(e3) + m.charAt(e4);
+    } return o;
+  },
+  decode: function (n) {
+    "use strict";
+    var o = "", i = 0, m = this.map, cc = String.fromCharCode, e1, e2, e3, e4, c1, c2, c3;
+    n = n.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+    while (i < n.length) {
+      e1 = m.indexOf(n.charAt(i++)); e2 = m.indexOf(n.charAt(i++));
+      e3 = m.indexOf(n.charAt(i++)); e4 = m.indexOf(n.charAt(i++));
+      c1 = (e1 << 2) | (e2 >> 4); c2 = ((e2 & 15) << 4) | (e3 >> 2);
+      c3 = ((e3 & 3) << 6) | e4;
+      o = o + (cc(c1) + ((e3 != 64) ? cc(c2) : "")) + (((e4 != 64) ? cc(c3) : ""));
+    } return this.utf8.decode(o);
+  },
+  utf8: {
+    encode: function (n) {
+      "use strict";
+      var o = "", i = 0, cc = String.fromCharCode, c;
+      while (i < n.length) {
+        c = n.charCodeAt(i++); o = o + ((c < 128) ? cc(c) : ((c > 127) && (c < 2048)) ?
+        (cc((c >> 6) | 192) + cc((c & 63) | 128)) : (cc((c >> 12) | 224) + cc(((c >> 6) & 63) | 128) + cc((c & 63) | 128)));
+        } return o;
+    },
+    decode: function (n) {
+      "use strict";
+      var o = "", i = 0, cc = String.fromCharCode, c2, c;
+      while (i < n.length) {
+        c = n.charCodeAt(i);
+        o = o + ((c < 128) ? [cc(c), i++][0] : ((c > 191) && (c < 224)) ?
+        [cc(((c & 31) << 6) | ((c2 = n.charCodeAt(i + 1)) & 63)), (i += 2)][0] :
+        [cc(((c & 15) << 12) | (((c2 = n.charCodeAt(i + 1)) & 63) << 6) | ((c3 = n.charCodeAt(i + 2)) & 63)), (i += 3)][0]);
+      } return o;
+    }
+  }
+};
+},{}],26:[function(require,module,exports){
+module.exports = each;
+function each(o, cb, s){
+  var n;
+  if (!o){
+    return 0;
+  }
+  s = !s ? o : s;
+  if (o instanceof Array){
+    for (n=0; n<o.length; n++) {
+      if (cb.call(s, o[n], n, o) === false){
+        return 0;
+      }
+    }
+  } else {
+    for (n in o){
+      if (o.hasOwnProperty(n)) {
+        if (cb.call(s, o[n], n, o) === false){
+          return 0;
+        }
+      }
+    }
+  }
+  return 1;
+}
+},{}],27:[function(require,module,exports){
+module.exports = extend;
+function extend(target){
+  for (var i = 1; i < arguments.length; i++) {
+    for (var prop in arguments[i]){
+      target[prop] = arguments[i][prop];
+    }
+  }
+  return target;
+};
+},{}],28:[function(require,module,exports){
+module.exports = parseParams;
+function parseParams(str){
+  var urlParams = {},
+      match,
+      pl     = /\+/g, 
+      search = /([^&=]+)=?([^&]*)/g,
+      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+      query  = str.split("?")[1];
+  while (!!(match=search.exec(query))) {
+    urlParams[decode(match[1])] = decode(match[2]);
+  }
+  return urlParams;
+};
 },{}]},{},[1]);
 
 //# sourceMappingURL=keen-tracking.js.map

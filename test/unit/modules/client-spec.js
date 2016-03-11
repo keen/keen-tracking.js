@@ -30,14 +30,12 @@ describe('Keen (browser)', function() {
         projectId: '123',
         writeKey: '456',
         protocol: 'http',
-        host: 'none',
-        writePath: '/customWritePath'
+        host: 'none'
       });
       assert.equal(this.client.projectId(), '123');
       assert.equal(this.client.writeKey(), '456');
       assert.equal(this.client.config.host, 'none');
       assert.equal(this.client.config.protocol, 'http');
-      assert.equal(this.client.writePath(), '/customWritePath');
     });
 
   });
