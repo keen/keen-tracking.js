@@ -27,7 +27,7 @@
   "dependencies": {
     "component-emitter": "^1.2.0",
     "cookies-js": "^1.2.1",
-    "keen-core": "0.0.1"
+    "keen-core": "0.0.2"
   },
   "devDependencies": {
     "browserify": "^9.0.8",
