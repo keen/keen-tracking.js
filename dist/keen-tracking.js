@@ -1165,7 +1165,8 @@ Emitter.prototype.hasListeners = function(event){
 (function (global){
 var each = require('./utils/each'),
     extend = require('./utils/extend'),
-    parseParams = require('./utils/parse-params');
+    parseParams = require('./utils/parse-params'),
+    serialize = require('./utils/serialize');
 var Emitter = require('component-emitter');
 (function(env){
   var initialKeen = typeof env.Keen !== 'undefined' ? env.Keen : undefined;
@@ -1195,7 +1196,8 @@ var Emitter = require('component-emitter');
     utils: {
       'each'        : each,
       'extend'      : extend,
-      'parseParams' : parseParams
+      'parseParams' : parseParams,
+      'serialize'   : serialize
     },
     version: '0.1.1'
   });
@@ -1294,7 +1296,7 @@ var Emitter = require('component-emitter');
   }
 }).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./utils/each":24,"./utils/extend":25,"./utils/parse-params":26,"component-emitter":20}],23:[function(require,module,exports){
+},{"./utils/each":24,"./utils/extend":25,"./utils/parse-params":26,"./utils/serialize":27,"component-emitter":20}],23:[function(require,module,exports){
 module.exports = {
   map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
   encode: function (n) {
@@ -1390,6 +1392,20 @@ function parseParams(str){
   }
   return urlParams;
 };
-},{}]},{},[1]);
+},{}],27:[function(require,module,exports){
+var each = require('./each'),
+    extend = require('./extend');
+module.exports = serialize;
+function serialize(data){
+  var query = [];
+  each(data, function(value, key){
+    if ('string' !== typeof value) {
+      value = JSON.stringify(value);
+    }
+    query.push(key + '=' + encodeURIComponent(value));
+  });
+  return query.join('&');
+}
+},{"./each":24,"./extend":25}]},{},[1]);
 
 //# sourceMappingURL=keen-tracking.js.map
