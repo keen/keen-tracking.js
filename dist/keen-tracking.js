@@ -1220,8 +1220,8 @@ var Emitter = require('component-emitter');
       requestType  : 'jsonp',
       resources    : extend({}, Client.resources)
     };
-    if ('undefined' !== typeof document && document.all) {
-      config.protocol = (document.location.protocol !== 'https:') ? 'http' : 'https';
+    if (typeof window !== 'undefined' && window.navigator.userAgent.indexOf('MSIE') > -1) {
+      config.protocol = document.location.protocol.replace(':', '');
     }
     if (config.host) {
       config.host.replace(/.*?:\/\//g, '');
@@ -1290,7 +1290,7 @@ var Emitter = require('component-emitter');
     module.exports = Client;
   }
   if (typeof define !== 'undefined' && define.amd) {
-    define('keen-Client', [], function(){
+    define('keen-core', [], function(){
       return Client;
     });
   }
