@@ -20,6 +20,7 @@
     "Eric Anderson <eric@keen.io> (https://github.com/aroc)",
     "Alex Kleissner <alex@keen.io> (https://github.com/hex337)"
   ],
+  "license": "MIT",
   "engines": {
     "node": "0.10.x"
   },
