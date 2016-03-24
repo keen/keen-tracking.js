@@ -921,21 +921,23 @@ cookie.prototype.get = function(str){
     data = json.parse(Cookies.get(this.config.key));
   }
   if (str) {
-    return ('undefined' !== typeof data[str]) ? data[str] : null;
+    return (typeof data[str] !== 'undefined') ? data[str] : null;
   }
   else {
     return data;
   }
 };
-cookie.prototype.set = function(str, value){
+cookie.prototype.set = function(str, value, daysUntilExpire){
   if (!arguments.length || !this.enabled) return this;
-  if ('string' === typeof str && arguments.length === 2) {
+  if (typeof str === 'string'  && arguments.length === 2) {
     this.data[str] = value ? value : null;
   }
-  else if ('object' === typeof str && arguments.length === 1) {
+  else if (typeof str === 'object' && arguments.length === 1) {
     extend(this.data, str);
   }
-  Cookies.set(this.config.key, this.data, this.config.options);
+  var extraOptions = {};
+  if (daysUntilExpire) { extraOptions.expires = daysUntilExpire };
+  Cookies.set(this.config.key, this.data, extend(this.config.options, extraOptions));
   return this;
 };
 cookie.prototype.expire = function(){
