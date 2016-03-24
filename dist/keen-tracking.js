@@ -714,7 +714,7 @@ function sendBeacon(url, callback){
 },{"./extend-events":3,"./index":10,"./utils/base64":12,"./utils/each":15,"./utils/extend":16}],12:[function(require,module,exports){
 module.exports = require('keen-core/lib/utils/base64');
 },{"keen-core/lib/utils/base64":23}],13:[function(require,module,exports){
-var Cookies = require('cookies-js');
+var Cookies = require('js-cookie');
 var extend = require('./extend');
 module.exports = cookie;
 function cookie(str){
@@ -724,7 +724,9 @@ function cookie(str){
   }
   this.config = {
     key: str,
-    options: {}
+    options: {
+      expires: 365
+    }
   };
   this.data = this.get();
   return this;
@@ -732,10 +734,10 @@ function cookie(str){
 cookie.prototype.get = function(str){
   var data = {};
   if (Cookies.get(this.config.key)) {
-    data = JSON.parse( decodeURIComponent(Cookies.get(this.config.key)) );
+    data = JSON.parse(Cookies.get(this.config.key));
   }
   if (str) {
-    return ('undefined' !== typeof data[str]) ? data[str] : null;
+    return (typeof data[str] !== 'undefined') ? data[str] : null;
   }
   else {
     return data;
@@ -743,18 +745,22 @@ cookie.prototype.get = function(str){
 };
 cookie.prototype.set = function(str, value){
   if (!arguments.length || !this.enabled()) return this;
-  if ('string' === typeof str && arguments.length === 2) {
+  if (typeof str === 'string'  && arguments.length === 2) {
     this.data[str] = value ? value : null;
   }
-  else if ('object' === typeof str && arguments.length === 1) {
+  else if (typeof str === 'object' && arguments.length === 1) {
     extend(this.data, str);
   }
-  Cookies.set(this.config.key, encodeURIComponent( JSON.stringify(this.data) ), this.config.options);
+  Cookies.set(this.config.key, this.data, this.config.options);
   return this;
 };
-cookie.prototype.expire = function(){
-  Cookies.expire(this.config.key);
-  this.data = {};
+cookie.prototype.expire = function(daysUntilExpire){
+  if (daysUntilExpire) {
+    Cookies.set(this.config.key, this.data, extend(this.config.options, { expires: daysUntilExpire }));
+  } else {
+    Cookies.remove(this.config.key);
+    this.data = {};
+  }
   return this;
 };
 cookie.prototype.options = function(obj){
@@ -763,9 +769,9 @@ cookie.prototype.options = function(obj){
   return this;
 };
 cookie.prototype.enabled = function(){
-  return Cookies.enabled;
+  return navigator.cookieEnabled;
 };
-},{"./extend":16,"cookies-js":21}],14:[function(require,module,exports){
+},{"./extend":16,"js-cookie":21}],14:[function(require,module,exports){
 module.exports = deepExtend;
 function deepExtend(target){
   for (var i = 1; i < arguments.length; i++) {
@@ -1160,7 +1166,123 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 },{}],21:[function(require,module,exports){
-/* * Cookies.js - 1.2.1 * https://github.com/ScottHamper/Cookies * * This is free and unencumbered software released into the public domain. */(function (global, undefined) {    'use strict';    var factory = function (window) {        if (typeof window.document !== 'object') {            throw new Error('Cookies.js requires a `window` with a `document` object');        }        var Cookies = function (key, value, options) {            return arguments.length === 1 ?                Cookies.get(key) : Cookies.set(key, value, options);        };        Cookies._document = window.document;        Cookies._cacheKeyPrefix = 'cookey.';        Cookies._maxExpireDate = new Date('Fri, 31 Dec 9999 23:59:59 UTC');        Cookies.defaults = {            path: '/',            secure: false        };        Cookies.get = function (key) {            if (Cookies._cachedDocumentCookie !== Cookies._document.cookie) {                Cookies._renewCache();            }            return Cookies._cache[Cookies._cacheKeyPrefix + key];        };        Cookies.set = function (key, value, options) {            options = Cookies._getExtendedOptions(options);            options.expires = Cookies._getExpiresDate(value === undefined ? -1 : options.expires);            Cookies._document.cookie = Cookies._generateCookieString(key, value, options);            return Cookies;        };        Cookies.expire = function (key, options) {            return Cookies.set(key, undefined, options);        };        Cookies._getExtendedOptions = function (options) {            return {                path: options && options.path || Cookies.defaults.path,                domain: options && options.domain || Cookies.defaults.domain,                expires: options && options.expires || Cookies.defaults.expires,                secure: options && options.secure !== undefined ?  options.secure : Cookies.defaults.secure            };        };        Cookies._isValidDate = function (date) {            return Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime());        };        Cookies._getExpiresDate = function (expires, now) {            now = now || new Date();            if (typeof expires === 'number') {                expires = expires === Infinity ?                    Cookies._maxExpireDate : new Date(now.getTime() + expires * 1000);            } else if (typeof expires === 'string') {                expires = new Date(expires);            }            if (expires && !Cookies._isValidDate(expires)) {                throw new Error('`expires` parameter cannot be converted to a valid Date instance');            }            return expires;        };        Cookies._generateCookieString = function (key, value, options) {            key = key.replace(/[^#$&+\^`|]/g, encodeURIComponent);            key = key.replace(/\(/g, '%28').replace(/\)/g, '%29');            value = (value + '').replace(/[^!#$&-+\--:<-\[\]-~]/g, encodeURIComponent);            options = options || {};            var cookieString = key + '=' + value;            cookieString += options.path ? ';path=' + options.path : '';            cookieString += options.domain ? ';domain=' + options.domain : '';            cookieString += options.expires ? ';expires=' + options.expires.toUTCString() : '';            cookieString += options.secure ? ';secure' : '';            return cookieString;        };        Cookies._getCacheFromString = function (documentCookie) {            var cookieCache = {};            var cookiesArray = documentCookie ? documentCookie.split('; ') : [];            for (var i = 0; i < cookiesArray.length; i++) {                var cookieKvp = Cookies._getKeyValuePairFromCookieString(cookiesArray[i]);                if (cookieCache[Cookies._cacheKeyPrefix + cookieKvp.key] === undefined) {                    cookieCache[Cookies._cacheKeyPrefix + cookieKvp.key] = cookieKvp.value;                }            }            return cookieCache;        };        Cookies._getKeyValuePairFromCookieString = function (cookieString) {            var separatorIndex = cookieString.indexOf('=');            separatorIndex = separatorIndex < 0 ? cookieString.length : separatorIndex;            return {                key: decodeURIComponent(cookieString.substr(0, separatorIndex)),                value: decodeURIComponent(cookieString.substr(separatorIndex + 1))            };        };        Cookies._renewCache = function () {            Cookies._cache = Cookies._getCacheFromString(Cookies._document.cookie);            Cookies._cachedDocumentCookie = Cookies._document.cookie;        };        Cookies._areEnabled = function () {            var testKey = 'cookies.js';            var areEnabled = Cookies.set(testKey, 1).get(testKey) === '1';            Cookies.expire(testKey);            return areEnabled;        };        Cookies.enabled = Cookies._areEnabled();        return Cookies;    };    var cookiesExport = typeof global.document === 'object' ? factory(global) : factory;    if (false) {        define(function () { return cookiesExport; });    } else if (typeof exports === 'object') {        if (typeof module === 'object' && typeof module.exports === 'object') {            exports = module.exports = cookiesExport;        }        exports.Cookies = cookiesExport;    } else {        global.Cookies = cookiesExport;    }})(typeof window === 'undefined' ? this : window);
+/*!
+ * JavaScript Cookie v2.1.0
+ * https://github.com/js-cookie/js-cookie
+ *
+ * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
+ * Released under the MIT license
+ */
+(function (factory) {
+	if (false) {
+		define(factory);
+	} else if (typeof exports === 'object') {
+		module.exports = factory();
+	} else {
+		var _OldCookies = window.Cookies;
+		var api = window.Cookies = factory();
+		api.noConflict = function () {
+			window.Cookies = _OldCookies;
+			return api;
+		};
+	}
+}(function () {
+	function extend () {
+		var i = 0;
+		var result = {};
+		for (; i < arguments.length; i++) {
+			var attributes = arguments[ i ];
+			for (var key in attributes) {
+				result[key] = attributes[key];
+			}
+		}
+		return result;
+	}
+	function init (converter) {
+		function api (key, value, attributes) {
+			var result;
+			if (arguments.length > 1) {
+				attributes = extend({
+					path: '/'
+				}, api.defaults, attributes);
+				if (typeof attributes.expires === 'number') {
+					var expires = new Date();
+					expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
+					attributes.expires = expires;
+				}
+				try {
+					result = JSON.stringify(value);
+					if (/^[\{\[]/.test(result)) {
+						value = result;
+					}
+				} catch (e) {}
+				if (!converter.write) {
+					value = encodeURIComponent(String(value))
+						.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+				} else {
+					value = converter.write(value, key);
+				}
+				key = encodeURIComponent(String(key));
+				key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
+				key = key.replace(/[\(\)]/g, escape);
+				return (document.cookie = [
+					key, '=', value,
+					attributes.expires && '; expires=' + attributes.expires.toUTCString(),
+					attributes.path    && '; path=' + attributes.path,
+					attributes.domain  && '; domain=' + attributes.domain,
+					attributes.secure ? '; secure' : ''
+				].join(''));
+			}
+			if (!key) {
+				result = {};
+			}
+			var cookies = document.cookie ? document.cookie.split('; ') : [];
+			var rdecode = /(%[0-9A-Z]{2})+/g;
+			var i = 0;
+			for (; i < cookies.length; i++) {
+				var parts = cookies[i].split('=');
+				var name = parts[0].replace(rdecode, decodeURIComponent);
+				var cookie = parts.slice(1).join('=');
+				if (cookie.charAt(0) === '"') {
+					cookie = cookie.slice(1, -1);
+				}
+				try {
+					cookie = converter.read ?
+						converter.read(cookie, name) : converter(cookie, name) ||
+						cookie.replace(rdecode, decodeURIComponent);
+					if (this.json) {
+						try {
+							cookie = JSON.parse(cookie);
+						} catch (e) {}
+					}
+					if (key === name) {
+						result = cookie;
+						break;
+					}
+					if (!key) {
+						result[name] = cookie;
+					}
+				} catch (e) {}
+			}
+			return result;
+		}
+		api.get = api.set = api;
+		api.getJSON = function () {
+			return api.apply({
+				json: true
+			}, [].slice.call(arguments));
+		};
+		api.defaults = {};
+		api.remove = function (key, attributes) {
+			api(key, '', extend(attributes, {
+				expires: -1
+			}));
+		};
+		api.withConverter = init;
+		return api;
+	}
+	return init(function () {});
+}));
 },{}],22:[function(require,module,exports){
 (function (global){
 var each = require('./utils/each'),
@@ -1199,7 +1321,7 @@ var Emitter = require('component-emitter');
       'parseParams' : parseParams,
       'serialize'   : serialize
     },
-    version: '0.1.1'
+    version: '1.0.0'
   });
   Client.log = function(str){
     if (Client.debug && typeof console === 'object') {

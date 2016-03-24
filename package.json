@@ -1,6 +1,6 @@
 {
   "name": "keen-tracking",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Data Collection SDK for Keen IO",
   "main": "lib/server.js",
   "browser": "lib/browser.js",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "component-emitter": "^1.2.0",
-    "cookies-js": "^1.2.1",
+    "js-cookie": "2.1.0",
     "keen-core": "0.0.2"
   },
   "devDependencies": {
