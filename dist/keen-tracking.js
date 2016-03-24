@@ -909,10 +909,11 @@ function cookie(str){
   }
   this.config = {
     key: str,
-    options: {}
+    options: {
+      expires: 365
+    }
   };
   this.data = this.get();
-  this.enabled = true;
   return this;
 }
 cookie.prototype.get = function(str){
@@ -927,28 +928,33 @@ cookie.prototype.get = function(str){
     return data;
   }
 };
-cookie.prototype.set = function(str, value, daysUntilExpire){
-  if (!arguments.length || !this.enabled) return this;
+cookie.prototype.set = function(str, value){
+  if (!arguments.length || !this.enabled()) return this;
   if (typeof str === 'string'  && arguments.length === 2) {
     this.data[str] = value ? value : null;
   }
   else if (typeof str === 'object' && arguments.length === 1) {
     extend(this.data, str);
   }
-  var extraOptions = {};
-  if (daysUntilExpire) { extraOptions.expires = daysUntilExpire };
-  Cookies.set(this.config.key, this.data, extend(this.config.options, extraOptions));
+  Cookies.set(this.config.key, this.data, this.config.options);
   return this;
 };
-cookie.prototype.expire = function(){
-  Cookies.remove(this.config.key);
-  this.data = {};
+cookie.prototype.expire = function(daysUntilExpire){
+  if (daysUntilExpire) {
+    Cookies.set(this.config.key, this.data, extend(this.config.options, { expires: daysUntilExpire }));
+  } else {
+    Cookies.remove(this.config.key);
+    this.data = {};  
+  }
   return this;
 };
 cookie.prototype.options = function(obj){
   if (!arguments.length) return this.config.options;
   this.config.options = (typeof obj === 'object') ? obj : {};
   return this;
+};
+cookie.prototype.enabled = function(){
+  return navigator.cookieEnabled;
 };
 },{"./extend":16,"./json":17,"js-cookie":23}],14:[function(require,module,exports){
 var json = require('./json');

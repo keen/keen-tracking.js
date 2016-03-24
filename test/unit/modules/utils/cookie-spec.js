@@ -112,14 +112,10 @@ describe('Keen.utils.cookie', function() {
 
   });
 
-  describe('enabled property', function(){
+  describe('.enabled', function(){
 
-    it('should be a boolean value by default', function(){
-      assert.isBoolean(this.cookie.enabled);
-    });
-
-    it('should be true by default', function(){
-      assert.isTrue(this.cookie.enabled);
+    it('should return a boolean value', function(){
+      assert.isBoolean(this.cookie.enabled());
     });
 
   });
