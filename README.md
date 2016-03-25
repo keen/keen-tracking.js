@@ -817,7 +817,7 @@ var sessionTimer = Keen.utils.timer();
 sessionTimer.start();
 
 Keen.listenTo({
-	'form#signup': function(e){
+	'submit form#signup': function(e){
 		// 500ms to record an event
 		var userEmail = document.getElementById('signup-email').value;
 		client.recordEvent('user signup', {
@@ -826,7 +826,7 @@ Keen.listenTo({
 			}
 		});
 	},
-	'click .nav li > a': function(e){
+	'click .nav a': function(e){
 		// 500ms to record an event
 		client.recordEvent('leave page');
 	}
