@@ -130,7 +130,7 @@ Copy/paste this snippet of JavaScript above the `</head>` tag of your page to lo
 // Loads the library asynchronously from any URI
 !function(name,path,ctx){
   var latest,prev=name!=='Keen'&&window.Keen?window.Keen:false;ctx[name]=ctx[name]||{ready:function(fn){var h=document.getElementsByTagName('head')[0],s=document.createElement('script'),w=window,loaded;s.onload=s.onerror=s.onreadystatechange=function(){if((s.readyState&&!(/^c|loade/.test(s.readyState)))||loaded){return}s.onload=s.onreadystatechange=null;loaded=1;latest=w.Keen;if(prev){w.Keen=prev}else{try{delete w.Keen}catch(e){w.Keen=void 0}}ctx[name]=latest;ctx[name].ready(fn)};s.async=1;s.src=path;h.parentNode.insertBefore(s,h)}}
-}('Keen','https://d26b395fwzu5fz.cloudfront.net/keen-tracking-0.1.1.min.js',this);
+}('Keen','https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.0.0.min.js',this);
 
 // Executes when the library is loaded and ready
 Keen.ready(function(){
@@ -502,7 +502,30 @@ sessionCookie.options({
 
 **Important:** Some browsers do not allow cookies to be created or accessed from a local file (`file://dev/index.html`), which can make local development and testing problematic. `.set()` and `.get()` methods will only function correctly when cookies are enabled.
 
-This utility uses [ScottHamper's](https://github.com/ScottHamper) wonderfully simple [Cookies.js](https://github.com/ScottHamper/Cookies) library. Read all options for Cookies.js [here](https://github.com/ScottHamper/Cookies#cookiessetkey-value--options).
+This utility uses [js-cookie](https://github.com/js-cookie/js-cookie).
+
+<a name="cookie-migration"></a>
+Prior to the 1.0 release, this library used [Cookies.js](https://github.com/ScottHamper/Cookies), but incorrectly encoded the cookie data twice. Data stored in cookies by v0.1.1 or earlier can be accessed and resolved like so:
+
+```javascript
+var cookies = document.cookie.split(';');
+var myCookie = Keen.utils.cookie('your-cookie-name');
+var badData, newData;
+
+for (var i = 0; i < cookies.length; i++) {
+  if (cookies[i].indexOf('your-cookie-name=') < 0) continue;
+  badData = cookies[i].split('your-cookie-name=')[1];
+  newData = JSON.parse(
+    decodeURIComponent(
+      decodeURIComponent(badData)
+    )
+  );
+  myCookie.set(newData);
+  break;
+}
+```
+
+
 
 
 ### Listeners

@@ -6,28 +6,39 @@
 **BREAKING:**
 -->
 
-<a name="0.1.1></a>
+<a name="1.0.0"></a>
+# 1.0.0
+
+**NEW:**
+* Move core client functionality to keen-core.js (PR #40).
+
+**BREAKING:**
+* Replaced [cookies-js](https://github.com/ScottHamper/Cookies) with [js-cookie](https://github.com/js-cookie/js-cookie). Cookies are now encoded properly, but will require a workaround (covered [here](./README.md#cookie-migration)) to fix previous cookie data.
+* Removed `client.writePath()` method and `writePath` config option in favor of internal resource mapping and the `client.resources()` method.
+
+
+<a name="0.1.1"></a>
 # 0.1.1
 
 **CHANGE:**
 * Publish to bower
 
 
-<a name="0.1.0></a>
+<a name="0.1.0"></a>
 # 0.1.0
 
 **CHANGE:**
 * Reworked `.url()` method to use resource templates, with an internal collection that makes specific API URLS easy to request and customize.
 
 
-<a name="0.0.5></a>
+<a name="0.0.5"></a>
 # 0.0.5
 
 **FIXED:**
 * Define noop func when no callback is provided (fixes #34)
 
 
-<a name="0.0.4></a>
+<a name="0.0.4"></a>
 # 0.0.4
 
 **FIXED:**
