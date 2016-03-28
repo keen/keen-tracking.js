@@ -6,6 +6,12 @@
 **BREAKING:**
 -->
 
+<a name="1.0.1"></a>
+# 1.0.1
+
+**FIXED:**
+* Event properties with `undefined` values no longer throw an error when used with `Keen.utils.extend`.
+
 <a name="1.0.0"></a>
 # 1.0.0
 
