@@ -1,5 +1,6 @@
 var assert = require('proclaim');
 
+var Cookies = require('js-cookie');
 var cookie = require('../../../../lib/utils/cookie');
 
 describe('Keen.utils.cookie', function() {
@@ -34,6 +35,11 @@ describe('Keen.utils.cookie', function() {
   });
 
   describe('.get', function(){
+
+    it('should return a simple string for pre-existing non-json data', function(){
+      Cookies.set('keen-test-cookie', 'some thing that is not json');
+      assert.deepEqual(this.cookie.get(), 'some thing that is not json');
+    });
 
     it('should return an empty object when no key name is provided and no data has been stored', function(){
       assert.deepEqual(this.cookie.get(), {});
