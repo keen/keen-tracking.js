@@ -4,7 +4,14 @@
 **FIXED:**
 **NEW:**
 **BREAKING:**
+**CHANGE:**
 -->
+
+<a name="1.0.2"></a>
+# 1.0.2
+
+**CHANGED:**
+* Cookie values that are strings *or* JSON can be successfully retreived using the same `.get` function form the `Keen.utils.cookie` module. The `.get` function now intelligently decides whether to return a Javascript object or a simple string value.
 
 <a name="1.0.1"></a>
 # 1.0.1
