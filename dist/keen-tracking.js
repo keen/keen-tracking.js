@@ -734,9 +734,9 @@ function cookie(str){
 cookie.prototype.get = function(str){
   var data = {};
   if (Cookies.get(this.config.key)) {
-    data = JSON.parse(Cookies.get(this.config.key));
+    data = Cookies.getJSON(this.config.key);
   }
-  if (str) {
+  if (str && typeof data === 'object' && typeof data !== null) {
     return (typeof data[str] !== 'undefined') ? data[str] : null;
   }
   else {
