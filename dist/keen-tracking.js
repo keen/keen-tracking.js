@@ -35,42 +35,6 @@
       return listener(selector).on(eventType, callback);
     });
   };
-  K.ready = function(fn){
-    if (K.loaded) {
-      fn();
-    }
-    else {
-      K.once('ready', fn);
-    }
-  };
-  domReady(function(){
-    K.loaded = true;
-    K.emit('ready');
-  });
-  function domReady(fn){
-    if (K.loaded || 'undefined' === typeof document) {
-      fn();
-      return;
-    }
-    if(document.readyState == null && document.addEventListener){
-      document.addEventListener('DOMContentLoaded', function DOMContentLoaded(){
-        document.removeEventListener('DOMContentLoaded', DOMContentLoaded, false);
-        document.readyState = 'complete';
-      }, false);
-      document.readyState = 'loading';
-    }
-    testDom(fn);
-  }
-  function testDom(fn){
-    if (/in/.test(document.readyState)) {
-      setTimeout(function(){
-        testDom(fn);
-      }, 9);
-    }
-    else {
-      fn();
-    }
-  }
   function trackExternalLink(jsEvent, eventCollection, payload, timeout, timeoutCallback){
     this.emit('error', 'This method has been deprecated. Check out DOM listeners: https://github.com/keen/keen-tracking.js#listeners');
     var evt = jsEvent,
@@ -1321,7 +1285,7 @@ var Emitter = require('component-emitter');
       'parseParams' : parseParams,
       'serialize'   : serialize
     },
-    version: '1.0.2'
+    version: '1.0.3'
   });
   Client.log = function(str){
     if (Client.debug && typeof console === 'object') {
@@ -1331,6 +1295,14 @@ var Emitter = require('component-emitter');
   Client.noConflict = function(){
     env.Keen = initialKeen;
     return Client;
+  };
+  Client.ready = function(fn){
+    if (Client.loaded) {
+      fn();
+    }
+    else {
+      Client.once('ready', fn);
+    }
   };
   Client.prototype.configure = function(obj){
     var config = obj || {};
@@ -1405,17 +1377,41 @@ var Emitter = require('component-emitter');
     });
     return path;
   };
+  domReady(function(){
+    Client.loaded = true;
+    Client.emit('ready');
+  });
+  function domReady(fn){
+    if (Client.loaded || typeof document === 'undefined') {
+      fn();
+      return;
+    }
+    if(document.readyState == null && document.addEventListener){
+      document.addEventListener('DOMContentLoaded', function DOMContentLoaded(){
+        document.removeEventListener('DOMContentLoaded', DOMContentLoaded, false);
+        document.readyState = 'complete';
+      }, false);
+      document.readyState = 'loading';
+    }
+    testDom(fn);
+  }
+  function testDom(fn){
+    if (/in/.test(document.readyState)) {
+      setTimeout(function(){
+        testDom(fn);
+      }, 9);
+    }
+    else {
+      fn();
+    }
+  }
   if (env) {
     env.Keen = Client;
   }
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = Client;
   }
-  if (typeof define !== 'undefined' && define.amd) {
-    define('keen-core', [], function(){
-      return Client;
-    });
-  }
+  /* RequireJS defintion not necessary */
 }).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./utils/each":24,"./utils/extend":25,"./utils/parse-params":26,"./utils/serialize":27,"component-emitter":20}],23:[function(require,module,exports){

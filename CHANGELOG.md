@@ -7,6 +7,14 @@
 **CHANGE:**
 -->
 
+<a name="1.0.3"></a>
+# 1.0.3
+
+**FIXED:**
+
+* Minor update imports keen-core.js@0.0.3 with `Keen.ready(fn)` handler and an internal `domReady` function (previously part of this library, last bit of functionality to port over to keen-core.js)
+
+
 <a name="1.0.2"></a>
 # 1.0.2
 
