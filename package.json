@@ -16,18 +16,15 @@
   "author": "Dustin Larimer <dustin@keen.io> (https://keen.io/)",
   "contributors": [
     "Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)",
-    "Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)",
     "Eric Anderson <eric@keen.io> (https://github.com/aroc)",
+    "Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)",
     "Alex Kleissner <alex@keen.io> (https://github.com/hex337)"
   ],
   "license": "MIT",
-  "engines": {
-    "node": "0.10.x"
-  },
   "dependencies": {
     "component-emitter": "^1.2.0",
     "js-cookie": "2.1.0",
-    "keen-core": "0.0.2"
+    "keen-core": "0.0.3"
   },
   "devDependencies": {
     "browserify": "^9.0.8",

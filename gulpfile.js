@@ -146,7 +146,7 @@ gulp.task('test:sauce', ['build', 'test:browserify'], function(){
     logColors: true,
     reporters: [ 'saucelabs' ],
     sauceLabs: {
-      testName: moment().format('ddd, MMM Do, h:mm:ss a'),
+      testName: pkg.name + '.js: ' + moment().format(' ddd, MMM Do, h:mm:ss a'),
       recordScreenshots: false,
       recordVideo: true
     },
