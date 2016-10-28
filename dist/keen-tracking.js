@@ -404,7 +404,7 @@ function recordEvent(eventCollection, eventBody, callback, async){
   }
   getRequestUrl = this.url('events', encodeURIComponent(eventCollection), {
     api_key  : this.writeKey(),
-    data     : base64.encode( JSON.stringify(extendedEventBody) ),
+    data     : encodeURIComponent( base64.encode( JSON.stringify(extendedEventBody) ) ),
     modified : new Date().getTime()
   });
   getRequestUrlOkLength = getRequestUrl.length < getUrlMaxLength();
@@ -1153,7 +1153,7 @@ var Emitter = require('component-emitter');
       'parseParams' : parseParams,
       'serialize'   : serialize
     },
-    version: '1.0.3'
+    version: '1.0.4'
   });
   Client.log = function(str){
     if (Client.debug && typeof console === 'object') {
