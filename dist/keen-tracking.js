@@ -1153,7 +1153,7 @@ var Emitter = require('component-emitter');
       'parseParams' : parseParams,
       'serialize'   : serialize
     },
-    version: '1.0.4'
+    version: '1.0.5'
   });
   Client.log = function(str){
     if (Client.debug && typeof console === 'object') {
