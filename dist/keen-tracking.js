@@ -103,9 +103,6 @@
       return -1;
     };
   }
-  if (env) {
-    env.Keen = K;
-  }
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = K;
   }
@@ -114,6 +111,7 @@
       return K;
     });
   }
+  env.Keen = K.extendLibrary(K);
 }).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./":10,"./defer-events":2,"./extend-events":3,"./helpers/getBrowserProfile":4,"./helpers/getDatetimeIndex":5,"./helpers/getDomNodePath":6,"./helpers/getScreenProfile":7,"./helpers/getUniqueId":8,"./helpers/getWindowProfile":9,"./record-events-browser":11,"./utils/cookie":13,"./utils/deepExtend":14,"./utils/each":15,"./utils/extend":16,"./utils/listener":17,"./utils/timer":19}],2:[function(require,module,exports){
@@ -1249,13 +1247,13 @@ Emitter.prototype.hasListeners = function(event){
 }));
 },{}],22:[function(require,module,exports){
 (function (global){
-var each = require('./utils/each'),
-    extend = require('./utils/extend'),
-    parseParams = require('./utils/parse-params'),
-    serialize = require('./utils/serialize');
-var Emitter = require('component-emitter');
 (function(env){
-  var initialKeen = typeof env.Keen !== 'undefined' ? env.Keen : undefined;
+  var previousKeen = env.Keen || undefined;
+  var each = require('./utils/each'),
+      extend = require('./utils/extend'),
+      parseParams = require('./utils/parse-params'),
+      serialize = require('./utils/serialize');
+  var Emitter = require('component-emitter');
   function Client(props){
     if (this instanceof Client === false) {
       return new Client(props);
@@ -1267,33 +1265,57 @@ var Emitter = require('component-emitter');
     this.emit('ready');
     Client.emit('client', this);
   }
+  if (previousKeen && typeof previousKeen.resources === 'undefined') {
+    Client.legacyVersion = previousKeen;
+  }
   Emitter(Client);
   Emitter(Client.prototype);
   extend(Client, {
     debug: false,
     enabled: true,
     loaded: false,
-    resources: {
-      'base'      : '{protocol}://{host}',
-      'version'   : '{protocol}://{host}/3.0',
-      'projects'  : '{protocol}://{host}/3.0/projects',
-      'projectId' : '{protocol}://{host}/3.0/projects/{projectId}'
-    },
-    utils: {
-      'each'        : each,
-      'extend'      : extend,
-      'parseParams' : parseParams,
-      'serialize'   : serialize
-    },
     version: '1.0.3'
   });
+  Client.helpers = Client.helpers || {};
+  Client.resources = Client.resources || {};
+  extend(Client.resources, {
+    'base'      : '{protocol}://{host}',
+    'version'   : '{protocol}://{host}/3.0',
+    'projects'  : '{protocol}://{host}/3.0/projects',
+    'projectId' : '{protocol}://{host}/3.0/projects/{projectId}'
+  });
+  Client.utils = Client.utils || {};
+  extend(Client.utils, {
+    'each'        : each,
+    'extend'      : extend,
+    'parseParams' : parseParams,
+    'serialize'   : serialize
+  });
+  Client.extendLibrary = function(target, source) {
+    var previous = previousKeen || source;
+    if (typeof previous !== 'undefined') {
+      each(previous, function(value, key) {
+        if (typeof value === 'object') {
+          target[key] = target[key] || {};
+          extend(target[key], value);
+        }
+        else {
+          target[key] = target[key] || value;
+        }
+      });
+      extend(target.prototype, previous.prototype);
+    }
+    return target;
+  };
   Client.log = function(str){
     if (Client.debug && typeof console === 'object') {
       console.log('[Keen]', str);
     }
   };
   Client.noConflict = function(){
-    env.Keen = initialKeen;
+    if (typeof env.Keen !== 'undefined') {
+      env.Keen = Client.legacyVersion || previousKeen;
+    }
     return Client;
   };
   Client.ready = function(fn){
@@ -1405,13 +1427,10 @@ var Emitter = require('component-emitter');
       fn();
     }
   }
-  if (env) {
-    env.Keen = Client;
+  function isUndefined(target) {
+    return typeof target === 'undefined';
   }
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Client;
-  }
-  /* RequireJS defintion not necessary */
+  module.exports = Client;
 }).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./utils/each":24,"./utils/extend":25,"./utils/parse-params":26,"./utils/serialize":27,"component-emitter":20}],23:[function(require,module,exports){
