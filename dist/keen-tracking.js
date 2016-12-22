@@ -402,7 +402,7 @@ function recordEvent(eventCollection, eventBody, callback, async){
   }
   getRequestUrl = this.url('events', encodeURIComponent(eventCollection), {
     api_key  : this.writeKey(),
-    data     : base64.encode( JSON.stringify(extendedEventBody) ),
+    data     : encodeURIComponent( base64.encode( JSON.stringify(extendedEventBody) ) ),
     modified : new Date().getTime()
   });
   getRequestUrlOkLength = getRequestUrl.length < getUrlMaxLength();
@@ -917,7 +917,7 @@ function deferClickEvent(evt, anchor, callback){
 }
 function deferFormSubmit(evt, form, callback){
   var timeout = 500;
-  cbResponse = callback(evt);
+  var cbResponse = callback(evt);
   if (('boolean' === typeof cbResponse && cbResponse === false) || evt.defaultPrevented || evt.returnValue === false) {
     if (evt.preventDefault) {
       evt.preventDefault();
@@ -1274,7 +1274,7 @@ Emitter.prototype.hasListeners = function(event){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.0.3'
+    version: '1.1.0'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
