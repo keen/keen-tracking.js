@@ -130,7 +130,7 @@ Copy/paste this snippet of JavaScript above the `</head>` tag of your page to lo
 // Loads the library asynchronously from any URI
 !function(name,path,ctx){
   var latest,prev=name!=='Keen'&&window.Keen?window.Keen:false;ctx[name]=ctx[name]||{ready:function(fn){var h=document.getElementsByTagName('head')[0],s=document.createElement('script'),w=window,loaded;s.onload=s.onerror=s.onreadystatechange=function(){if((s.readyState&&!(/^c|loade/.test(s.readyState)))||loaded){return}s.onload=s.onreadystatechange=null;loaded=1;latest=w.Keen;if(prev){w.Keen=prev}else{try{delete w.Keen}catch(e){w.Keen=void 0}}ctx[name]=latest;ctx[name].ready(fn)};s.async=1;s.src=path;h.parentNode.insertBefore(s,h)}}
-}('Keen','https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.1.0.min.js',this);
+}('Keen','https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.1.1.min.js',this);
 
 // Executes when the library is loaded and ready
 Keen.ready(function(){
@@ -678,7 +678,11 @@ These helpers are designed to generate useful properties and objects for event d
 
 ### Datetime index
 
+**Important:** This is now supported by the API as an add-on! Learn more here: https://keen.io/docs/api/#datetime-parser
+
 `Keen.utils.getDatetimeIndex()` returns a set of properties like "hour_of_day" or "day_of_month". This helper accepts an optional Date object as an argument, otherwise it will construct and return a datetime index object based on "now".
+
+This helper works with a new `Date` object, and therefore the value returned is localized and not UTC. [Read more about this issue here](https://github.com/keen/keen-tracking.js/issues/49).
 
 ```javascript
 var datetimeIndex = Keen.helpers.getDatetimeIndex();

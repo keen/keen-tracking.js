@@ -6,6 +6,13 @@
 **BREAKING:**
 **CHANGE:**
 -->
+<a name="1.1.1"></a>
+# 1.1.1 Global Namespace Fix (Pt2)
+
+**FIXED:**
+* This patch isolates global namespace definition and installs `keen-core@0.1.1` to fix an issue where prototype methods of other SDKs were blended into this SDK's prototype.
+
+
 <a name="1.1.0"></a>
 # 1.1.0 Global Namespace Fix
 
