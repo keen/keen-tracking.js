@@ -1274,7 +1274,7 @@ Emitter.prototype.hasListeners = function(event){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.1.0'
+    version: '1.1.1'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
@@ -1293,7 +1293,7 @@ Emitter.prototype.hasListeners = function(event){
   });
   Client.extendLibrary = function(target, source) {
     var previous = previousKeen || source;
-    if (typeof previous !== 'undefined') {
+    if (isDefined(previous) && isDefined(previous.resources)) {
       each(previous, function(value, key) {
         if (typeof value === 'object') {
           target[key] = target[key] || {};
@@ -1426,6 +1426,9 @@ Emitter.prototype.hasListeners = function(event){
     else {
       fn();
     }
+  }
+  function isDefined(target) {
+    return typeof target !== 'undefined';
   }
   function isUndefined(target) {
     return typeof target === 'undefined';
