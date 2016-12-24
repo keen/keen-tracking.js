@@ -2,18 +2,18 @@
 (function (global){
 (function(env) {
   'use strict';
-  var K = require('./');
+  var KeenLibrary = require('./');
   var each = require('./utils/each');
   var extend = require('./utils/extend');
-  var listener = require('./utils/listener')(K);
-  extend(K.prototype, require('./record-events-browser'));
-  extend(K.prototype, require('./defer-events'));
-  extend(K.prototype, {
+  var listener = require('./utils/listener')(KeenLibrary);
+  extend(KeenLibrary.prototype, require('./record-events-browser'));
+  extend(KeenLibrary.prototype, require('./defer-events'));
+  extend(KeenLibrary.prototype, {
     'extendEvent': require('./extend-events').extendEvent,
     'extendEvents': require('./extend-events').extendEvents
   });
-  K.prototype.trackExternalLink = trackExternalLink;
-  extend(K.helpers, {
+  KeenLibrary.prototype.trackExternalLink = trackExternalLink;
+  extend(KeenLibrary.helpers, {
     'getBrowserProfile'  : require('./helpers/getBrowserProfile'),
     'getDatetimeIndex'   : require('./helpers/getDatetimeIndex'),
     'getDomNodePath'     : require('./helpers/getDomNodePath'),
@@ -21,13 +21,13 @@
     'getUniqueId'        : require('./helpers/getUniqueId'),
     'getWindowProfile'   : require('./helpers/getWindowProfile')
   });
-  extend(K.utils, {
+  extend(KeenLibrary.utils, {
     'cookie'     : require('./utils/cookie'),
     'deepExtend' : require('./utils/deepExtend'),
     'listener'   : listener,
     'timer'      : require('./utils/timer')
   });
-  K.listenTo = function(listenerHash){
+  KeenLibrary.listenTo = function(listenerHash){
     each(listenerHash, function(callback, key){
       var split = key.split(' ');
       var eventType = split[0],
@@ -104,14 +104,14 @@
     };
   }
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = K;
+    module.exports = KeenLibrary;
   }
   if (typeof define !== 'undefined' && define.amd) {
     define('keen-tracking', [], function(){
-      return K;
+      return KeenLibrary;
     });
   }
-  env.Keen = K.extendLibrary(K);
+  env.Keen = KeenLibrary.extendLibrary(KeenLibrary);
 }).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./":10,"./defer-events":2,"./extend-events":3,"./helpers/getBrowserProfile":4,"./helpers/getDatetimeIndex":5,"./helpers/getDomNodePath":6,"./helpers/getScreenProfile":7,"./helpers/getUniqueId":8,"./helpers/getWindowProfile":9,"./record-events-browser":11,"./utils/cookie":13,"./utils/deepExtend":14,"./utils/each":15,"./utils/extend":16,"./utils/listener":17,"./utils/timer":19}],2:[function(require,module,exports){
@@ -331,13 +331,12 @@ module.exports = getWindowProfile;
     document.documentElement.offsetHeight/Width is a workaround for IE8 and below, where window.innerHeight/Width is undefined
 */
 },{}],10:[function(require,module,exports){
-var K = require('keen-core');
+var KeenCore = require('keen-core');
 var each = require('./utils/each'),
     extend = require('./utils/extend'),
     queue = require('./utils/queue');
-K.helpers = K.helpers || {};
-K.resources.events = '{protocol}://{host}/3.0/projects/{projectId}/events';
-K.on('client', function(client){
+KeenCore.helpers = KeenCore.helpers || {};
+KeenCore.on('client', function(client){
   client.extensions = {
     events: [],
     collections: {}
@@ -347,13 +346,13 @@ K.on('client', function(client){
     client.recordDeferredEvents();
   });
 });
-K.prototype.writeKey = function(str){
+KeenCore.prototype.writeKey = function(str){
   if (!arguments.length) return this.config.writeKey;
   this.config.writeKey = (str ? String(str) : null);
   return this;
 };
-K.prototype.setGlobalProperties = function(props){
-  K.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
+KeenCore.prototype.setGlobalProperties = function(props){
+  KeenCore.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
   if (!props || typeof props !== 'function') {
     this.emit('error', 'Invalid value for global properties: ' + props);
     return;
@@ -361,7 +360,7 @@ K.prototype.setGlobalProperties = function(props){
   this.config.globalProperties = props;
   return this;
 };
-module.exports = K;
+module.exports = KeenCore;
 },{"./utils/each":15,"./utils/extend":16,"./utils/queue":18,"keen-core":22}],11:[function(require,module,exports){
 var Keen = require('./index');
 var base64 = require('./utils/base64');
@@ -1282,7 +1281,9 @@ Emitter.prototype.hasListeners = function(event){
     'base'      : '{protocol}://{host}',
     'version'   : '{protocol}://{host}/3.0',
     'projects'  : '{protocol}://{host}/3.0/projects',
-    'projectId' : '{protocol}://{host}/3.0/projects/{projectId}'
+    'projectId' : '{protocol}://{host}/3.0/projects/{projectId}',
+    'events'    : '{protocol}://{host}/3.0/projects/{projectId}/events',
+    'queries'   : '{protocol}://{host}/3.0/projects/{projectId}/queries'
   });
   Client.utils = Client.utils || {};
   extend(Client.utils, {
@@ -1367,7 +1368,7 @@ Emitter.prototype.hasListeners = function(event){
   };
   Client.prototype.url = function(name){
     var args = Array.prototype.slice.call(arguments, 1),
-        baseUrl = Client.resources.base || '{protocol}://{host}',
+        baseUrl = this.config.resources.base || '{protocol}://{host}',
         path;
     if (name && typeof name === 'string') {
       if (this.config.resources[name]) {
