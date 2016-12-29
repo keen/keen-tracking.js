@@ -6,7 +6,6 @@ chai.use(spies);
 
 var Keen = require('../../../lib/server');
 var config = require('../helpers/client-config');
-var mock = require('../helpers/mock-server-requests');
 
 // Keen.debug = true;
 
@@ -24,7 +23,6 @@ describe('.recordEvent(s) methods (server)', function() {
   describe('.recordEvent()', function() {
 
     it('should make an HTTP request',function(done){
-      mock.post('/events/' + config.collection, 201, config.responses.success);
       this.client.recordEvent( config.collection, config.properties, function(err, res) {
         expect(err).to.be.null;
         expect(res).to.deep.equal( JSON.parse(config.responses.success) );
@@ -65,23 +63,24 @@ describe('.recordEvent(s) methods (server)', function() {
           { page: 'same again' }
         ]
       };
-      this.batchResponse = JSON.stringify({
+      this.batchResponse = {
         click: [
+          { 'success': true },
           { 'success': true }
         ],
         pageview: [
           { 'success': true },
           { 'success': true }
         ]
-      });
+      };
     });
 
-    it('should make an HTTP request',function(){
+    it('should make an HTTP request',function(done){
       var self = this;
-      mock.post('/events', 201, self.batchResponse);
       self.client.recordEvents( self.batchData, function(err, res) {
         expect(err).to.be.null;
-        expect(res).to.deep.equal( JSON.parse(self.batchResponse) );
+        expect(res).to.deep.equal( self.batchResponse );
+        done();
       });
     });
 

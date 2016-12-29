@@ -6,8 +6,15 @@
 **BREAKING:**
 **CHANGE:**
 -->
+<a name="1.1.3"></a>
+# 1.1.3 Fix `recordEvents()` server usage
+
+**FIXED:**
+* This update fixes #66, where server usage of `recordEvents()` includes a trailing slash, resulting in a `ResourceNotFoundError` error.
+
+
 <a name="1.1.2"></a>
-# 1.1.1 Fix Resource Mapping
+# 1.1.2 Fix Resource Mapping
 
 **NEW:**
 * This patch installs `keen-core@0.1.2` and removes the internal `events` resource mapping (now in keen-core) to fix an issue with prototype inheritance and state.
