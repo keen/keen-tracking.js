@@ -1273,7 +1273,7 @@ Emitter.prototype.hasListeners = function(event){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.1.2'
+    version: '1.1.3'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
