@@ -571,10 +571,6 @@ formListener.on('submit', function(e){
     // record signup data
   });
 });
-
-// TODO: Override DOM event timeouts (defaults shown)
-// Keen.deferDomEvents('A', 'click', 500);
-// Keen.deferDomEvents('FORM', 'submit', 500);
 ```
 
 #### Keen.listenTo()
