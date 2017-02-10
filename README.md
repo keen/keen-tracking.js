@@ -656,7 +656,7 @@ userActivity.start();
 // Pause the timer
 userActivity.pause();
 
-// Return the vale of the timer (seconds)
+// Return the value of the timer (seconds)
 userActivity.value(); // 10
 
 // Clear the current value of the timer
