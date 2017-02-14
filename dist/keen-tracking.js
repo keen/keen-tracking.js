@@ -564,6 +564,7 @@ function sendXhr(method, url, data, callback){
   xhr.open(method, url, true);
   xhr.setRequestHeader('Authorization', self.writeKey());
   xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.setRequestHeader('X-KeenSDKVersion-X', 'keen_tracking_browser-'+require('../package.json').version);
   if (data) {
     payload = JSON.stringify(data);
   }
@@ -672,7 +673,7 @@ function sendBeacon(url, callback){
   };
   img.src = url + '&c=clv1';
 }
-},{"./extend-events":3,"./index":10,"./utils/base64":12,"./utils/each":15,"./utils/extend":16}],12:[function(require,module,exports){
+},{"../package.json":28,"./extend-events":3,"./index":10,"./utils/base64":12,"./utils/each":15,"./utils/extend":16}],12:[function(require,module,exports){
 module.exports = require('keen-core/lib/utils/base64');
 },{"keen-core/lib/utils/base64":23}],13:[function(require,module,exports){
 var Cookies = require('js-cookie');
@@ -994,139 +995,7 @@ timer.prototype.clear = function(){
   return this;
 };
 },{}],20:[function(require,module,exports){
-/**
- * Expose `Emitter`.
- */
-module.exports = Emitter;
-/**
- * Initialize a new `Emitter`.
- *
- * @api public
- */
-function Emitter(obj) {
-  if (obj) return mixin(obj);
-};
-/**
- * Mixin the emitter properties.
- *
- * @param {Object} obj
- * @return {Object}
- * @api private
- */
-function mixin(obj) {
-  for (var key in Emitter.prototype) {
-    obj[key] = Emitter.prototype[key];
-  }
-  return obj;
-}
-/**
- * Listen on the given `event` with `fn`.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-Emitter.prototype.on =
-Emitter.prototype.addEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])
-    .push(fn);
-  return this;
-};
-/**
- * Adds an `event` listener that will be invoked a single
- * time then automatically removed.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-Emitter.prototype.once = function(event, fn){
-  function on() {
-    this.off(event, on);
-    fn.apply(this, arguments);
-  }
-  on.fn = fn;
-  this.on(event, on);
-  return this;
-};
-/**
- * Remove the given callback for `event` or all
- * registered callbacks.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-Emitter.prototype.off =
-Emitter.prototype.removeListener =
-Emitter.prototype.removeAllListeners =
-Emitter.prototype.removeEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-  if (0 == arguments.length) {
-    this._callbacks = {};
-    return this;
-  }
-  var callbacks = this._callbacks['$' + event];
-  if (!callbacks) return this;
-  if (1 == arguments.length) {
-    delete this._callbacks['$' + event];
-    return this;
-  }
-  var cb;
-  for (var i = 0; i < callbacks.length; i++) {
-    cb = callbacks[i];
-    if (cb === fn || cb.fn === fn) {
-      callbacks.splice(i, 1);
-      break;
-    }
-  }
-  return this;
-};
-/**
- * Emit `event` with the given args.
- *
- * @param {String} event
- * @param {Mixed} ...
- * @return {Emitter}
- */
-Emitter.prototype.emit = function(event){
-  this._callbacks = this._callbacks || {};
-  var args = [].slice.call(arguments, 1)
-    , callbacks = this._callbacks['$' + event];
-  if (callbacks) {
-    callbacks = callbacks.slice(0);
-    for (var i = 0, len = callbacks.length; i < len; ++i) {
-      callbacks[i].apply(this, args);
-    }
-  }
-  return this;
-};
-/**
- * Return array of callbacks for `event`.
- *
- * @param {String} event
- * @return {Array}
- * @api public
- */
-Emitter.prototype.listeners = function(event){
-  this._callbacks = this._callbacks || {};
-  return this._callbacks['$' + event] || [];
-};
-/**
- * Check if this emitter has `event` handlers.
- *
- * @param {String} event
- * @return {Boolean}
- * @api public
- */
-Emitter.prototype.hasListeners = function(event){
-  return !! this.listeners(event).length;
-};
-},{}],21:[function(require,module,exports){
+/** * Expose `Emitter`. */if (typeof module !== 'undefined') {  module.exports = Emitter;}/** * Initialize a new `Emitter`. * * @api public */function Emitter(obj) {  if (obj) return mixin(obj);};/** * Mixin the emitter properties. * * @param {Object} obj * @return {Object} * @api private */function mixin(obj) {  for (var key in Emitter.prototype) {    obj[key] = Emitter.prototype[key];  }  return obj;}/** * Listen on the given `event` with `fn`. * * @param {String} event * @param {Function} fn * @return {Emitter} * @api public */Emitter.prototype.on =Emitter.prototype.addEventListener = function(event, fn){  this._callbacks = this._callbacks || {};  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])    .push(fn);  return this;};/** * Adds an `event` listener that will be invoked a single * time then automatically removed. * * @param {String} event * @param {Function} fn * @return {Emitter} * @api public */Emitter.prototype.once = function(event, fn){  function on() {    this.off(event, on);    fn.apply(this, arguments);  }  on.fn = fn;  this.on(event, on);  return this;};/** * Remove the given callback for `event` or all * registered callbacks. * * @param {String} event * @param {Function} fn * @return {Emitter} * @api public */Emitter.prototype.off =Emitter.prototype.removeListener =Emitter.prototype.removeAllListeners =Emitter.prototype.removeEventListener = function(event, fn){  this._callbacks = this._callbacks || {};  if (0 == arguments.length) {    this._callbacks = {};    return this;  }  var callbacks = this._callbacks['$' + event];  if (!callbacks) return this;  if (1 == arguments.length) {    delete this._callbacks['$' + event];    return this;  }  var cb;  for (var i = 0; i < callbacks.length; i++) {    cb = callbacks[i];    if (cb === fn || cb.fn === fn) {      callbacks.splice(i, 1);      break;    }  }  return this;};/** * Emit `event` with the given args. * * @param {String} event * @param {Mixed} ... * @return {Emitter} */Emitter.prototype.emit = function(event){  this._callbacks = this._callbacks || {};  var args = [].slice.call(arguments, 1)    , callbacks = this._callbacks['$' + event];  if (callbacks) {    callbacks = callbacks.slice(0);    for (var i = 0, len = callbacks.length; i < len; ++i) {      callbacks[i].apply(this, args);    }  }  return this;};/** * Return array of callbacks for `event`. * * @param {String} event * @return {Array} * @api public */Emitter.prototype.listeners = function(event){  this._callbacks = this._callbacks || {};  return this._callbacks['$' + event] || [];};/** * Check if this emitter has `event` handlers. * * @param {String} event * @return {Boolean} * @api public */Emitter.prototype.hasListeners = function(event){  return !! this.listeners(event).length;};},{}],21:[function(require,module,exports){
 /*!
  * JavaScript Cookie v2.1.0
  * https://github.com/js-cookie/js-cookie
@@ -1246,13 +1115,13 @@ Emitter.prototype.hasListeners = function(event){
 }));
 },{}],22:[function(require,module,exports){
 (function (global){
+var each = require('./utils/each'),
+    extend = require('./utils/extend'),
+    parseParams = require('./utils/parse-params'),
+    serialize = require('./utils/serialize');
+var Emitter = require('component-emitter');
 (function(env){
-  var previousKeen = env.Keen || undefined;
-  var each = require('./utils/each'),
-      extend = require('./utils/extend'),
-      parseParams = require('./utils/parse-params'),
-      serialize = require('./utils/serialize');
-  var Emitter = require('component-emitter');
+  var initialKeen = typeof env.Keen !== 'undefined' ? env.Keen : undefined;
   function Client(props){
     if (this instanceof Client === false) {
       return new Client(props);
@@ -1264,59 +1133,33 @@ Emitter.prototype.hasListeners = function(event){
     this.emit('ready');
     Client.emit('client', this);
   }
-  if (previousKeen && typeof previousKeen.resources === 'undefined') {
-    Client.legacyVersion = previousKeen;
-  }
   Emitter(Client);
   Emitter(Client.prototype);
   extend(Client, {
     debug: false,
     enabled: true,
     loaded: false,
+    resources: {
+      'base'      : '{protocol}://{host}',
+      'version'   : '{protocol}://{host}/3.0',
+      'projects'  : '{protocol}://{host}/3.0/projects',
+      'projectId' : '{protocol}://{host}/3.0/projects/{projectId}'
+    },
+    utils: {
+      'each'        : each,
+      'extend'      : extend,
+      'parseParams' : parseParams,
+      'serialize'   : serialize
+    },
     version: '1.1.3'
   });
-  Client.helpers = Client.helpers || {};
-  Client.resources = Client.resources || {};
-  extend(Client.resources, {
-    'base'      : '{protocol}://{host}',
-    'version'   : '{protocol}://{host}/3.0',
-    'projects'  : '{protocol}://{host}/3.0/projects',
-    'projectId' : '{protocol}://{host}/3.0/projects/{projectId}',
-    'events'    : '{protocol}://{host}/3.0/projects/{projectId}/events',
-    'queries'   : '{protocol}://{host}/3.0/projects/{projectId}/queries'
-  });
-  Client.utils = Client.utils || {};
-  extend(Client.utils, {
-    'each'        : each,
-    'extend'      : extend,
-    'parseParams' : parseParams,
-    'serialize'   : serialize
-  });
-  Client.extendLibrary = function(target, source) {
-    var previous = previousKeen || source;
-    if (isDefined(previous) && isDefined(previous.resources)) {
-      each(previous, function(value, key) {
-        if (typeof value === 'object') {
-          target[key] = target[key] || {};
-          extend(target[key], value);
-        }
-        else {
-          target[key] = target[key] || value;
-        }
-      });
-      extend(target.prototype, previous.prototype);
-    }
-    return target;
-  };
   Client.log = function(str){
     if (Client.debug && typeof console === 'object') {
       console.log('[Keen]', str);
     }
   };
   Client.noConflict = function(){
-    if (typeof env.Keen !== 'undefined') {
-      env.Keen = Client.legacyVersion || previousKeen;
-    }
+    env.Keen = initialKeen;
     return Client;
   };
   Client.ready = function(fn){
@@ -1368,7 +1211,7 @@ Emitter.prototype.hasListeners = function(event){
   };
   Client.prototype.url = function(name){
     var args = Array.prototype.slice.call(arguments, 1),
-        baseUrl = this.config.resources.base || '{protocol}://{host}',
+        baseUrl = Client.resources.base || '{protocol}://{host}',
         path;
     if (name && typeof name === 'string') {
       if (this.config.resources[name]) {
@@ -1428,13 +1271,13 @@ Emitter.prototype.hasListeners = function(event){
       fn();
     }
   }
-  function isDefined(target) {
-    return typeof target !== 'undefined';
+  if (env) {
+    env.Keen = Client;
   }
-  function isUndefined(target) {
-    return typeof target === 'undefined';
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Client;
   }
-  module.exports = Client;
+  /* RequireJS defintion not necessary */
 }).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./utils/each":24,"./utils/extend":25,"./utils/parse-params":26,"./utils/serialize":27,"component-emitter":20}],23:[function(require,module,exports){
@@ -1547,6 +1390,69 @@ function serialize(data){
   });
   return query.join('&');
 }
-},{"./each":24,"./extend":25}]},{},[1]);
+},{"./each":24,"./extend":25}],28:[function(require,module,exports){
+module.exports={
+  "name": "keen-tracking",
+  "version": "1.1.3",
+  "description": "Data Collection SDK for Keen IO",
+  "main": "lib/server.js",
+  "browser": "lib/browser.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/keen/keen-tracking.js.git"
+  },
+  "scripts": {
+    "start": "gulp with-tests",
+    "test": "gulp test:cli"
+  },
+  "bugs": "https://github.com/keen/keen-tracking.js/issues",
+  "author": "Dustin Larimer <dustin@keen.io> (https://keen.io/)",
+  "contributors": [
+    "Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)",
+    "Eric Anderson <eric@keen.io> (https://github.com/aroc)",
+    "Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)",
+    "Alex Kleissner <alex@keen.io> (https://github.com/hex337)"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "component-emitter": "^1.2.0",
+    "js-cookie": "2.1.0",
+    "keen-core": "0.1.2"
+  },
+  "devDependencies": {
+    "browserify": "^9.0.8",
+    "chai": "^2.3.0",
+    "chai-spies": "^0.6.0",
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-awspublish": "0.0.23",
+    "gulp-connect": "^2.2.0",
+    "gulp-derequire": "^2.1.0",
+    "gulp-mocha": "^2.0.1",
+    "gulp-mocha-phantomjs": "^0.6.1",
+    "gulp-remove-empty-lines": "0.0.2",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.3",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-strip-comments": "^1.0.1",
+    "gulp-util": "^3.0.4",
+    "gulp-yuicompressor": "0.0.3",
+    "karma": "^0.12.32",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-mocha": "^0.2.0",
+    "karma-nyan-reporter": "0.0.60",
+    "karma-requirejs": "^0.2.2",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-sauce-launcher": "^0.2.11",
+    "mocha": "^2.2.5",
+    "moment": "^2.10.3",
+    "phantomjs": "^1.9.17",
+    "proclaim": "^3.3.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
+},{}]},{},[1]);
 
 //# sourceMappingURL=keen-tracking.js.map
