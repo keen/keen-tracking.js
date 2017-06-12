@@ -679,7 +679,7 @@ function sendBeacon(url, callback){
   };
   img.src = url + '&c=clv1';
 }
-function sendNavigatorBeacon(url, data, eventCollection) {
+function sendNavigatorBeacon(url, eventCollection, data) {
   var requestUrl = this.url('events', encodeURIComponent(eventCollection), {
     api_key  : this.writeKey(),
     modified : new Date().getTime()
