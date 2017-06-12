@@ -681,7 +681,7 @@ function sendBeacon(url, callback){
 }
 function sendNavigatorBeacon(url, data, callback) {
   var blob = new Blob([data], { type: 'application/json' });
-  navigator.sendBeacon('url', blob);
+  navigator.sendBeacon(url, blob);
 }
 },{"./extend-events":3,"./index":10,"./utils/base64":12,"./utils/each":15,"./utils/extend":16}],12:[function(require,module,exports){
 module.exports = require('keen-core/lib/utils/base64');
