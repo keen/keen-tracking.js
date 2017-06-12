@@ -421,7 +421,7 @@ function recordEvent(eventCollection, eventBody, callback, async){
         break;
       case 'navigatorBeacon':
         if (navigator && navigator.sendBeacon) {
-          sendNavigatorBeacon.call(this, url, extendedEventBody);
+          sendNavigatorBeacon.call(this, url, eventCollection, extendedEventBody);
           break;
         } else {
           this.emit('error', 'navigatorBeacon request type is not supported for this browser. Falling back to default');
@@ -679,9 +679,13 @@ function sendBeacon(url, callback){
   };
   img.src = url + '&c=clv1';
 }
-function sendNavigatorBeacon(url, data, callback) {
-  var blob = new Blob([JSON.stringify(data)], { type: 'application/json; charset=UTF-8' });
-  navigator.sendBeacon(url, blob);
+function sendNavigatorBeacon(url, data, eventCollection) {
+  var requestUrl = this.url('events', encodeURIComponent(eventCollection), {
+    api_key  : this.writeKey(),
+    modified : new Date().getTime()
+  });
+  var blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  navigator.sendBeacon(requestUrl, blob);
 }
 },{"./extend-events":3,"./index":10,"./utils/base64":12,"./utils/each":15,"./utils/extend":16}],12:[function(require,module,exports){
 module.exports = require('keen-core/lib/utils/base64');
