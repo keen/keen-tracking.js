@@ -680,7 +680,7 @@ function sendBeacon(url, callback){
   img.src = url + '&c=clv1';
 }
 function sendNavigatorBeacon(url, data, callback) {
-  var blob = new Blob([data], { type: 'application/json' });
+  var blob = new Blob([JSON.stringify(data)], { type: 'application/json; charset=UTF-8' });
   navigator.sendBeacon(url, blob);
 }
 },{"./extend-events":3,"./index":10,"./utils/base64":12,"./utils/each":15,"./utils/extend":16}],12:[function(require,module,exports){
