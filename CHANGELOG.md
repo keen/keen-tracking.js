@@ -6,6 +6,13 @@
 **BREAKING:**
 **CHANGE:**
 -->
+<a name="1.1.4"></a>
+# 1.1.4 Bug fix for React Native
+
+**FIXED:**
+* Fixed `window.navigator` reference to avoid errors in environments that expose non-standard `window` objects, such as React Native.
+
+
 <a name="1.1.3"></a>
 # 1.1.3 Fix `recordEvents()` server usage
 
