@@ -31,6 +31,8 @@ The following examples demonstrate how to implement rock-solid web analytics, ca
 
 If any of this is confusing, that's our fault and we would love to help. Join our  [Slack community](https://slack.keen.io) or send us a [message](https://keen.io/support/).
 
+**Looking for compute capabilities?** Check out [keen-analysis.js](https://github.com/keen/keen-analysis.js).
+
 **Upgrading from an earlier version of keen-js?** [Read this](./docs/upgrade-guide.md).
 
 ---
