@@ -21,6 +21,9 @@ The previous implementation of `client.url()` automatically included `https://ap
 This method now references an internal collection of resource paths, and constructs URLs using client configuration properties like `host` and `projectId`:
 
 ```javascript
+import Keen from 'keen-tracking';
+const client = new Keen({ /*configure*/ });
+
 var url = client.url('projectId');
 // Renders {protocol}://{host}/3.0/projects/{projectId}
 // Returns https://api.keen.io/3.0/projects/PROJECT_ID
@@ -37,6 +40,9 @@ Default resources:
 Unmatching strings will be appended to the base resource, like so:
 
 ```javascript
+import Keen from 'keen-tracking';
+const client = new Keen({ /*configure*/ });
+
 var url = client.url('/3.0/projects');
 // Returns https://api.keen.io/3.0/projects
 ```
@@ -44,6 +50,9 @@ var url = client.url('/3.0/projects');
 You can also pass in an object to append a serialized query string to the result, like so:
 
 ```javascript
+import Keen from 'keen-tracking';
+const client = new Keen({ /*configure*/ });
+
 var url = client.url('events', { api_key: 'YOUR_API_KEY' });
 // Returns https://api.keen.io/3.0/projects/PROJECT_ID/events?api_key=YOUR_API_KEY
 ```
@@ -51,6 +60,9 @@ var url = client.url('events', { api_key: 'YOUR_API_KEY' });
 Resources can be returned or added with the `client.resources()` method, like so:
 
 ```javascript
+import Keen from 'keen-tracking';
+const client = new Keen({ /*configure*/ });
+
 client.resources()
 // Returns client.config.resources object
 

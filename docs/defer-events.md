@@ -3,6 +3,9 @@
 These methods handle an internal queue of events, which is pushed to the [events](https://keen.io/docs/api/#record-multiple-events) API resource on a given interval (default: 15 seconds), or when the queue reaches a maximum capacity (default: 5000).
 
 ```javascript
+import Keen from 'keen-tracking';
+const client = new Keen({ /*configure*/ });
+
 // Single event from the previous example
 client.deferEvent('purchase', purchaseEvent);
 

@@ -11,7 +11,9 @@ These helpers are designed to generate useful properties and objects for event d
 This helper works with a new `Date` object, and therefore the value returned is localized and not UTC. [Read more about this issue here](https://github.com/keen/keen-tracking.js/issues/49).
 
 ```javascript
-var datetimeIndex = Keen.helpers.getDatetimeIndex();
+import Keen from 'keen-tracking';
+
+const datetimeIndex = Keen.helpers.getDatetimeIndex();
 /*
 // Monday, June 29th, 2015
 {
@@ -29,7 +31,9 @@ var datetimeIndex = Keen.helpers.getDatetimeIndex();
 `Keen.helpers.getUniqueId()` returns a UUID. This is useful in conjunction with `Keen.utils.cookie()` for identifying and tracking unauthenticated site visitors.
 
 ```javascript
-var uniqueId = Keen.helpers.getUniqueId();
+import Keen from 'keen-tracking';
+
+const uniqueId = Keen.helpers.getUniqueId();
 // '150caf6b-ef9f-48cd-ae32-43e2f5bb0fe8'
 ```
 
@@ -38,8 +42,10 @@ var uniqueId = Keen.helpers.getUniqueId();
 `Keen.helpers.getDomNodePath(el)` returns the xPath for a given DOM element.
 
 ```javascript
-var btn = document.getElementById('signup-button');
-var domNodePath = Keen.helpers.getDomNodePath(btn);
+import Keen from 'keen-tracking';
+
+const btn = document.getElementById('signup-button');
+const domNodePath = Keen.helpers.getDomNodePath(btn);
 // 'body > div#nav > ul > li:eq(1) > a#signup-button'
 ```
 
@@ -48,7 +54,9 @@ var domNodePath = Keen.helpers.getDomNodePath(btn);
 `Keen.helpers.getScreenProfile()` returns a set of properties describing the current device screen, like "height", "availHeight", and "orientation".
 
 ```javascript
-var screenProfile = Keen.helpers.getScreenProfile();
+import Keen from 'keen-tracking';
+
+const screenProfile = Keen.helpers.getScreenProfile();
 /*
 {
   height: 900,
@@ -70,7 +78,9 @@ var screenProfile = Keen.helpers.getScreenProfile();
 `Keen.helpers.getWindowProfile()` returns a set of properties describing the current window, like "height", "scrollHeight", and "ratio" to screen dimensions.
 
 ```javascript
-var windowProfile = Keen.helpers.getWindowProfile();
+import Keen from 'keen-tracking';
+
+const windowProfile = Keen.helpers.getWindowProfile();
 /*
 {
   height: 436,
@@ -89,7 +99,9 @@ var windowProfile = Keen.helpers.getWindowProfile();
 `Keen.helpers.getBrowserProfile()` returns a set of properties describing the current browser, like "useragent", "online" status, and "language", plus [screen](#screen-profile) and [window](#window-profile) profiles.
 
 ```javascript
-var browserProfile = Keen.helpers.getBrowserProfile();
+import Keen from 'keen-tracking';
+
+const browserProfile = Keen.helpers.getBrowserProfile();
 /*
 {
   cookies: true,

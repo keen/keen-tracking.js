@@ -1,10 +1,12 @@
-# Event Events
+# Extend Events
 
 These methods extend the event body of every event sent through `recordEvent()` or `recordEvents()`, for all or specified collections, and accepts either a predefined object (static) or a function that returns an object (dynamic). This returned object is then grafted into the original event body with a deep-extend operation that seamlessly blends nested objects.
 
 `extendEvents` transforms will be applied first, followed by collection-specific `extendEvent` transforms. In either case, transforms will be applied in the order that they are defined. Properties provided in the originating `recordEvent/s()` call will override any matching properties (static or dynamic) returned by these methods.
 
 ```javascript
+import Keen from 'keen-tracking';
+const client = new Keen({ /*configure*/ });
 // Extend events for a single collection
 client.extendEvent('transaction', {});
 client.extendEvent('transaction', function(){
@@ -49,6 +51,9 @@ client.extendEvents(function(){
 **Example usage:**
 
 ```javascript
+import Keen from 'keen-tracking';
+const client = new Keen({ /*configure*/ });
+
 // Object (static)
 client.extendEvents({
   page: {

@@ -5,6 +5,8 @@
 **Important:** Form submits and clicks will be delayed by 500ms, unless the event is cancelled within a given listener's callback.
 
 ```javascript
+import Keen from 'keen-tracking';
+
 // Listen to DOM events
 
 // Create a new element listener (assigned)
@@ -46,6 +48,8 @@ formListener.on('submit', function(e){
 This is a convenience function for quickly creating multiple listeners. These listeners are constructed with the `Keen.utils.listener` utility, so the behavior will be identical to calling `Keen.utils.listener(selector).on(eventType, callback);`.
 
 ```javascript
+import Keen from 'keen-tracking';
+
 Keen.listenTo({
   'click .nav li > a': function(e){
     // You have 500ms to record an event!
@@ -59,6 +63,8 @@ Keen.listenTo({
 This technique does not return a reference to the listener, but can be deactivated by defining a listener with the same selector and calling the `.off(eventType)` event:
 
 ```JavaScript
+import Keen from 'keen-tracking';
+
 Keen.utils.listener('.nav li > a').off('click');
 Keen.utils.listener('form#signup').off('submit');
 ```
@@ -66,6 +72,8 @@ Keen.utils.listener('form#signup').off('submit');
 #### Window events
 
 ```javascript
+import Keen from 'keen-tracking';
+
 var winListener = Keen.utils.listener('window')
   .once('scroll', function(e){
     // user is interacting with the page

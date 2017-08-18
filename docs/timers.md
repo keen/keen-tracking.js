@@ -3,6 +3,8 @@
 `Keen.utils.timer()` creates an object that tracks time, and can be paused, restarted, or initialized with a known value (seconds). It seems simple, but these little do-dads are excellent for recording the duration of sessions or specific interactions.
 
 ```javascript
+import Keen from 'keen-tracking';
+
 var userActivity = Keen.utils.timer();
 
 // Start the timer

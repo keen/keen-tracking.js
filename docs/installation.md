@@ -105,7 +105,9 @@ Also note a global `Keen` object will still be defined. This is meant to ensure 
 The client instance is the core of the library and will be required for all API-related functionality. The `client` variable defined below will also be used throughout this document.
 
 ```javascript
-var client = new Keen({
+import Keen from 'keen-tracking';
+
+const client = new Keen({
   projectId: 'YOUR_PROJECT_ID',
   writeKey: 'YOUR_WRITE_KEY',
   host: 'api.keen.io',

@@ -7,6 +7,9 @@ These methods push single or multiple events to their respective API endpoints. 
 Here is an example for recording a "purchases" event. Note that dollar amounts are tracked in cents:
 
 ```javascript
+import Keen from 'keen-tracking';
+const client = new Keen({ /*configure*/ });
+
 // Create a data object with the properties you want to record
 var purchaseEvent = {
   item: 'golden gadget',
@@ -40,6 +43,9 @@ client.recordEvent('purchases', purchaseEvent, function(err, res){
 Here is an example for how to record multiple events with a single API call. Note that dollar amounts are tracked in cents:
 
 ```javascript
+import Keen from 'keen-tracking';
+const client = new Keen({ /*configure*/ });
+
 var multipleEvents = {
   purchases: [
     {

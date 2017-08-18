@@ -32,6 +32,7 @@ Dev console errors and messages are turned off by default, but can be activated 
 
 ```javascript
 import Keen from 'keen-tracking';
+
 // Track errors and messages in the dev console
 Keen.debug = true;
 
