@@ -25,11 +25,9 @@ Or load it from our CDN:
 
 ## Getting started
 
-The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions**. Not interested in web analytics? Use these examples as a primer for getting up and running quickly.
+The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions**. Not interested in web analytics? Use these examples as a primer for getting up and running quickly. These examples also make use of several [helpers](./docs/#helpers) and [utilities](./docs/#utilities) that were designed to address common requirements and help produce insightful, valuable data models.
 
-[Full documentation is available here](./docs).
-
-These examples also make use of several [helpers](./docs/helpers.md) and [utilities](https://github.com/keen/keen-tracking.js/tree/master/lib/utils) that were designed to address common requirements and help produce insightful, valuable data models.
+[Full documentation is available here](./docs)
 
 If any of this is confusing, that's our fault and we would love to help. Join our  [Slack community](https://slack.keen.io) or send us a [message](https://keen.io/support/).
 
@@ -40,7 +38,7 @@ If any of this is confusing, that's our fault and we would love to help. Join ou
 
 ### Setup and Pageview Tracking
 
-Next, let's create a new `client` instance with your Project ID and Write Key, and use the `.extendEvents()` method to define a solid baseline data model that will be applied to every single event that is recorded. Consistent data models and property names make life much easier later on, when analyzing and managing several event streams. This setup also includes our [data enrichment add-ons](https://keen.io/docs/streams/data-enrichment-overview/), which will populate additional information when an event is received on our end.
+First, let's create a new `client` instance with your Project ID and Write Key, and use the `.extendEvents()` method to define a solid baseline data model that will be applied to every single event that is recorded. Consistent data models and property names make life much easier later on, when analyzing and managing several event streams. This setup also includes our [data enrichment add-ons](https://keen.io/docs/streams/data-enrichment-overview/), which will populate additional information when an event is received on our end.
 
 ```javascript
 import Keen from 'keen-tracking';
@@ -121,7 +119,7 @@ client.extendEvents(() => {
 client.recordEvent('pageview', {});
 ```
 
-Now every event that is recorded will inherit this baseline data model. Any additional properties defined in `client.recordEvent()` will be applied before the event finally submitted.
+Every event that is recorded will inherit this baseline data model. Additional properties defined in `client.recordEvent()` will be applied before the event finally submitted.
 
 What else can this SDK do?
 
@@ -129,7 +127,7 @@ What else can this SDK do?
 * [Extend event data models for a single event stream](./docs/extend-events.md)
 * [Queue events to be recorded at a given time interval](./docs/defer-events.md)
 
-[Full documentation is available here](./docs).
+[Full documentation is available here](./docs)
 
 ---
 
