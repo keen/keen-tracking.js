@@ -57,7 +57,7 @@ client.on('extendEvents', Keen.log);
 
 This is an open source project and we love involvement from the community! Hit us up with pull requests and issues.
 
-[Learn more about contributing to this project](./CONTRIBUTING.md).
+[Learn more about contributing to this project](../CONTRIBUTING.md).
 
 ---
 
