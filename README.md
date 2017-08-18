@@ -25,13 +25,17 @@ Or load it from our CDN:
 
 ## Getting started
 
-The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions**. These examples also make use of several [helpers](https://github.com/keen/keen-tracking.js/tree/master/lib/helpers) and [utilities](https://github.com/keen/keen-tracking.js/tree/master/lib/utils) that were designed to address common requirements and help produce insightful, valuable data models.
+The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions**. Not interested in web analytics? That's fine! Use these examples as a primer for getting up and running quickly.
 
-Not interested in web analytics? That's fine! Use these examples as a primer for getting up and running quickly.
+[Full documentation is available here](./docs).
 
-[Read the docs here](./docs). If any of this is confusing or vague, that's our fault and we would love to help. Jump into our [public Slack channel](https://slack.keen.io) or send us a [direct message](https://keen.io/support/).
+These examples also make use of several [helpers](./docs/helpers.md) and [utilities](https://github.com/keen/keen-tracking.js/tree/master/lib/utils) that were designed to address common requirements and help produce insightful, valuable data models.
+
+If any of this is confusing or vague, that's our fault and we would love to help. Jump into our [public Slack channel](https://slack.keen.io) or send us a [direct message](https://keen.io/support/).
 
 **Upgrading from an earlier version of keen-js?** [Read this](./docs/upgrade-guide.md).
+
+---
 
 
 ### Setup and Pageview Tracking
