@@ -25,13 +25,13 @@ Or load it from our CDN:
 
 ## Getting started
 
-The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions**. Not interested in web analytics? That's fine! Use these examples as a primer for getting up and running quickly.
+The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions**. Not interested in web analytics? Use these examples as a primer for getting up and running quickly.
 
 [Full documentation is available here](./docs).
 
 These examples also make use of several [helpers](./docs/helpers.md) and [utilities](https://github.com/keen/keen-tracking.js/tree/master/lib/utils) that were designed to address common requirements and help produce insightful, valuable data models.
 
-If any of this is confusing or vague, that's our fault and we would love to help. Jump into our [public Slack channel](https://slack.keen.io) or send us a [direct message](https://keen.io/support/).
+If any of this is confusing, that's our fault and we would love to help. Join our  [Slack community](https://slack.keen.io) or send us a [message](https://keen.io/support/).
 
 **Upgrading from an earlier version of keen-js?** [Read this](./docs/upgrade-guide.md).
 
@@ -54,7 +54,7 @@ const utils = Keen.utils;
 
 const sessionCookie = utils.cookie('rename-this-example-cookie');
 if (!sessionCookie.get('guest_id')) {
-	sessionCookie.set('guest_id', helpers.getUniqueId());
+  sessionCookie.set('guest_id', helpers.getUniqueId());
 }
 
 client.extendEvents(() => {
@@ -126,10 +126,10 @@ Now every event that is recorded will inherit this baseline data model. Any addi
 What else can this SDK do?
 
 * [Record multiple events in batches](./docs/record-events.md)
-* [Extend event data models for a single event stream](*)
-* [Queue events to be recorded at a given time interval](*)
+* [Extend event data models for a single event stream](./docs/extend-events.md)
+* [Queue events to be recorded at a given time interval](./docs/defer-events.md)
 
-[Read the docs here](./docs)
+[Full documentation is available here](./docs).
 
 ---
 
@@ -152,7 +152,7 @@ timer.start();
 
 Keen.listenTo({
   'click .nav a': function(e){
-		client.recordEvent('click', {
+    client.recordEvent('click', {
       action: {
         intent: 'navigate',
         target_path: helpers.getDomNodePath(e.target)
@@ -161,19 +161,19 @@ Keen.listenTo({
         time_on_page: timer.value()
       }
     });
-	},
-	'submit form#signup': function(e){
-		client.recordEvent('form-submit', {
+  },
+  'submit form#signup': function(e){
+    client.recordEvent('form-submit', {
       action: {
         intent: 'signup',
         target_path: helpers.getDomNodePath(e.target)
       },
-			visitor: {
-				email_address: document.getElementById('signup-email').value,
+      visitor: {
+        email_address: document.getElementById('signup-email').value,
         time_on_page: timer.value()
-			}
-		});
-	}
+      }
+    });
+  }
 });
 ```
 

@@ -12,8 +12,8 @@ sessionCookie.set('user_id', '222323843234');
 
 // Set multiple values
 sessionCookie.set({
-	user_id: '222323843234',
-	first_referrer: 'https://github.com/keen/keen-tracking.js'
+  user_id: '222323843234',
+  first_referrer: 'https://github.com/keen/keen-tracking.js'
 })
 
 // Get a single value, if it exists
@@ -32,8 +32,8 @@ sessionCookie.expire();
 
 // Set options on the cookie
 sessionCookie.options({
-	domain: '...',
-	secure: true
+  domain: '...',
+  secure: true
 });
 ```
 

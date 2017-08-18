@@ -12,17 +12,17 @@ var navLinks = Keen.utils.listener('.nav li > a');
 
 // Listen for a given event
 navLinks.on('click', function(e){
-	// You have 500ms to record an event!
+  // You have 500ms to record an event!
 });
 
 // Listen for event once
 myClicker.once('click', function(e){
-	// First click!
+  // First click!
 });
 
 // Cancel a given event listener
 function clickHandler(e){
-	// do something!
+  // do something!
 }
 myClicker.on('click', clickHandler);
 myClicker.off('click', clickHandler);
@@ -47,12 +47,12 @@ This is a convenience function for quickly creating multiple listeners. These li
 
 ```javascript
 Keen.listenTo({
-	'click .nav li > a': function(e){
-		// You have 500ms to record an event!
-	},
-	'submit form#signup': function(e){
-		// Record a signup event
-	}
+  'click .nav li > a': function(e){
+    // You have 500ms to record an event!
+  },
+  'submit form#signup': function(e){
+    // Record a signup event
+  }
 });
 ```
 
@@ -67,15 +67,15 @@ Keen.utils.listener('form#signup').off('submit');
 
 ```javascript
 var winListener = Keen.utils.listener('window')
-	.once('scroll', function(e){
-		// user is interacting with the page
-	})
-	.on('hashchange', function(e){
-		// user clicked an internal anchor (eg: /#some-heading)
-	})
-	.on('resize', function(e){
-		// ...
-	});
+  .once('scroll', function(e){
+    // user is interacting with the page
+  })
+  .on('hashchange', function(e){
+    // user clicked an internal anchor (eg: /#some-heading)
+  })
+  .on('resize', function(e){
+    // ...
+  });
 ```
 
 **Generally supported events:**

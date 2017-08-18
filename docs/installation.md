@@ -24,17 +24,17 @@ Prefer asynchronous loading? Copy/paste this snippet of JavaScript above the `</
 // Executes when the library is loaded and ready
 Keen.ready(function(){
 
-	// Create a new client instance
-	var client = new Keen({
-		projectId: 'YOUR_PROJECT_ID',
-		writeKey: 'YOUR_WRITE_KEY'
-	});
+  // Create a new client instance
+  var client = new Keen({
+    projectId: 'YOUR_PROJECT_ID',
+    writeKey: 'YOUR_WRITE_KEY'
+  });
 
-	// Record an event!
-	client.recordEvent('pageviews', {
-		// Define your event data model
-		title: document.title
-	});
+  // Record an event!
+  client.recordEvent('pageviews', {
+    // Define your event data model
+    title: document.title
+  });
 
 });
 </script>
@@ -57,11 +57,11 @@ var modules = {};
 }('MyKeenBuild','/assets/js/custom-keen-tracking.js', modules);
 
 modules.MyKeenBuild.ready(function(){
-	var client = new modules.MyKeenBuild.Client({
-		projectId: 'YOUR_PROJECT_ID',
-		writeKey: 'YOUR_WRITE_KEY'
-	});
-	// client.recordEvent('pageviews', {});
+  var client = new modules.MyKeenBuild.Client({
+    projectId: 'YOUR_PROJECT_ID',
+    writeKey: 'YOUR_WRITE_KEY'
+  });
+  // client.recordEvent('pageviews', {});
 });
 ```
 
@@ -106,11 +106,11 @@ The client instance is the core of the library and will be required for all API-
 
 ```javascript
 var client = new Keen({
-	projectId: 'YOUR_PROJECT_ID',
-	writeKey: 'YOUR_WRITE_KEY',
-	host: 'api.keen.io',
-	protocol: 'https',
-	requestType: 'jsonp' // Also: 'xhr', 'beacon'
+  projectId: 'YOUR_PROJECT_ID',
+  writeKey: 'YOUR_WRITE_KEY',
+  host: 'api.keen.io',
+  protocol: 'https',
+  requestType: 'jsonp' // Also: 'xhr', 'beacon'
 });
 
 // Optional accessor methods are available too

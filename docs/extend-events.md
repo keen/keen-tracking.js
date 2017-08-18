@@ -8,41 +8,41 @@ These methods extend the event body of every event sent through `recordEvent()` 
 // Extend events for a single collection
 client.extendEvent('transaction', {});
 client.extendEvent('transaction', function(){
-	return {};
+  return {};
 });
 
 // Extend events for all collections
 client.extendEvents({});
 client.extendEvents(function(){
-	return {};
+  return {};
 });
 
 // Example usage
 
 var userProps = {
-	full_name: 'User Dude',
-	email: 'name@domain.com',
-	id: 'f1233423h',
-	username: 'userdude213'
+  full_name: 'User Dude',
+  email: 'name@domain.com',
+  id: 'f1233423h',
+  username: 'userdude213'
 };
 
 // Include a predefined 'user' object with every purchase event
 client.extendEvent('purchases', {
-	'user': userProps
+  'user': userProps
 });
 
 // Include a predefined 'user' object with every event
 client.extendEvents({
-	'user': userProps
+  'user': userProps
 });
 
 // Include a dynamic 'keen.timestamp' property with every event
 client.extendEvents(function(){
-	return {
-		keen: {
-			timestamp: new Date().toISOString()
-		}
-	};
+  return {
+    keen: {
+      timestamp: new Date().toISOString()
+    }
+  };
 });
 ```
 
@@ -51,26 +51,26 @@ client.extendEvents(function(){
 ```javascript
 // Object (static)
 client.extendEvents({
-	page: {
-		href: document.location.href,
-		title: document.title
-	},
-	referrer: document.referrer,
-	user: {
-		email: 'name@domain.com',
-		id: 'f1233423h',
-		username: 'someuser123'
-	}
+  page: {
+    href: document.location.href,
+    title: document.title
+  },
+  referrer: document.referrer,
+  user: {
+    email: 'name@domain.com',
+    id: 'f1233423h',
+    username: 'someuser123'
+  }
 });
 
 // Function that returns an object (dynamic)
 // Useful for attaching time-sensitive data
 client.extendEvents(function(){
-	return {
-		keen: {
-			timestamp: new Date().toISOString()
-		}
-	}
+  return {
+    keen: {
+      timestamp: new Date().toISOString()
+    }
+  }
 });
 
 //
@@ -78,19 +78,19 @@ client.recordEvent('pageviews');
 
 /* Resulting event body:
 {
-	user: {
-		email: 'name@domain.com',
-		id: 'f1233423h',
-		username: 'someuser123'
-	},
-	page: {
-		href: 'https://github.com/keen/keen-tracking.js#extend-events',
-		title: document.title
-	},
-	referrer: 'https://github.com/keen/',
-	keen: {
-		timestamp: '2015-06-28T22:01:38.824Z'
-	}
+  user: {
+    email: 'name@domain.com',
+    id: 'f1233423h',
+    username: 'someuser123'
+  },
+  page: {
+    href: 'https://github.com/keen/keen-tracking.js#extend-events',
+    title: document.title
+  },
+  referrer: 'https://github.com/keen/',
+  keen: {
+    timestamp: '2015-06-28T22:01:38.824Z'
+  }
 }
 */
 ```

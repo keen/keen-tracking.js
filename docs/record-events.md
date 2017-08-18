@@ -9,21 +9,21 @@ Here is an example for recording a "purchases" event. Note that dollar amounts a
 ```javascript
 // Create a data object with the properties you want to record
 var purchaseEvent = {
-	item: 'golden gadget',
-	price: 2550, // track dollars as cents
-	referrer: document.referrer,
-	keen: {
-		timestamp: new Date().toISOString()
-	}
+  item: 'golden gadget',
+  price: 2550, // track dollars as cents
+  referrer: document.referrer,
+  keen: {
+    timestamp: new Date().toISOString()
+  }
 };
 
 client.recordEvent('purchases', purchaseEvent, function(err, res){
-	if (err) {
-		// there was an error!
-	}
-	else {
-		// see sample response below
-	}
+  if (err) {
+    // there was an error!
+  }
+  else {
+    // see sample response below
+  }
 });
 ```
 
@@ -31,7 +31,7 @@ client.recordEvent('purchases', purchaseEvent, function(err, res){
 
 ```jsonp
 {
-	"created": true
+  "created": true
 }
 ```
 
@@ -41,35 +41,35 @@ Here is an example for how to record multiple events with a single API call. Not
 
 ```javascript
 var multipleEvents = {
-	purchases: [
-		{
-			item: 'golden gadget',
-			price: 2550,
-			transaction_id: 'f029342'
-		},
-		{
-			item: 'a different gadget',
-			price: 1775,
-			transaction_id: 'f029342'
-		}
-	],
-	transactions: [
-		{
-			id: 'f029342',
-			items: 2,
-			total: 4325
-		}
-	]
+  purchases: [
+    {
+      item: 'golden gadget',
+      price: 2550,
+      transaction_id: 'f029342'
+    },
+    {
+      item: 'a different gadget',
+      price: 1775,
+      transaction_id: 'f029342'
+    }
+  ],
+  transactions: [
+    {
+      id: 'f029342',
+      items: 2,
+      total: 4325
+    }
+  ]
 };
 
 // Send multiple events to several collections
 client.recordEvents(multipleEvents, function(err, res){
-	if (err) {
-		// there was an error!
-	}
-	else {
-		// see sample response below
-	}
+  if (err) {
+    // there was an error!
+  }
+  else {
+    // see sample response below
+  }
 });
 ```
 
@@ -77,18 +77,18 @@ client.recordEvents(multipleEvents, function(err, res){
 
 ```json
 {
-	"purchases": [
-		{
-			"success": true
-		},
-		{
-			"success": true
-		}
-	],
-	"transactions": [
-		{
-			"success": true
-		}
-	]
+  "purchases": [
+    {
+      "success": true
+    },
+    {
+      "success": true
+    }
+  ],
+  "transactions": [
+    {
+      "success": true
+    }
+  ]
 }
 ```
