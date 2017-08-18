@@ -1,20 +1,5 @@
 # keen-tracking.js [![Build Status](https://travis-ci.org/keen/keen-tracking.js.svg?branch=master)](https://travis-ci.org/keen/keen-tracking.js)
 
-## Getting started
-
-The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions**. These examples also make use of several [helpers](https://github.com/keen/keen-tracking.js/tree/master/lib/helpers) and [utilities](https://github.com/keen/keen-tracking.js/tree/master/lib/utils) that were designed to address common requirements and help produce insightful, valuable data models.
-
-Not interested in web analytics? That's fine! Use these examples as a primer for getting up and running quickly. If any of this is confusing or vague, that's our fault and we would love to help. Jump into our [public Slack channel](https://slack.keen.io) or send us a [direct message](https://keen.io/support/).
-
-[Read the docs here](./docs)
-
-**Upgrading from an earlier version of keen-js?** [Read this](./docs/upgrade-guide.md).
-
-
-### Get Project ID & API Keys
-
-If you haven’t done so already, [login to Keen IO to create a project](https://keen.io/login?s=gh_js) and grab the **Project ID** and a **write-enabled API key** from the **Access** page of the project console.
-
 
 ### Installation
 
@@ -29,6 +14,24 @@ Or load it from our CDN:
 ```html
 <script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.1.4.min.js"></script>
 ```
+
+[Read about more installation options here](./docs/installation.md)
+
+
+### Project ID & API Keys
+
+[Login to Keen IO to create a project](https://keen.io/login?s=gh_js) and grab the **Project ID** and **Write Key** from your project's **Access** page.
+
+
+## Getting started
+
+The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions**. These examples also make use of several [helpers](https://github.com/keen/keen-tracking.js/tree/master/lib/helpers) and [utilities](https://github.com/keen/keen-tracking.js/tree/master/lib/utils) that were designed to address common requirements and help produce insightful, valuable data models.
+
+Not interested in web analytics? That's fine! Use these examples as a primer for getting up and running quickly.
+
+[Read the docs here](./docs). If any of this is confusing or vague, that's our fault and we would love to help. Jump into our [public Slack channel](https://slack.keen.io) or send us a [direct message](https://keen.io/support/).
+
+**Upgrading from an earlier version of keen-js?** [Read this](./docs/upgrade-guide.md).
 
 
 ### Setup and Pageview Tracking
