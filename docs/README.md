@@ -53,25 +53,11 @@ client.on('extendEvents', Keen.log);
 
 ---
 
-### Custom builds
+### Contributing
 
-Run the following commands to install and build this project:
+This is an open source project and we love involvement from the community! Hit us up with pull requests and issues.
 
-```ssh
-# Clone the repo
-$ git clone https://github.com/keen/keen-tracking.js.git && cd keen-tracking.js
-
-# Install project dependencies
-$ npm install
-
-# Build project with gulp
-# npm install -g gulp
-$ gulp
-
-# Build and launch to view test results
-$ gulp with-tests
-$ open http://localhost:9000
-```
+[Learn more about contributing to this project](./CONTRIBUTING.md).
 
 ---
 

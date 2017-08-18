@@ -27,7 +27,7 @@ Or load it from our CDN:
 
 The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions**. Not interested in web analytics? Use these examples as a primer for getting up and running quickly. These examples also make use of several [helpers](./docs/#helpers) and [utilities](./docs/#utilities) that were designed to address common requirements and help produce insightful, valuable data models.
 
-[Full documentation is available here](./docs)
+[Full documentation is available here](./docs/README.md)
 
 If any of this is confusing, that's our fault and we would love to help. Join our  [Slack community](https://slack.keen.io) or send us a [message](https://keen.io/support/).
 
@@ -119,7 +119,7 @@ client.extendEvents(() => {
 client.recordEvent('pageview', {});
 ```
 
-Every event that is recorded will inherit this baseline data model. Additional properties defined in `client.recordEvent()` will be applied before the event finally submitted.
+Every event that is recorded will inherit this baseline data model. Additional properties defined in `client.recordEvent()` will be applied before the event is finally recorded.
 
 What else can this SDK do?
 
@@ -127,7 +127,7 @@ What else can this SDK do?
 * [Extend event data models for a single event stream](./docs/extend-events.md)
 * [Queue events to be recorded at a given time interval](./docs/defer-events.md)
 
-[Full documentation is available here](./docs)
+[Full documentation is available here](./docs/README.md)
 
 ---
 
@@ -211,7 +211,7 @@ Check out the many additional methods supported by [mobile-detect.js](https://gi
 
 ### Contributing
 
-This is an open source project and we love involvement from the community! Hit us up with pull requests and issues. The more contributions the better!
+This is an open source project and we love involvement from the community! Hit us up with pull requests and issues.
 
 [Learn more about contributing to this project](./CONTRIBUTING.md).
 

@@ -1,11 +1,6 @@
 # We <3 Contributions!
 
-This is an open source project and we love involvement from the community! Hit us up with pull requests and issues. The more contributions the better!
-
-**TODO:**
-
-* [ ] Validate `Keen.utils.listener()` form submit binding on IE8
-* [ ] Expose `A` element click event and `FORM` element submit event timeouts (default: 500ms)
+This is an open source project and we love involvement from the community! Hit us up with pull requests and issues.
 
 Run the following commands to install and build this project:
 
@@ -52,4 +47,3 @@ Fetch the branch and/or deploy to staging to test the following:
 ## Related tickets?
 
 ```
-
