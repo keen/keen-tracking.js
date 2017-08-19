@@ -202,3 +202,5 @@ const configureStore = preloadedState => createStore(
 
 export default configureStore
 ```
+
+Once the app reloads, events should begin appearing in the browser console.
