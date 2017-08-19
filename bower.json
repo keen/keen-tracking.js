@@ -27,6 +27,7 @@
     ".travis.yml",
     ".gitignore",
     ".npmignore",
+    "docs",
     "lib",
     "node_modules",
     "test",
