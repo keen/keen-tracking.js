@@ -21,10 +21,11 @@ redux/examples/real-world/src/store/keen-middleware.js
 This file has a lot going on, so here's a quick overview:
 
 1. Import the `keen-tracking` package and disable event logging when not in `production` mode.
-2. `EVENT_STREAM_NAME` can be customized to your liking. We recommend recording events to a single stream when instrumenting apps like this, and filtering queries on the `action.type` property (defined later).
-3. Define a `client` instance and enable logging when not in `production` mode. Events won't be recorded, since `Keen.disabled` is `true`, but you will still be able to see captured events logged out in the console.
-4. Use `client.extendEvents()` to define a baseline data model for every action/event that is recorded.
-5. Define and export the actual middleware function where `action` and `state` data are captured.
+2. `EVENT_STREAM_NAME` can be customized to your liking. We recommend recording events to a single stream when instrumenting apps like this, and filtering queries on the `action.type` (or similar) property defined within your actions.
+3. `OMITTED_ACTIONS` allows you to omit noisy or trivial actions from being recorded.
+4. Define a `client` instance and enable logging when not in `production` mode. Events won't be recorded, since `Keen.disabled` is `true`, but you will still be able to see captured events logged out in the console.
+5. Use `client.extendEvents()` to define a baseline data model for every action/event that is recorded.
+6. Define and export the actual middleware function where `action` and `state` data are captured.
 
 ```javascript
 import Keen from 'keen-tracking';
