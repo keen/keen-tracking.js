@@ -1,6 +1,6 @@
 # React Redux Middleware
 
-This example demonstrates how to instrument a Redux Store, based on the official [Redux Real World Example App](https://github.com/reactjs/redux/tree/master/examples/real-world).
+This example demonstrates how to instrument a Redux Store, based on the official [Redux Real World Example app](https://github.com/reactjs/redux/tree/master/examples/real-world).
 
 ### Installation
 
