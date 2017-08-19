@@ -7,6 +7,12 @@
 
 ---
 
+### Examples
+
+* [React Redux Middleware](./examples/react-redux-middleware): How to instrument a Redux Store, based on the official Redux Real World Example app
+
+---
+
 ### Utilities
 
 * [Cookies](./cookies.md) (browser-only) for persisting data from one page to the next

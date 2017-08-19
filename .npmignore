@@ -11,4 +11,5 @@ karma.conf.js
 
 bower_components
 dist
+docs
 test
