@@ -1,6 +1,6 @@
 {
   "name": "keen-tracking",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "Data Collection SDK for Keen IO",
   "main": "lib/server.js",
   "browser": "lib/browser.js",

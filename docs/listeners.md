@@ -43,7 +43,7 @@ formListener.on('submit', function(e){
 });
 ```
 
-#### Keen.listenTo()
+### Keen.listenTo()
 
 This is a convenience function for quickly creating multiple listeners. These listeners are constructed with the `Keen.utils.listener` utility, so the behavior will be identical to calling `Keen.utils.listener(selector).on(eventType, callback);`.
 
@@ -69,7 +69,27 @@ Keen.utils.listener('.nav li > a').off('click');
 Keen.utils.listener('form#signup').off('submit');
 ```
 
-#### Window events
+
+### Nested DOM elements
+
+To capture events from anchor tags that contain nested elements, such as `<img>`, `<i>`, or `<strong>` nodes, use a wildcard selector (#72):
+
+```html
+<a class="my-btn" href="./index.html">
+  <img class="nav-brand" src="assets/logo.png" title="Logo" />
+</a>
+```
+
+```javascript
+import Keen from 'keen-tracking';
+
+Keen.utils.listener('a.my-btn, a.my-btn *').on('click', function(e){
+  // You have 500ms to record an event!
+});
+```
+
+
+### Window events
 
 ```javascript
 import Keen from 'keen-tracking';
