@@ -95,4 +95,10 @@ describe('.deferEvent(s) methods', function() {
     this.client.recordDeferredEvents();
   });
 
+  it('should clear internal queue timer when .queueInterval() is set to 0', function(){
+    assert.ok(this.client.queue.timer);
+    this.client.queueInterval(0);
+    assert.isNull(this.client.queue.timer);
+  });
+
 });
