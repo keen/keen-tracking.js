@@ -4,9 +4,7 @@ These helpers are designed to generate useful properties and objects for event d
 
 ### Datetime index
 
-**Important:** This is now supported by the API as an add-on! Learn more here: https://keen.io/docs/api/#datetime-parser
-
-`Keen.helpers.getDatetimeIndex()` returns a set of properties like "hour_of_day" or "day_of_month". This helper accepts an optional Date object as an argument, otherwise it will construct and return a datetime index object based on "now".
+`Keen.helpers.getDatetimeIndex()` returns a set of properties like "hour_of_day" or "day_of_month". This helper accepts an optional `Date` object as an argument, otherwise it will construct and return a datetime index object based on "now".
 
 This helper works with a new `Date` object, and therefore the value returned is localized and not UTC. [Read more about this issue here](https://github.com/keen/keen-tracking.js/issues/49).
 
@@ -25,6 +23,37 @@ const datetimeIndex = Keen.helpers.getDatetimeIndex();
 }
 */
 ```
+
+#### UTC datetime index
+
+Create and pass a UTC `Date` object into `Keen.helpers.getDatetimeIndex()` to include a UTC datetime index with your event data model.
+
+```javascript
+import Keen from 'keen-tracking';
+
+const now = new Date();
+const utc = new Date(
+  now.getUTCFullYear(),
+  now.getUTCMonth(),
+  now.getUTCDate(),
+  now.getUTCHours(),
+  now.getUTCMinutes(),
+  now.getUTCSeconds(),
+  now.getUTCMilliseconds()
+);
+const utcDatetimeIndex = Keen.helpers.getDatetimeIndex(utc);
+/*
+// Monday, June 29th, 2015
+{
+  'hour_of_day': 14,
+  'day_of_week': 2,
+  'day_of_month': 29,
+  'month': 6,
+  'year': 2015
+}
+*/
+```
+
 
 ### Unique ID
 

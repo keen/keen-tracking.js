@@ -16,6 +16,7 @@
 **UPDATED:**
 * Updated tests and docs related to deferred event handling and queueing (#76).
 * Updated docs about assigning DOM listeners to anchor tags with nested elements (#72).
+* Include a UTC Datetime Index example in `docs/helpers.md` (#49, #70).
 
 
 <a name="1.1.4"></a>
