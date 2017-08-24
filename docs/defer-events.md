@@ -53,7 +53,7 @@ client.queueInterval(15);
 client.queueInterval(); // 15
 ```
 
-**Important:** Setting the `queueInterval` to `0` will stop the internal `setInterval` loop that monitors the queue.
+**Important:** Setting `client.queueInterval(0);` will stop the internal `setInterval` loop that monitors the queue. Another method for exiting this process is `client.queue.pause();`.
 
 
 ### Flush the queue
@@ -65,7 +65,7 @@ import Keen from 'keen-tracking';
 const client = new Keen({ /*configure*/ });
 
 client.deferEvent('purchase', {
-  /* Data Model */ 
+  /* Data Model */
 });
 
 client.recordDeferredEvents();
