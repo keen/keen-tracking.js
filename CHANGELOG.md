@@ -10,11 +10,11 @@
 # 1.2.0 Fix queue exiting
 
 **FIXED:**
-* Fixed queue handling (#76) to clear the internal `setInterval` loop and allow scripts using queues to exit properly.
+* Fixed queue handling (#76) to clear the internal `setInterval` loop and allow scripts using queues to exit properly
 * Fixed async loader snippet (#77).
 
 **UPDATED:**
-* Updated tests and docs related to deferred event handling and queueing (#77).
+* Updated tests and docs related to deferred event handling and queueing (#76).
 * Updated docs about assigning DOM listeners to anchor tags with nested elements (#72).
 
 
