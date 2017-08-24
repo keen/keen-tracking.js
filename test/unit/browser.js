@@ -10,5 +10,6 @@ require('./modules/utils/listener-spec');
 require('./modules/utils/cookie-spec');
 require('./modules/utils/timer-spec');
 require('./modules/utils/deep-extend-spec');
+require('./modules/utils/queue-spec');
 
 // Include browser-specific specs here
