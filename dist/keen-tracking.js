@@ -153,11 +153,13 @@ function deferEvents(eventsHash){
 function queueCapacity(num){
   if (!arguments.length) return this.queue.config.capacity;
   this.queue.config.capacity = num ? Number(num): 0;
+  this.queue.check();
   return this;
 }
 function queueInterval(num){
   if (!arguments.length) return this.queue.config.interval;
   this.queue.config.interval = num ? Number(num): 0;
+  this.queue.check();
   return this;
 }
 function recordDeferredEvents(){
@@ -1173,7 +1175,7 @@ timer.prototype.clear = function(){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.1.4'
+    version: '1.2.0'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
