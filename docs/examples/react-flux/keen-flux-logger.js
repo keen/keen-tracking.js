@@ -5,7 +5,8 @@ const EVENT_STREAM_NAME = 'app-actions';
 
 // Omit noisy actions if necessary
 const OMITTED_ACTIONS = [
-  // '@@router/LOCATION_CHANGE'
+  // 'KEYPRESS',
+  // 'WINDOW_RESIZED'
 ];
 
 // Define a client instance
@@ -56,6 +57,7 @@ client.extendEvents(() => {
       /* Include additional visitor info here */
     },
     keen: {
+      timestamp: new Date().toISOString(),
       addons: [
         {
           name: 'keen:ip_to_geo',
@@ -91,25 +93,21 @@ client.extendEvents(() => {
   };
 });
 
-const reduxMiddleware = function({ getState }) {
-  return (next) => (action) => {
-    const returnValue = next(action);
-    const eventBody = {
-      'action': action,
-      'state': getState()
-      /*
-          Include additional properties here, or
-          refine the state data that is recorded
-          by cherry-picking specific properties
-      */
-    };
-    // Filter omitted actions by action.type
-    // ...or whatever you name this property
-    if (OMITTED_ACTIONS.indexOf(action.type) < 0) {
-      client.recordEvent(EVENT_STREAM_NAME, eventBody);
-    }
-    return returnValue;
+const fluxLogger = function(state, action) {
+  const eventBody = {
+    'action': action,
+    'state': state
+    /*
+        Include additional properties here, or
+        refine the state data that is recorded
+        by cherry-picking specific properties
+    */
   };
+  // Filter omitted actions by action.type
+  // ...or whatever you name this property
+  if (OMITTED_ACTIONS.indexOf(action.type) < 0) {
+    client.deferEvent(EVENT_STREAM_NAME, eventBody);
+  }
 }
 
-export default reduxMiddleware;
+export default fluxLogger;
