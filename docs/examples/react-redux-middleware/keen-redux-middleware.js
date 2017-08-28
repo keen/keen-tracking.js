@@ -1,18 +1,23 @@
 import Keen from 'keen-tracking';
-if (process.env.NODE_ENV !== 'production') {
-  Keen.disabled = true;
-}
 
-const EVENT_STREAM_NAME = 'app-action';
+// Record all actions to a single event stream
+const EVENT_STREAM_NAME = 'app-actions';
+
+// Omit noisy actions if necessary
 const OMITTED_ACTIONS = [
-  '@@router/LOCATION_CHANGE'
+  // '@@router/LOCATION_CHANGE'
 ];
 
+// Define a client instance
 const client = new Keen({
   projectId: 'PROJECT_ID',
   writeKey: 'WRITE_KEY'
 });
+
 if (process.env.NODE_ENV !== 'production') {
+  // Optionally prevent recording in dev mode
+  Keen.enabled = false;
+  // Display events in the browser console
   client.on('recordEvent', KeenTracking.log);
 }
 
@@ -20,6 +25,11 @@ const helpers = Keen.helpers;
 const timer = Keen.utils.timer();
 timer.start();
 
+// Batch-record events every 5s
+client.queueInterval(5);
+
+// Define a baseline data model for every
+// action/event that will be recorded
 client.extendEvents(() => {
   return {
     geo: {
@@ -87,7 +97,14 @@ const reduxMiddleware = function({ getState }) {
     const eventBody = {
       'action': action,
       'state': getState()
+      /*
+          Include additional properties here, or
+          refine the state data that is recorded
+          by cherry-picking specific properties
+      */
     };
+    // Filter omitted actions by action.type
+    // ...or whatever you name this property
     if (OMITTED_ACTIONS.indexOf(action.type) < 0) {
       client.recordEvent(EVENT_STREAM_NAME, eventBody);
     }
