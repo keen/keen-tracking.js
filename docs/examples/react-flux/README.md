@@ -112,7 +112,7 @@ const fluxLogger = function(state, action) {
   const eventBody = {
     'action': action,
     'state': state
-    /* 
+    /*
         Include additional properties here, or
         refine the state data that is recorded
         by cherry-picking specific properties
@@ -136,7 +136,6 @@ Next, import our new `keen-flux-logger` module into your Store definition:
 ```javascript
 import { ReduceStore } from 'flux/utils';
 import AppDispatcher from './app-dispatcher';
-import ActionTypes from './action-types';
 import KeenFluxLogger from './keen-flux-logger';
 
 class Store extends ReduceStore {
