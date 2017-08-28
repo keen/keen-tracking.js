@@ -106,7 +106,7 @@ const reduxMiddleware = function({ getState }) {
     // Filter omitted actions by action.type
     // ...or whatever you name this property
     if (OMITTED_ACTIONS.indexOf(action.type) < 0) {
-      client.recordEvent(EVENT_STREAM_NAME, eventBody);
+      client.deferEvent(EVENT_STREAM_NAME, eventBody);
     }
     return returnValue;
   };
