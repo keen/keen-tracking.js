@@ -9,7 +9,8 @@
 
 ### Examples
 
-* [React Redux Middleware](./examples/react-redux-middleware): How to instrument a Redux Store, based on the official Redux Real World Example app
+* [React Flux Logger](./examples/react-flux): How to instrument a Flux ReduceStore
+* [React Redux Middleware](./examples/react-redux-middleware): How to instrument a Redux Store
 
 ---
 
