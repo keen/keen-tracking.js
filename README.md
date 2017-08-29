@@ -31,6 +31,11 @@ The following examples demonstrate how to implement rock-solid web analytics, ca
 
 If any of this is confusing, that's our fault and we would love to help. Join our  [Slack community](https://slack.keen.io) or send us a [message](https://keen.io/support/).
 
+**Using React? Check out these setup guides:**
+
+* [React Flux Logger](./docs/examples/react-flux): How to instrument a Flux ReduceStore
+* [React Redux Middleware](./docs/examples/react-redux-middleware): How to instrument a Redux Store
+
 **Looking for compute capabilities?** Check out [keen-analysis.js](https://github.com/keen/keen-analysis.js).
 
 **Upgrading from an earlier version of keen-js?** [Read this](./docs/upgrade-guide.md).
@@ -123,11 +128,16 @@ client.recordEvent('pageview', {});
 
 Every event that is recorded will inherit this baseline data model. Additional properties defined in `client.recordEvent()` will be applied before the event is finally recorded.
 
-What else can this SDK do?
+**What else can this SDK do?**
 
 * [Record multiple events in batches](./docs/record-events.md)
 * [Extend event data models for a single event stream](./docs/extend-events.md)
 * [Queue events to be recorded at a given time interval](./docs/defer-events.md)
+
+**Using React? Check out these setup guides:**
+
+* [React Flux Logger](./docs/examples/react-flux): How to instrument a Flux ReduceStore
+* [React Redux Middleware](./docs/examples/react-redux-middleware): How to instrument a Redux Store
 
 [Full documentation is available here](./docs/README.md)
 
