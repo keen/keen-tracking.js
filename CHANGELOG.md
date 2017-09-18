@@ -11,7 +11,7 @@
 
 **FIXED:**
 * Fixed a queue polling issue (#84) to prevent queue from polling until events are added to the queue, allowing scripts to close properly when queues are _not_ used
-
+* Clear polling loop prior to replacing queue with a new one
 
 <a name="1.2.0"></a>
 # 1.2.0 Fix queue exiting

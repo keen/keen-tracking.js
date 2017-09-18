@@ -173,6 +173,7 @@ function recordDeferredEvents(){
       clonedQueueConfig,
       clonedQueueEvents;
   if (self.queue.capacity > 0) {
+    self.queue.pause();
     clonedQueueConfig = JSON.parse(JSON.stringify(self.queue.config));
     clonedQueueEvents = JSON.parse(JSON.stringify(self.queue.events));
     self.queue = queue();
@@ -968,7 +969,7 @@ queue.prototype.check = function() {
   if (shouldFlushQueue(this)) {
     this.flush();
   }
-  if (this.config.interval === 0) {
+  if (this.config.interval === 0 || this.capacity === 0) {
     this.pause();
   }
   return this;
@@ -1180,7 +1181,7 @@ timer.prototype.clear = function(){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.2.0'
+    version: '1.2.1'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
