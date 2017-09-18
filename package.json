@@ -1,6 +1,6 @@
 {
   "name": "keen-tracking",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Data Collection SDK for Keen IO",
   "main": "lib/server.js",
   "browser": "lib/browser.js",
@@ -42,6 +42,7 @@
     "gulp-replace": "^0.5.3",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-strip-comments": "^1.0.1",
+    "gulp-uglify": "^1.5.2",
     "gulp-util": "^3.0.4",
     "gulp-yuicompressor": "0.0.3",
     "karma": "^0.12.32",

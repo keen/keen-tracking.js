@@ -12,7 +12,7 @@ $ npm install keen-tracking --save
 Or load it from our CDN:
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.2.0.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.2.1.min.js"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)

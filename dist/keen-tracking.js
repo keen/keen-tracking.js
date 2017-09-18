@@ -133,6 +133,9 @@ function deferEvent(eventCollection, eventBody){
   this.queue.events[eventCollection] = this.queue.events[eventCollection] || [];
   this.queue.events[eventCollection].push(eventBody);
   this.queue.capacity++;
+  if (!this.queue.timer) {
+    this.queue.start();
+  }
   this.emit('deferEvent', eventCollection, eventBody);
   return this;
 }
@@ -146,6 +149,9 @@ function deferEvents(eventsHash){
     self.queue.events[eventCollection] = self.queue.events[eventCollection] || [];
     self.queue.events[eventCollection] = self.queue.events[eventCollection].concat(eventList);
     self.queue.capacity = self.queue.capacity + eventList.length;
+    if (!self.queue.timer) {
+      self.queue.start();
+    }
   });
   self.emit('deferEvents', eventsHash);
   return self;
@@ -167,6 +173,7 @@ function recordDeferredEvents(){
       clonedQueueConfig,
       clonedQueueEvents;
   if (self.queue.capacity > 0) {
+    self.queue.pause();
     clonedQueueConfig = JSON.parse(JSON.stringify(self.queue.config));
     clonedQueueEvents = JSON.parse(JSON.stringify(self.queue.events));
     self.queue = queue();
@@ -955,7 +962,6 @@ function queue() {
   };
   this.interval = 0;
   this.timer = null;
-  this.start();
   return this;
 }
 Emitter(queue.prototype);
@@ -963,7 +969,7 @@ queue.prototype.check = function() {
   if (shouldFlushQueue(this)) {
     this.flush();
   }
-  if (this.config.interval === 0) {
+  if (this.config.interval === 0 || this.capacity === 0) {
     this.pause();
   }
   return this;
@@ -1175,7 +1181,7 @@ timer.prototype.clear = function(){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.2.0'
+    version: '1.2.1'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
