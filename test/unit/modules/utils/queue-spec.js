@@ -28,8 +28,8 @@ describe('Keen.utils.queue', function() {
       assert.equal(this.queue.config.interval, 15);
     });
 
-    it('should have internal timer property', function() {
-      assert.ok(this.queue.timer);
+    it('should have internal timer property that is null', function() {
+      assert.isNull(this.queue.timer);
     });
 
     it('should have prototype methods', function() {
@@ -44,9 +44,9 @@ describe('Keen.utils.queue', function() {
   describe('methods', function(){
 
     it('should set a new timer when .start() is called', function() {
-      assert.ok(this.queue.timer);
-      this.queue.pause();
       assert.isNull(this.queue.timer);
+      // this.queue.pause();
+      // assert.isNull(this.queue.timer);
       this.queue.start();
       assert.ok(this.queue.timer);
       this.queue.pause();
@@ -72,12 +72,15 @@ describe('Keen.utils.queue', function() {
     });
 
     it('should clear timer when .pause() is called', function() {
+      assert.isNull(this.queue.timer);
+      this.queue.start();
       assert.ok(this.queue.timer);
       this.queue.pause();
       assert.isNull(this.queue.timer);
     });
 
     it('should clear timer when config.interval is set to 0', function() {
+      this.queue.start();
       assert.ok(this.queue.timer);
       this.queue.config.interval = 0;
       this.queue.check();

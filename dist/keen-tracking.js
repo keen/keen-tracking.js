@@ -133,6 +133,9 @@ function deferEvent(eventCollection, eventBody){
   this.queue.events[eventCollection] = this.queue.events[eventCollection] || [];
   this.queue.events[eventCollection].push(eventBody);
   this.queue.capacity++;
+  if (!this.queue.timer) {
+    this.queue.start();
+  }
   this.emit('deferEvent', eventCollection, eventBody);
   return this;
 }
@@ -146,6 +149,9 @@ function deferEvents(eventsHash){
     self.queue.events[eventCollection] = self.queue.events[eventCollection] || [];
     self.queue.events[eventCollection] = self.queue.events[eventCollection].concat(eventList);
     self.queue.capacity = self.queue.capacity + eventList.length;
+    if (!self.queue.timer) {
+      self.queue.start();
+    }
   });
   self.emit('deferEvents', eventsHash);
   return self;
@@ -955,7 +961,6 @@ function queue() {
   };
   this.interval = 0;
   this.timer = null;
-  this.start();
   return this;
 }
 Emitter(queue.prototype);

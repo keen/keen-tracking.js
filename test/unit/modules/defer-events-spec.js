@@ -95,7 +95,24 @@ describe('.deferEvent(s) methods', function() {
     this.client.recordDeferredEvents();
   });
 
+  it('should not have an internal queue timer until an event is added to the queue', function(){
+    assert.isNull(this.client.queue.timer);
+    this.client.deferEvent('single-deferred-event', { prop: true });
+    assert.ok(this.client.queue.timer);
+  });
+
+  it('should not have an internal queue timer until multiple events are added to the queue', function(){
+    assert.isNull(this.client.queue.timer);
+    this.client.deferEvents({
+      'deferred event': [{ test: 'data' }, { test: 'none' }],
+      'another event': [{ test: 'data' }]
+    });
+    assert.ok(this.client.queue.timer);
+  });
+
   it('should clear internal queue timer when .queueInterval() is set to 0', function(){
+    assert.isNull(this.client.queue.timer);
+    this.client.deferEvent('single-deferred-event', { prop: true });
     assert.ok(this.client.queue.timer);
     this.client.queueInterval(0);
     assert.isNull(this.client.queue.timer);

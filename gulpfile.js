@@ -4,7 +4,6 @@ var gulp = require('gulp'),
 var aws = require('gulp-awspublish'),
     browserify = require('browserify'),
     buffer = require('vinyl-buffer'),
-    compress = require('gulp-yuicompressor')
     connect = require('gulp-connect'),
     del = require('del'),
     karma = require('karma').server,
@@ -17,6 +16,7 @@ var aws = require('gulp-awspublish'),
     source = require('vinyl-source-stream'),
     sourcemaps = require('gulp-sourcemaps'),
     stripComments = require('gulp-strip-comments'),
+    uglify = require('gulp-uglify'),
     util = require('gulp-util');
 
 
@@ -52,17 +52,14 @@ gulp.task('build:browserify', function() {
 
 gulp.task('build:minify', ['build:browserify'], function(){
   return gulp.src(['./dist/' + pkg.name + '.js'])
-    .pipe(compress({ type: 'js' }))
+    .pipe(uglify())
     .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('minify-loader', function(){
   return gulp.src(['./lib/browser-async.js'])
-    .pipe(compress({
-      nomunge: 0,
-      type: 'js'
-    }))
+    .pipe(uglify())
     .pipe(rename({ basename: 'keen-loader', suffix: '.min' }))
     .pipe(gulp.dest('./dist/'));
 });
