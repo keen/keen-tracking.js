@@ -2,7 +2,7 @@
 
 * [Installation](./installation.md)
 * [Record events](./record-events.md) to the API individually or in batches
-* [Extend events](./extend-eventsmd) to build intricate, useful data models and ease instrumentation
+* [Extend events](./extend-events.md) to build intricate, useful data models and ease instrumentation
 * [Defer events](./defer-events.md) to be recorded at a given interval, or when the queue reaches a given capacity
 
 ---
