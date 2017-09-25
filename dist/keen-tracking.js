@@ -254,7 +254,10 @@ function getBrowserProfile() {
   }
 }
 function getDocumentDescription() {
-  var el = document.querySelector('meta[name="description"]');
+  var el;
+  if (document && typeof document.querySelector === 'function') {
+    el = document.querySelector('meta[name="description"]');
+  }
   return el ? el.content : '';
 }
 module.exports = getBrowserProfile;
