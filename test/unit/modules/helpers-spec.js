@@ -3,6 +3,7 @@ var assert = require('proclaim');
 var getBrowserProfile = require('../../../lib/helpers/getBrowserProfile');
 var getDatetimeIndex = require('../../../lib/helpers/getDatetimeIndex');
 var getDomNodePath = require('../../../lib/helpers/getDomNodePath');
+var getDomNodeProfile = require('../../../lib/helpers/getDomNodeProfile');
 var getScreenProfile = require('../../../lib/helpers/getScreenProfile');
 var getUniqueId = require('../../../lib/helpers/getUniqueId');
 var getWindowProfile = require('../../../lib/helpers/getWindowProfile');
@@ -91,6 +92,15 @@ describe('Keen.helpers', function(){
       var el = document.body;
       var path = getDomNodePath(el);
       assert.isString(path);
+    });
+  });
+
+  describe('#getDomNodeProfile', function(){
+    it('should return an object of properties for a given DOM node', function(){
+      var el = document.body;
+      var obj = getDomNodeProfile(el);
+      assert.isObject(obj);
+      assert.isString(obj.node_name, 'BODY');
     });
   });
 
