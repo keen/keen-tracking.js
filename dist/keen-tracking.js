@@ -238,19 +238,24 @@ function getExtendedEventBody(result, queue){
 },{"./utils/deepExtend":14,"./utils/each":15}],4:[function(require,module,exports){
 var getScreenProfile = require('./getScreenProfile'),
     getWindowProfile = require('./getWindowProfile');
-function getBrowserProfile(){
+function getBrowserProfile() {
   return {
-    'cookies'  : ('undefined' !== typeof navigator.cookieEnabled) ? navigator.cookieEnabled : false,
-    'codeName' : navigator.appCodeName,
-    'language' : navigator.language,
-    'name'     : navigator.appName,
-    'online'   : navigator.onLine,
-    'platform' : navigator.platform,
-    'useragent': navigator.userAgent,
-    'version'  : navigator.appVersion,
-    'screen'   : getScreenProfile(),
-    'window'   : getWindowProfile()
+    'cookies'    : ('undefined' !== typeof navigator.cookieEnabled) ? navigator.cookieEnabled : false,
+    'codeName'   : navigator.appCodeName,
+    'description': getDocumentDescription(),
+    'language'   : navigator.language,
+    'name'       : navigator.appName,
+    'online'     : navigator.onLine,
+    'platform'   : navigator.platform,
+    'useragent'  : navigator.userAgent,
+    'version'    : navigator.appVersion,
+    'screen'     : getScreenProfile(),
+    'window'     : getWindowProfile()
   }
+}
+function getDocumentDescription() {
+  var el = document.querySelector('meta[name="description"]');
+  return el ? el.content : '';
 }
 module.exports = getBrowserProfile;
 },{"./getScreenProfile":7,"./getWindowProfile":9}],5:[function(require,module,exports){
