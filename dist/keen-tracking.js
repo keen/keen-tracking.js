@@ -121,7 +121,6 @@
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./browser-auto-tracking":2,"./defer-events":3,"./extend-events":4,"./helpers/getBrowserProfile":5,"./helpers/getDatetimeIndex":6,"./helpers/getDomNodePath":7,"./helpers/getDomNodeProfile":8,"./helpers/getScreenProfile":9,"./helpers/getUniqueId":10,"./helpers/getWindowProfile":11,"./index":12,"./record-events-browser":13,"./utils/cookie":15,"./utils/deepExtend":16,"./utils/each":17,"./utils/extend":18,"./utils/listener":19,"./utils/serializeForm":21,"./utils/timer":22}],2:[function(require,module,exports){
 var pkg = require('../package.json');
-module.exports = initAutoTracking;
 function initAutoTracking(lib) {
   return function(obj) {
     var client = this;
@@ -254,7 +253,8 @@ function initAutoTracking(lib) {
     }
     return client;
   };
-};
+}
+module.exports = initAutoTracking;
 },{"../package.json":31}],3:[function(require,module,exports){
 var Keen = require('./index');
 var each = require('./utils/each');
