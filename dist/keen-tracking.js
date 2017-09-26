@@ -1849,8 +1849,9 @@ module.exports={
     "karma-sauce-launcher": "^0.2.11",
     "mocha": "^2.2.5",
     "moment": "^2.10.3",
-    "phantomjs": "^1.9.17",
+    "phantomjs": "^1.9.7-15",
     "proclaim": "^3.3.0",
+    "requirejs": "^2.3.5",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
