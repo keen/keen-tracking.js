@@ -2,18 +2,21 @@
 (function (global){
 (function(env) {
   'use strict';
-  var KeenLibrary = require('./');
+  var KeenCore = require('./index');
   var each = require('./utils/each');
   var extend = require('./utils/extend');
-  var listener = require('./utils/listener')(KeenLibrary);
-  extend(KeenLibrary.prototype, require('./record-events-browser'));
-  extend(KeenLibrary.prototype, require('./defer-events'));
-  extend(KeenLibrary.prototype, {
-    'extendEvent': require('./extend-events').extendEvent,
-    'extendEvents': require('./extend-events').extendEvents
+  var listener = require('./utils/listener')(KeenCore);
+  extend(KeenCore.prototype, require('./record-events-browser'));
+  extend(KeenCore.prototype, require('./defer-events'));
+  extend(KeenCore.prototype, {
+    'extendEvent'      : require('./extend-events').extendEvent,
+    'extendEvents'     : require('./extend-events').extendEvents
   });
-  KeenLibrary.prototype.trackExternalLink = trackExternalLink;
-  extend(KeenLibrary.helpers, {
+  extend(KeenCore.prototype, {
+    'initAutoTracking': require('./browser-auto-tracking')(KeenCore)
+  });
+  KeenCore.prototype.trackExternalLink = trackExternalLink;
+  extend(KeenCore.helpers, {
     'getBrowserProfile'  : require('./helpers/getBrowserProfile'),
     'getDatetimeIndex'   : require('./helpers/getDatetimeIndex'),
     'getDomNodePath'     : require('./helpers/getDomNodePath'),
@@ -22,14 +25,14 @@
     'getUniqueId'        : require('./helpers/getUniqueId'),
     'getWindowProfile'   : require('./helpers/getWindowProfile')
   });
-  extend(KeenLibrary.utils, {
+  extend(KeenCore.utils, {
     'cookie'        : require('./utils/cookie'),
     'deepExtend'    : require('./utils/deepExtend'),
     'listener'      : listener,
     'serializeForm' : require('./utils/serializeForm'),
     'timer'         : require('./utils/timer')
   });
-  KeenLibrary.listenTo = function(listenerHash){
+  KeenCore.listenTo = function(listenerHash){
     each(listenerHash, function(callback, key){
       var split = key.split(' ');
       var eventType = split[0],
@@ -106,17 +109,153 @@
     };
   }
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = KeenLibrary;
+    module.exports = KeenCore;
   }
   if (typeof define !== 'undefined' && define.amd) {
     define('keen-tracking', [], function(){
-      return KeenLibrary;
+      return KeenCore;
     });
   }
-  env.Keen = KeenLibrary.extendLibrary(KeenLibrary);
+  env.Keen = KeenCore.extendLibrary(KeenCore);
 }).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./":11,"./defer-events":2,"./extend-events":3,"./helpers/getBrowserProfile":4,"./helpers/getDatetimeIndex":5,"./helpers/getDomNodePath":6,"./helpers/getDomNodeProfile":7,"./helpers/getScreenProfile":8,"./helpers/getUniqueId":9,"./helpers/getWindowProfile":10,"./record-events-browser":12,"./utils/cookie":14,"./utils/deepExtend":15,"./utils/each":16,"./utils/extend":17,"./utils/listener":18,"./utils/serializeForm":20,"./utils/timer":21}],2:[function(require,module,exports){
+},{"./browser-auto-tracking":2,"./defer-events":3,"./extend-events":4,"./helpers/getBrowserProfile":5,"./helpers/getDatetimeIndex":6,"./helpers/getDomNodePath":7,"./helpers/getDomNodeProfile":8,"./helpers/getScreenProfile":9,"./helpers/getUniqueId":10,"./helpers/getWindowProfile":11,"./index":12,"./record-events-browser":13,"./utils/cookie":15,"./utils/deepExtend":16,"./utils/each":17,"./utils/extend":18,"./utils/listener":19,"./utils/serializeForm":21,"./utils/timer":22}],2:[function(require,module,exports){
+var pkg = require('../package.json');
+module.exports = initAutoTracking;
+function initAutoTracking(lib) {
+  return function(obj) {
+    var client = this;
+    var helpers = lib.helpers;
+    var utils = lib.utils;
+    var options = utils.extend({
+      ignoreDisabledFormFields: false,
+      ignoreFormFieldTypes: ['password'],
+      recordClicks: true,
+      recordFormSubmits: true,
+      recordPageViews: true
+    }, obj);
+    var cookie = new utils.cookie('keen');
+    var uuid = cookie.get('uuid');
+    if (!uuid) {
+      uuid = helpers.getUniqueId();
+      cookie.set('uuid', uuid);
+    }
+    client.extendEvents(function() {
+      var browserProfile = helpers.getBrowserProfile();
+      return {
+        tracked_by: pkg.name + '-' + pkg.version,
+        local_time_full: new Date(),
+        user: {
+          uuid: uuid
+        },
+        page: {
+          title: document ? document.title : null,
+          description: browserProfile.description
+        },
+        ip_address: '${keen.ip}',
+        geo: { /* Enriched */ },
+        user_agent: '${keen.user_agent}',
+        tech: {
+          profile: browserProfile
+          /* Enriched */
+        },
+        url: {
+          full: window ? window.location.href : '',
+          info: { /* Enriched */ }
+        },
+        referrer: {
+          full: document ? document.referrer : '',
+          info: { /* Enriched */ }
+        },
+        time: {
+          local: { /* Enriched */ },
+          utc: { /* Enriched */ }
+        },
+        keen: {
+          timestamp: new Date().toISOString(),
+          addons: [
+            {
+              name: 'keen:ip_to_geo',
+              input: {
+                ip: 'ip_address'
+              },
+              output : 'geo'
+            },
+            {
+              name: 'keen:ua_parser',
+              input: {
+                ua_string: 'user_agent'
+              },
+              output: 'tech'
+            },
+            {
+              name: 'keen:url_parser',
+              input: {
+                url: 'url.full'
+              },
+              output: 'url.info'
+            },
+            {
+              name: 'keen:url_parser',
+              input: {
+                url: 'referrer.full'
+              },
+              output: 'referrer.info'
+            },
+            {
+              name: 'keen:date_time_parser',
+              input: {
+                date_time: 'keen.timestamp'
+              },
+              output: 'time.utc'
+            },
+            {
+              name: 'keen:date_time_parser',
+              input: {
+                date_time: 'local_time_full'
+              },
+              output: 'time.local'
+            }
+          ],
+        }
+      };
+    });
+    if (options.recordClicks === true) {
+      utils.listener('a, a *').on('click', function(e) {
+        var el = e.target;
+        var props = {
+          element: helpers.getDomNodeProfile(el),
+          local_time_full: new Date()
+        };
+        client.recordEvent('clicks', props);
+      });
+    }
+    if (options.recordFormSubmits === true) {
+      utils.listener('form').on('submit', function(e) {
+        var el = e.target;
+        var serializerOptions = {
+          disabled: options.ignoreDisabledFormFields,
+          ignoreTypes: options.ignoreFormFieldTypes
+        };
+        var props = {
+          form: {
+            action: el.action,
+            fields: utils.serializeForm(el, serializerOptions),
+            method: el.method
+          },
+          element: helpers.getDomNodeProfile(el),
+          local_time_full: new Date()
+        };
+        client.recordEvent('form_submissions', props);
+      });
+    }
+    if (options.recordPageViews === true) {
+      client.recordEvent('pageviews');
+    }
+    return client;
+  };
+};
+},{"../package.json":31}],3:[function(require,module,exports){
 var Keen = require('./index');
 var each = require('./utils/each');
 var queue = require('./utils/queue');
@@ -196,7 +335,7 @@ function handleValidationError(message){
   var err = 'Event(s) not deferred: ' + message;
   this.emit('error', err);
 }
-},{"./index":11,"./utils/each":16,"./utils/queue":19}],3:[function(require,module,exports){
+},{"./index":12,"./utils/each":17,"./utils/queue":20}],4:[function(require,module,exports){
 var deepExtend = require('./utils/deepExtend');
 var each = require('./utils/each');
 module.exports = {
@@ -237,7 +376,7 @@ function getExtendedEventBody(result, queue){
   }
   return result;
 }
-},{"./utils/deepExtend":15,"./utils/each":16}],4:[function(require,module,exports){
+},{"./utils/deepExtend":16,"./utils/each":17}],5:[function(require,module,exports){
 var getScreenProfile = require('./getScreenProfile'),
     getWindowProfile = require('./getWindowProfile');
 function getBrowserProfile() {
@@ -263,7 +402,7 @@ function getDocumentDescription() {
   return el ? el.content : '';
 }
 module.exports = getBrowserProfile;
-},{"./getScreenProfile":8,"./getWindowProfile":10}],5:[function(require,module,exports){
+},{"./getScreenProfile":9,"./getWindowProfile":11}],6:[function(require,module,exports){
 function getDateTimeIndex(input){
   var date = input || new Date();
   return {
@@ -275,7 +414,7 @@ function getDateTimeIndex(input){
   };
 }
 module.exports = getDateTimeIndex;
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 function getDomNodePath(el){
   if (!el.nodeName) return '';
   var stack = [];
@@ -303,7 +442,7 @@ function getDomNodePath(el){
   return stack.slice(1).join(' > ');
 }
 module.exports = getDomNodePath;
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var getDomNodePath = require('./getDomNodePath');
 function getDomNodeProfile(el) {
   return {
@@ -323,7 +462,7 @@ function getDomNodeProfile(el) {
   };
 }
 module.exports = getDomNodeProfile;
-},{"./getDomNodePath":6}],8:[function(require,module,exports){
+},{"./getDomNodePath":7}],9:[function(require,module,exports){
 function getScreenProfile(){
   var keys, output;
   if ('undefined' == typeof window || !window.screen) return {};
@@ -339,7 +478,7 @@ function getScreenProfile(){
   return output;
 }
 module.exports = getScreenProfile;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 function getUniqueId(){
   var str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
   return str.replace(/[xy]/g, function(c) {
@@ -348,7 +487,7 @@ function getUniqueId(){
   });
 }
 module.exports = getUniqueId;
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 function getWindowProfile(){
   var body, html, output;
   if ('undefined' == typeof document) return {};
@@ -372,7 +511,7 @@ module.exports = getWindowProfile;
   Notes:
     document.documentElement.offsetHeight/Width is a workaround for IE8 and below, where window.innerHeight/Width is undefined
 */
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var KeenCore = require('keen-core');
 var each = require('./utils/each'),
     extend = require('./utils/extend'),
@@ -403,7 +542,7 @@ KeenCore.prototype.setGlobalProperties = function(props){
   return this;
 };
 module.exports = KeenCore;
-},{"./utils/each":16,"./utils/extend":17,"./utils/queue":19,"keen-core":24}],12:[function(require,module,exports){
+},{"./utils/each":17,"./utils/extend":18,"./utils/queue":20,"keen-core":25}],13:[function(require,module,exports){
 var Keen = require('./index');
 var base64 = require('./utils/base64');
 var each = require('./utils/each');
@@ -714,9 +853,9 @@ function sendBeacon(url, callback){
   };
   img.src = url + '&c=clv1';
 }
-},{"./extend-events":3,"./index":11,"./utils/base64":13,"./utils/each":16,"./utils/extend":17}],13:[function(require,module,exports){
+},{"./extend-events":4,"./index":12,"./utils/base64":14,"./utils/each":17,"./utils/extend":18}],14:[function(require,module,exports){
 module.exports = require('keen-core/lib/utils/base64');
-},{"keen-core/lib/utils/base64":25}],14:[function(require,module,exports){
+},{"keen-core/lib/utils/base64":26}],15:[function(require,module,exports){
 var Cookies = require('js-cookie');
 var extend = require('./extend');
 module.exports = cookie;
@@ -774,7 +913,7 @@ cookie.prototype.options = function(obj){
 cookie.prototype.enabled = function(){
   return navigator.cookieEnabled;
 };
-},{"./extend":17,"js-cookie":23}],15:[function(require,module,exports){
+},{"./extend":18,"js-cookie":24}],16:[function(require,module,exports){
 module.exports = deepExtend;
 function deepExtend(target){
   for (var i = 1; i < arguments.length; i++) {
@@ -801,11 +940,11 @@ function deepExtend(target){
 function clone(input){
   return JSON.parse( JSON.stringify(input) );
 }
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = require('keen-core/lib/utils/each');
-},{"keen-core/lib/utils/each":26}],17:[function(require,module,exports){
+},{"keen-core/lib/utils/each":27}],18:[function(require,module,exports){
 module.exports = require('keen-core/lib/utils/extend');
-},{"keen-core/lib/utils/extend":27}],18:[function(require,module,exports){
+},{"keen-core/lib/utils/extend":28}],19:[function(require,module,exports){
 var Emitter = require('component-emitter');
 var each = require('./each');
 /*
@@ -977,7 +1116,7 @@ function deferFormSubmit(evt, form, callback){
   }
   return false;
 }
-},{"./each":16,"component-emitter":22}],19:[function(require,module,exports){
+},{"./each":17,"component-emitter":23}],20:[function(require,module,exports){
 var Emitter = require('component-emitter');
 function queue() {
   if (this instanceof queue === false) {
@@ -1035,7 +1174,7 @@ function shouldFlushQueue(props) {
   return false;
 }
 module.exports = queue;
-},{"component-emitter":22}],20:[function(require,module,exports){
+},{"component-emitter":23}],21:[function(require,module,exports){
 /*
   This is a modified copy of https://github.com/defunctzombie/form-serialize/ v0.7.1
   Includes a new configuration option:
@@ -1202,7 +1341,7 @@ function str_serialize(result, key, value) {
   return result + (result ? '&' : '') + encodeURIComponent(key) + '=' + value;
 }
 module.exports = serialize;
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = timer;
 function timer(num){
   if (this instanceof timer === false) {
@@ -1230,8 +1369,8 @@ timer.prototype.clear = function(){
   this.count = 0;
   return this;
 };
-},{}],22:[function(require,module,exports){
-/** * Expose `Emitter`. */if (typeof module !== 'undefined') {  module.exports = Emitter;}/** * Initialize a new `Emitter`. * * @api public */function Emitter(obj) {  if (obj) return mixin(obj);};/** * Mixin the emitter properties. * * @param {Object} obj * @return {Object} * @api private */function mixin(obj) {  for (var key in Emitter.prototype) {    obj[key] = Emitter.prototype[key];  }  return obj;}/** * Listen on the given `event` with `fn`. * * @param {String} event * @param {Function} fn * @return {Emitter} * @api public */Emitter.prototype.on =Emitter.prototype.addEventListener = function(event, fn){  this._callbacks = this._callbacks || {};  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])    .push(fn);  return this;};/** * Adds an `event` listener that will be invoked a single * time then automatically removed. * * @param {String} event * @param {Function} fn * @return {Emitter} * @api public */Emitter.prototype.once = function(event, fn){  function on() {    this.off(event, on);    fn.apply(this, arguments);  }  on.fn = fn;  this.on(event, on);  return this;};/** * Remove the given callback for `event` or all * registered callbacks. * * @param {String} event * @param {Function} fn * @return {Emitter} * @api public */Emitter.prototype.off =Emitter.prototype.removeListener =Emitter.prototype.removeAllListeners =Emitter.prototype.removeEventListener = function(event, fn){  this._callbacks = this._callbacks || {};  if (0 == arguments.length) {    this._callbacks = {};    return this;  }  var callbacks = this._callbacks['$' + event];  if (!callbacks) return this;  if (1 == arguments.length) {    delete this._callbacks['$' + event];    return this;  }  var cb;  for (var i = 0; i < callbacks.length; i++) {    cb = callbacks[i];    if (cb === fn || cb.fn === fn) {      callbacks.splice(i, 1);      break;    }  }  return this;};/** * Emit `event` with the given args. * * @param {String} event * @param {Mixed} ... * @return {Emitter} */Emitter.prototype.emit = function(event){  this._callbacks = this._callbacks || {};  var args = [].slice.call(arguments, 1)    , callbacks = this._callbacks['$' + event];  if (callbacks) {    callbacks = callbacks.slice(0);    for (var i = 0, len = callbacks.length; i < len; ++i) {      callbacks[i].apply(this, args);    }  }  return this;};/** * Return array of callbacks for `event`. * * @param {String} event * @return {Array} * @api public */Emitter.prototype.listeners = function(event){  this._callbacks = this._callbacks || {};  return this._callbacks['$' + event] || [];};/** * Check if this emitter has `event` handlers. * * @param {String} event * @return {Boolean} * @api public */Emitter.prototype.hasListeners = function(event){  return !! this.listeners(event).length;};},{}],23:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
+/** * Expose `Emitter`. */if (typeof module !== 'undefined') {  module.exports = Emitter;}/** * Initialize a new `Emitter`. * * @api public */function Emitter(obj) {  if (obj) return mixin(obj);};/** * Mixin the emitter properties. * * @param {Object} obj * @return {Object} * @api private */function mixin(obj) {  for (var key in Emitter.prototype) {    obj[key] = Emitter.prototype[key];  }  return obj;}/** * Listen on the given `event` with `fn`. * * @param {String} event * @param {Function} fn * @return {Emitter} * @api public */Emitter.prototype.on =Emitter.prototype.addEventListener = function(event, fn){  this._callbacks = this._callbacks || {};  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])    .push(fn);  return this;};/** * Adds an `event` listener that will be invoked a single * time then automatically removed. * * @param {String} event * @param {Function} fn * @return {Emitter} * @api public */Emitter.prototype.once = function(event, fn){  function on() {    this.off(event, on);    fn.apply(this, arguments);  }  on.fn = fn;  this.on(event, on);  return this;};/** * Remove the given callback for `event` or all * registered callbacks. * * @param {String} event * @param {Function} fn * @return {Emitter} * @api public */Emitter.prototype.off =Emitter.prototype.removeListener =Emitter.prototype.removeAllListeners =Emitter.prototype.removeEventListener = function(event, fn){  this._callbacks = this._callbacks || {};  if (0 == arguments.length) {    this._callbacks = {};    return this;  }  var callbacks = this._callbacks['$' + event];  if (!callbacks) return this;  if (1 == arguments.length) {    delete this._callbacks['$' + event];    return this;  }  var cb;  for (var i = 0; i < callbacks.length; i++) {    cb = callbacks[i];    if (cb === fn || cb.fn === fn) {      callbacks.splice(i, 1);      break;    }  }  return this;};/** * Emit `event` with the given args. * * @param {String} event * @param {Mixed} ... * @return {Emitter} */Emitter.prototype.emit = function(event){  this._callbacks = this._callbacks || {};  var args = [].slice.call(arguments, 1)    , callbacks = this._callbacks['$' + event];  if (callbacks) {    callbacks = callbacks.slice(0);    for (var i = 0, len = callbacks.length; i < len; ++i) {      callbacks[i].apply(this, args);    }  }  return this;};/** * Return array of callbacks for `event`. * * @param {String} event * @return {Array} * @api public */Emitter.prototype.listeners = function(event){  this._callbacks = this._callbacks || {};  return this._callbacks['$' + event] || [];};/** * Check if this emitter has `event` handlers. * * @param {String} event * @return {Boolean} * @api public */Emitter.prototype.hasListeners = function(event){  return !! this.listeners(event).length;};},{}],24:[function(require,module,exports){
 /*!
  * JavaScript Cookie v2.1.0
  * https://github.com/js-cookie/js-cookie
@@ -1349,7 +1488,7 @@ timer.prototype.clear = function(){
 	}
 	return init(function () {});
 }));
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 (function (global){
 (function(env){
   var previousKeen = env.Keen || undefined;
@@ -1542,7 +1681,7 @@ timer.prototype.clear = function(){
   module.exports = Client;
 }).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./utils/each":26,"./utils/extend":27,"./utils/parse-params":28,"./utils/serialize":29,"component-emitter":22}],25:[function(require,module,exports){
+},{"./utils/each":27,"./utils/extend":28,"./utils/parse-params":29,"./utils/serialize":30,"component-emitter":23}],26:[function(require,module,exports){
 module.exports = {
   map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
   encode: function (n) {
@@ -1589,7 +1728,7 @@ module.exports = {
     }
   }
 };
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 module.exports = each;
 function each(o, cb, s){
   var n;
@@ -1614,7 +1753,7 @@ function each(o, cb, s){
   }
   return 1;
 }
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 module.exports = extend;
 function extend(target){
   for (var i = 1; i < arguments.length; i++) {
@@ -1624,7 +1763,7 @@ function extend(target){
   }
   return target;
 };
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 module.exports = parseParams;
 function parseParams(str){
   var urlParams = {},
@@ -1638,7 +1777,7 @@ function parseParams(str){
   }
   return urlParams;
 };
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var each = require('./each'),
     extend = require('./extend');
 module.exports = serialize;
@@ -1652,6 +1791,70 @@ function serialize(data){
   });
   return query.join('&');
 }
-},{"./each":26,"./extend":27}]},{},[1]);
+},{"./each":27,"./extend":28}],31:[function(require,module,exports){
+module.exports={
+  "name": "keen-tracking",
+  "version": "1.2.1",
+  "description": "Data Collection SDK for Keen IO",
+  "main": "lib/server.js",
+  "browser": "lib/browser.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/keen/keen-tracking.js.git"
+  },
+  "scripts": {
+    "start": "gulp with-tests",
+    "test": "gulp test:cli"
+  },
+  "bugs": "https://github.com/keen/keen-tracking.js/issues",
+  "author": "Dustin Larimer <dustin@keen.io> (https://keen.io/)",
+  "contributors": [
+    "Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)",
+    "Eric Anderson <eric@keen.io> (https://github.com/aroc)",
+    "Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)",
+    "Alex Kleissner <alex@keen.io> (https://github.com/hex337)"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "component-emitter": "^1.2.0",
+    "js-cookie": "2.1.0",
+    "keen-core": "^0.1.3"
+  },
+  "devDependencies": {
+    "browserify": "^9.0.8",
+    "chai": "^2.3.0",
+    "chai-spies": "^0.6.0",
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-awspublish": "0.0.23",
+    "gulp-connect": "^2.2.0",
+    "gulp-derequire": "^2.1.0",
+    "gulp-mocha": "^2.0.1",
+    "gulp-mocha-phantomjs": "^0.6.1",
+    "gulp-remove-empty-lines": "0.0.2",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.3",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-strip-comments": "^1.0.1",
+    "gulp-uglify": "^1.5.2",
+    "gulp-util": "^3.0.4",
+    "gulp-yuicompressor": "0.0.3",
+    "karma": "^0.12.32",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-mocha": "^0.2.0",
+    "karma-nyan-reporter": "0.0.60",
+    "karma-requirejs": "^0.2.2",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-sauce-launcher": "^0.2.11",
+    "mocha": "^2.2.5",
+    "moment": "^2.10.3",
+    "phantomjs": "^1.9.17",
+    "proclaim": "^3.3.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
+},{}]},{},[1]);
 
 //# sourceMappingURL=keen-tracking.js.map
