@@ -6,6 +6,19 @@
 **BREAKING:**
 **CHANGE:**
 -->
+
+<a name="1.3.0"></a>
+# 1.3.0 Automated Event Tracking (browser-only)
+
+**NEW:**
+* Ported functionality from the Web Auto Collector into this SDK: The interface and behaviors of this feature are a little different, but the data models produced are backward compatible
+* New helper: `Keen.helper.getDomNodeProfile(<ELEMENT>)`: Return an object containing properties profiling a given DOM node
+* New utility: `Keen.utils.serializeForm(<FORM>, OPTIONS)`: Serialize the data of a form, with the option to ignore certain input types by passing in a `{ ignoreTypes: ['password'] }` option
+
+**UPDATED:**
+* Description meta tag content is now part of the `Keen.helpers.getBrowserProfile()` output when present
+
+
 <a name="1.2.1"></a>
 # 1.2.1 Fix queue polling
 
