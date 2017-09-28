@@ -38,6 +38,8 @@ client.initAutoTracking({
 });
 ```
 
+Scroll state tracking powered by the `getScrollState()` helper and a `window` scroll listener. This scroll listener can be removed by calling `Keen.utils.listener('window').off('scroll');`.
+
 ### Customization
 
 Add additional properties to any or all events with [`extendEvent` or `extendEvents` methods](./extend-events.md):
