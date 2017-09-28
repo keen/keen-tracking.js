@@ -31,7 +31,7 @@
 * [Screen profile](./helpers.md#screen-profile) for generating a set of properties describing the current device screen, like "height", "availHeight", and "orientation"
 * [Window profile](./helpers.md#window-profile) for generating a set of properties describing the current window, like "height", "scrollHeight", and "ratio" to screen dimensions
 * [Browser profile](./helpers.md#browser-profile) for generating a set of properties describing the current browser, like "useragent", "online" status, and "language", plus [screen](./helpers.md#screen-profile) and [window](./helpers.md#window-profile) profiles
-
+* [Scroll state](./helpers/#scroll-state) for generating a set of properties profiling the current scroll state of the window
 ---
 
 ### Debugging
