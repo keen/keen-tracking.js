@@ -33,7 +33,8 @@ client.initAutoTracking({
   ignoreFormFieldTypes: ['password'],
   recordClicks: true,
   recordFormSubmits: true,
-  recordPageViews: true
+  recordPageViews: true,
+  recordScrollState: true
 });
 ```
 

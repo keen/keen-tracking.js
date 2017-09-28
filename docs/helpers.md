@@ -78,6 +78,32 @@ const domNodePath = Keen.helpers.getDomNodePath(btn);
 // 'body > div#nav > ul > li:eq(1) > a#signup-button'
 ```
 
+### DOM node profile
+
+`Keen.helpers.getDomNodeProfile(el)` returns an object of properties profiling a given DOM node.
+
+```javascript
+import Keen from 'keen-tracking';
+
+const btn = document.getElementById('signup-button');
+const domNodeProfile = Keen.helpers.getDomNodeProfile(btn);
+/*
+{
+  "class":"",
+  "href":"http://localhost:9000/demo/auto-tracking.html#hash",
+  "id":"signup-button",
+  "name":"",
+  "node_name":"A",
+  "selector":"body > div#nav > ul > li:eq(3) > a#signup-button",
+  "text":"Signup",
+  "title":"",
+  "type":"",
+  "x_position":48,
+  "y_position":70
+}
+*/
+```
+
 ### Screen profile
 
 `Keen.helpers.getScreenProfile()` returns a set of properties describing the current device screen, like "height", "availHeight", and "orientation".
@@ -168,4 +194,44 @@ const browserProfile = Keen.helpers.getBrowserProfile();
   }
 }
 */
+```
+
+### Scroll State
+
+`Keen.helpers.getScrollState()` returns an object of properties profiling the current scroll state. This lets you measure how much of a page a user has viewed before taking a recorded action.
+
+```javascript
+import Keen from 'keen-tracking';
+
+const scrollState = Keen.helpers.getScrollState();
+/*
+{
+  pixel: 900,
+  pixel_max: 900,
+  ratio: 0.75,
+  ratio_max: 0.75
+}
+*/
+```
+
+This object can then be passed into the helper again to receive a new object with updated `pixel_max` and `ratio_max` values. Use this in conjunction with a `window` scroll listener to include the latest scroll state when recording an event:
+
+```javascript
+var scrollState = helpers.getScrollState();
+utils.listener('window').on('scroll', function() {
+  scrollState = helpers.getScrollState(scrollState);
+  console.log('Latest state', scrollState);
+});
+/*
+{
+  pixel: 900,
+  pixel_max: 1200,
+  ratio: 0.75,
+  ratio_max: 1
+}
+*/
+
+utils.listener('a, a *').on('click', function() {
+  client.recordEvent('clicks', { scroll_state: scrollState });
+});
 ```
