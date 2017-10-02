@@ -1,6 +1,5 @@
 # keen-tracking.js [![Build Status](https://travis-ci.org/keen/keen-tracking.js.svg?branch=master)](https://travis-ci.org/keen/keen-tracking.js)
 
-
 ### Installation
 
 Install this package from npm:
@@ -12,20 +11,20 @@ $ npm install keen-tracking --save
 Or load it from our CDN:
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.2.1.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.3.0.min.js"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)
-
 
 ### Project ID & API Keys
 
 [Login to Keen IO to create a project](https://keen.io/login?s=gh_js) and grab the **Project ID** and **Write Key** from your project's **Access** page.
 
-
 ## Getting started
 
-The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions**. Not interested in web analytics? Use these examples as a primer for getting up and running quickly. These examples also make use of several [helpers](./docs/#helpers) and [utilities](./docs/#utilities) that were designed to address common requirements and help produce insightful, valuable data models.
+The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions** with robust data models.
+
+Not interested in web analytics? Use these examples as a primer for getting up and running quickly. These examples also make use of several [helpers](./docs/#helpers) and [utilities](./docs/#utilities) that were designed to address common requirements and help produce insightful, valuable data models.
 
 [Full documentation is available here](./docs/README.md)
 
@@ -42,8 +41,28 @@ If any of this is confusing, that's our fault and we would love to help. Join ou
 
 ---
 
+### Automated Event Tracking (browser-only)
 
-### Setup and Pageview Tracking
+Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
+
+```html
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.3.0.min.js"></script>
+<script>
+Keen.ready(function(){
+  var client = new Keen({
+    projectId: 'YOUR_PROJECT_ID',
+    writeKey: 'YOUR_WRITE_KEY'
+  });
+  client.initAutoTracking();
+});
+</script>
+```
+
+[Learn how to configure and customize this functionality here](./docs/auto-tracking.md)
+
+---
+
+### Pageview Tracking
 
 First, let's create a new `client` instance with your Project ID and Write Key, and use the `.extendEvents()` method to define a solid baseline data model that will be applied to every single event that is recorded. Consistent data models and property names make life much easier later on, when analyzing and managing several event streams. This setup also includes our [data enrichment add-ons](https://keen.io/docs/streams/data-enrichment-overview/), which will populate additional information when an event is received on our end.
 
@@ -128,8 +147,11 @@ client.recordEvent('pageview', {});
 
 Every event that is recorded will inherit this baseline data model. Additional properties defined in `client.recordEvent()` will be applied before the event is finally recorded.
 
+Want to get up and running faster? This can also be achieved in the browser with [automated event tracking](./docs/auto-tracking.md).
+
 **What else can this SDK do?**
 
+* [Automated tracking (browser-only)](./docs/auto-tracking.md)
 * [Record multiple events in batches](./docs/record-events.md)
 * [Extend event data models for a single event stream](./docs/extend-events.md)
 * [Queue events to be recorded at a given time interval](./docs/defer-events.md)
@@ -187,6 +209,8 @@ Keen.listenTo({
 });
 ```
 
+Want to get up and running faster? This can also be achieved in the browser with [automated event tracking](./docs/auto-tracking.md).
+
 ---
 
 ### Block Bots and Improve Device Recognition
@@ -218,6 +242,8 @@ client.extendEvents(() => {
 ```
 
 Check out the many additional methods supported by [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js) to further enrich your data model.
+
+This can also be used with [automated event tracking](./docs/auto-tracking.md).
 
 ---
 

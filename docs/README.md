@@ -1,6 +1,7 @@
 # Documentation
 
 * [Installation](./installation.md)
+* [Automated tracking (browser-only)](./auto-tracking.md) to capture `pageviews`, `clicks`, and `form_submissions`
 * [Record events](./record-events.md) to the API individually or in batches
 * [Extend events](./extend-events.md) to build intricate, useful data models and ease instrumentation
 * [Defer events](./defer-events.md) to be recorded at a given interval, or when the queue reaches a given capacity
@@ -30,7 +31,7 @@
 * [Screen profile](./helpers.md#screen-profile) for generating a set of properties describing the current device screen, like "height", "availHeight", and "orientation"
 * [Window profile](./helpers.md#window-profile) for generating a set of properties describing the current window, like "height", "scrollHeight", and "ratio" to screen dimensions
 * [Browser profile](./helpers.md#browser-profile) for generating a set of properties describing the current browser, like "useragent", "online" status, and "language", plus [screen](./helpers.md#screen-profile) and [window](./helpers.md#window-profile) profiles
-
+* [Scroll state](./helpers/#scroll-state) for generating a set of properties profiling the current scroll state of the window
 ---
 
 ### Debugging

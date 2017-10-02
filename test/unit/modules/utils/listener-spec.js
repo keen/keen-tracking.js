@@ -52,7 +52,7 @@ describe('Keen.utils.listener', function() {
   });
 
   it('should set `<a>` events', function(){
-    var a = listener('a');
+    var a = listener('a#test-anchors');
     var eventTypes = [
       'mousedown',
       'mousemove',
@@ -63,12 +63,12 @@ describe('Keen.utils.listener', function() {
     each(eventTypes, function(type){
       a.on(type, function(e){ });
       assert.isObject(Keen.domListeners[type]);
-      assert.isObject(Keen.domListeners[type]['a']);
+      assert.isObject(Keen.domListeners[type]['a#test-anchors']);
     });
   });
 
   it('should set `<form>` events', function(){
-    var form = listener('form');
+    var form = listener('form#test-forms');
     var eventTypes = [
       'keydown',
       'keypress',
@@ -83,7 +83,7 @@ describe('Keen.utils.listener', function() {
     each(eventTypes, function(type){
       form.on(type, function(e){ });
       assert.isObject(Keen.domListeners[type]);
-      assert.isObject(Keen.domListeners[type]['form']);
+      assert.isObject(Keen.domListeners[type]['form#test-forms']);
     });
   });
 
@@ -178,7 +178,7 @@ describe('Keen.utils.listener', function() {
     function noop(e){ }
   });
 
-  // Not testable by IE8
+  // // Not testable by IE8
   if(!document.addEventListener) return;
 
   it('should handle `<form>` submit events', function(done){
