@@ -5,7 +5,6 @@ var Keen = require('../../../lib/browser');
 describe('Auto Tracking', function() {
 
   beforeEach(function() {
-    this.timeout(5000);
     this.client = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey,
@@ -15,7 +14,8 @@ describe('Auto Tracking', function() {
     });
   });
 
-  it('should capture "pageviews," "clicks," and "form submits"', function(done){
+  it('should capture "pageviews," "clicks," and "form submits"', function(){
+    this.timeout(5000);
     var aNode = document.createElement('A');
     var bNode = document.createElement('BUTTON');
     var fNode = document.createElement('FORM');
@@ -44,9 +44,9 @@ describe('Auto Tracking', function() {
         fNode.outerHTML = '';
         inc++;
       }
-      if (inc === 3) {
-        done();
-      }
+      // if (inc === 3) {
+      //   done();
+      // }
     });
     this.client.initAutoTracking();
 
@@ -89,21 +89,36 @@ describe('Auto Tracking', function() {
     /*
       Init Behavior
     */
+    // Init anchor click
     if (aNode.click) {
       aNode.click();
-      bNode.click();
     }
-    else if(document.createEvent) {
-      ev = document.createEvent('MouseEvent');
-      ev.initMouseEvent('click',
+    else if (document.createEvent) {
+      var ev1 = document.createEvent('MouseEvent');
+      ev1.initMouseEvent('click',
           true /* bubble */, true /* cancelable */,
           window, null,
           0, 0, 0, 0,
           false, false, false, false,
           0, null
       );
-      aNode.dispatchEvent(ev);
-      bNode.dispatchEvent(ev);
+      aNode.dispatchEvent(ev1);
+    }
+
+    // Init form button click (submit)
+    if (bNode.click) {
+      bNode.click();
+    }
+    else if (document.createEvent) {
+      var ev2 = document.createEvent('MouseEvent');
+      ev2.initMouseEvent('click',
+          true /* bubble */, true /* cancelable */,
+          window, null,
+          0, 0, 0, 0,
+          false, false, false, false,
+          0, null
+      );
+      bNode.dispatchEvent(ev2);
     }
   });
 
