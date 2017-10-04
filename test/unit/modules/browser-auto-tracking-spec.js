@@ -5,6 +5,7 @@ var Keen = require('../../../lib/browser');
 describe('Auto Tracking', function() {
 
   beforeEach(function() {
+    this.timeout(5000);
     this.client = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey,
