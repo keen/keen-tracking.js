@@ -94,7 +94,7 @@ describe('Auto Tracking', function() {
     }
     else if(document.createEvent) {
       ev = document.createEvent('MouseEvent');
-      ev.initMouseEvent(click,
+      ev.initMouseEvent('click',
           true /* bubble */, true /* cancelable */,
           window, null,
           0, 0, 0, 0,
