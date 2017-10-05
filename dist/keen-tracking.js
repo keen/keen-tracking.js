@@ -135,6 +135,7 @@ function initAutoTracking(lib) {
       recordPageViews: true,
       recordScrollState: true
     }, obj);
+    var now = new Date();
     var cookie = new utils.cookie('keen');
     var uuid = cookie.get('uuid');
     if (!uuid) {
@@ -235,7 +236,8 @@ function initAutoTracking(lib) {
           element: helpers.getDomNodeProfile(el),
           local_time_full: new Date(),
           page: {
-            scroll_state: scrollState
+            scroll_state: scrollState,
+            time_on_page: getSecondsSinceDate(now)
           }
         };
         client.recordEvent('clicks', props);
@@ -257,7 +259,8 @@ function initAutoTracking(lib) {
           element: helpers.getDomNodeProfile(el),
           local_time_full: new Date(),
           page: {
-            scroll_state: scrollState
+            scroll_state: scrollState,
+            time_on_page: getSecondsSinceDate(now),
           }
         };
         client.recordEvent('form_submissions', props);
@@ -268,6 +271,10 @@ function initAutoTracking(lib) {
     }
     return client;
   };
+}
+function getSecondsSinceDate(date) {
+  var diff = new Date().getTime() - date.getTime();
+  return Math.round(diff / 1000);
 }
 module.exports = initAutoTracking;
 },{"../package.json":32}],3:[function(require,module,exports){
@@ -1886,7 +1893,7 @@ module.exports={
     "gulp-uglify": "^1.5.2",
     "gulp-util": "^3.0.4",
     "gulp-yuicompressor": "0.0.3",
-    "karma": "^0.12.32",
+    "karma": "^1.7.1",
     "karma-chrome-launcher": "^0.1.12",
     "karma-firefox-launcher": "^0.1.6",
     "karma-mocha": "^0.2.0",

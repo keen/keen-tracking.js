@@ -32,6 +32,7 @@ describe('Auto Tracking', function() {
         assert.equal(stream, 'clicks');
         assert.equal(payload.element.id, 'test-auto-tracker-clicks');
         assert.equal(payload.element.node_name, 'A');
+        assert.isNumber(payload.page.time_on_page);
         aNode.outerHTML = '';
         inc++;
       }
@@ -41,6 +42,7 @@ describe('Auto Tracking', function() {
         assert.equal(payload.element.node_name, 'FORM');
         assert.equal(payload.form.fields.email, 'team@keen.io');
         assert.notOk(payload.form.fields.password);
+        assert.isNumber(payload.page.time_on_page);
         fNode.outerHTML = '';
         inc++;
       }
