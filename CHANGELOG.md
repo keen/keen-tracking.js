@@ -7,7 +7,7 @@
 **CHANGE:**
 -->
 <a name="1.4.0"></a>
-# 1.4.0 Automated Event Tracking (browser-only)
+# 1.4.0 Improved Protocol Handling and Dev Setup
 
 **NEW:**
 * Server-side tracking now respects the `"http"` value for `protocol` option, using the `http` module. Previously this always used `https`, regardless of the configuration value, which can cause issues for internal proxies (#82, via #92 contributed by [lukechilds](https://github.com/lukechilds))
