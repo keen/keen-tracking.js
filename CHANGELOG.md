@@ -6,6 +6,16 @@
 **BREAKING:**
 **CHANGE:**
 -->
+<a name="1.4.0"></a>
+# 1.4.0 Automated Event Tracking (browser-only)
+
+**NEW:**
+* Server-side tracking now respects the `"http"` value for `protocol` option, using the `http` module. Previously this always used `https`, regardless of the configuration value, which can cause issues for internal proxies (#82, via #92 contributed by [lukechilds](https://github.com/lukechilds))
+* Auto-tracking now records `page.time_on_page` (seconds) for all events
+
+**FIXED:**
+* This project now builds and runs correctly in NodeJS v7 and v8 (#95, via #96 contributed by [lukechilds](https://github.com/lukechilds))
+
 
 <a name="1.3.0"></a>
 # 1.3.0 Automated Event Tracking (browser-only)

@@ -11,7 +11,7 @@ $ npm install keen-tracking --save
 Or load it from our CDN:
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.3.0.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.4.0.min.js"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)
@@ -46,7 +46,7 @@ If any of this is confusing, that's our fault and we would love to help. Join ou
 Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.3.0.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.4.0.min.js"></script>
 <script>
 Keen.ready(function(){
   var client = new Keen({

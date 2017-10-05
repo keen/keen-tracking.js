@@ -159,7 +159,8 @@ function initAutoTracking(lib) {
         },
         page: {
           title: document ? document.title : null,
-          description: browserProfile.description
+          description: browserProfile.description,
+          time_on_page: getSecondsSinceDate(now)
         },
         ip_address: '${keen.ip}',
         geo: { /* Enriched */ },
@@ -236,8 +237,7 @@ function initAutoTracking(lib) {
           element: helpers.getDomNodeProfile(el),
           local_time_full: new Date(),
           page: {
-            scroll_state: scrollState,
-            time_on_page: getSecondsSinceDate(now)
+            scroll_state: scrollState
           }
         };
         client.recordEvent('clicks', props);
@@ -259,8 +259,7 @@ function initAutoTracking(lib) {
           element: helpers.getDomNodeProfile(el),
           local_time_full: new Date(),
           page: {
-            scroll_state: scrollState,
-            time_on_page: getSecondsSinceDate(now),
+            scroll_state: scrollState
           }
         };
         client.recordEvent('form_submissions', props);
@@ -1571,7 +1570,7 @@ timer.prototype.clear = function(){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.3.0'
+    version: '1.4.0'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
@@ -1848,7 +1847,7 @@ function serialize(data){
 },{"./each":28,"./extend":29}],32:[function(require,module,exports){
 module.exports={
   "name": "keen-tracking",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Data Collection SDK for Keen IO",
   "main": "lib/server.js",
   "browser": "lib/browser.js",
