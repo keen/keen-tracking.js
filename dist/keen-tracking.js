@@ -135,6 +135,7 @@ function initAutoTracking(lib) {
       recordPageViews: true,
       recordScrollState: true
     }, obj);
+    var now = new Date();
     var cookie = new utils.cookie('keen');
     var uuid = cookie.get('uuid');
     if (!uuid) {
@@ -158,7 +159,8 @@ function initAutoTracking(lib) {
         },
         page: {
           title: document ? document.title : null,
-          description: browserProfile.description
+          description: browserProfile.description,
+          time_on_page: getSecondsSinceDate(now)
         },
         ip_address: '${keen.ip}',
         geo: { /* Enriched */ },
@@ -268,6 +270,10 @@ function initAutoTracking(lib) {
     }
     return client;
   };
+}
+function getSecondsSinceDate(date) {
+  var diff = new Date().getTime() - date.getTime();
+  return Math.round(diff / 1000);
 }
 module.exports = initAutoTracking;
 },{"../package.json":32}],3:[function(require,module,exports){
@@ -1564,7 +1570,7 @@ timer.prototype.clear = function(){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.3.0'
+    version: '1.4.0'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
@@ -1841,7 +1847,7 @@ function serialize(data){
 },{"./each":28,"./extend":29}],32:[function(require,module,exports){
 module.exports={
   "name": "keen-tracking",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Data Collection SDK for Keen IO",
   "main": "lib/server.js",
   "browser": "lib/browser.js",
@@ -1886,7 +1892,7 @@ module.exports={
     "gulp-uglify": "^1.5.2",
     "gulp-util": "^3.0.4",
     "gulp-yuicompressor": "0.0.3",
-    "karma": "^0.12.32",
+    "karma": "^1.7.1",
     "karma-chrome-launcher": "^0.1.12",
     "karma-firefox-launcher": "^0.1.6",
     "karma-mocha": "^0.2.0",
