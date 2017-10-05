@@ -30,6 +30,23 @@ describe('.recordEvent(s) methods (server)', function() {
       });
     });
 
+    it('should default to HTTPS',function(done){
+      this.client.config.host = 'nonexistenthost';
+      this.client.recordEvent( config.collection, config.properties, function(err) {
+        expect(err.port).to.equal(443);
+        done();
+      });
+    });
+
+    it('should respect client HTTP protocol',function(done){
+      this.client.config.host = 'nonexistenthost';
+      this.client.config.protocol = 'http';
+      this.client.recordEvent( config.collection, config.properties, function(err) {
+        expect(err.port).to.equal(80);
+        done();
+      });
+    });
+
     it('should not make an HTTP request if Keen.enabled is set to \'false\'', function(done){
       Keen.enabled = false;
       this.client.recordEvent( config.collection, config.properties, function(err, res){
