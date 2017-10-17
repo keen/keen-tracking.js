@@ -156,10 +156,19 @@ Want to get up and running faster? This can also be achieved in the browser with
 * [Extend event data models for a single event stream](./docs/extend-events.md)
 * [Queue events to be recorded at a given time interval](./docs/defer-events.md)
 
-**Using React? Check out these setup guides:**
+**App Frameworks:**
 
 * [React Flux Logger](./docs/examples/react-flux): How to instrument a Flux ReduceStore
 * [React Redux Middleware](./docs/examples/react-redux-middleware): How to instrument a Redux Store
+* [Vue.js Vuex Store](./docs/examples/vue-vuex): How to instrument a Vue Vuex Store
+
+**Video Players:**
+
+* [Facebook video player](./docs/examples/video/facebook-video)
+* [HTML5 video player](./docs/examples/video/html5)
+* [Video.js player](./docs/examples/video/video-js)
+* [Vimeo video player](./docs/examples/video/vimeo)
+* [Youtube iFrame video player](./docs/examples/video/youtube)
 
 [Full documentation is available here](./docs/README.md)
 

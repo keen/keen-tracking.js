@@ -1,100 +1,34 @@
-import Keen from 'keen-tracking'
+import Keen from 'keen-tracking';
 
-// Record all actions to a single event stream
-const EVENT_STREAM_NAME = 'app-actions'
+// Record all mutations to a single event stream
+const EVENT_STREAM_NAME = 'app-mutations';
 
-// Omit noisy actions if necessary
-const OMITTED_ACTIONS = [
+// Omit noisy mutations if necessary
+const OMITTED_MUTATIONS = [
   // 'KEYPRESS',
   // 'WINDOW_RESIZED'
-]
+];
 
 // Define a client instance
 const client = new Keen({
   projectId: 'YOUR_PROJECT_ID',
   writeKey: 'YOUR_WRITE_KEY'
-})
-// make debug mode
-Keen.debug = true
-client.on('recordEvent', Keen.log)
-client.on('deferEvent', Keen.log)
-client.on('deferEvents', Keen.log)
+});
+// Optional debugging
+Keen.debug = true;
+client.on('recordEvent', Keen.log);
 
-const helpers = Keen.helpers
-const timer = Keen.utils.timer()
-timer.start()
-
-// Batch-record events every 5s
-client.queueInterval(5)
-
-// Define a baseline data model for every
-// action/event that will be recorded
-client.extendEvents(() => {
-  return {
-    geo: {
-      info: { /* Enriched */ },
-      ip_address: Keen.ip,
-    },
-    page: {
-      info: { /* Enriched */ },
-      title: document.title,
-      url: document.location.href
-    },
-    referrer: {
-      info: { /* Enriched */ },
-      url: document.referrer
-    },
-    tech: {
-      browser: helpers.getBrowserProfile(),
-      info: { /* Enriched */ },
-      user_agent: Keen.user_agent
-    },
-    time: helpers.getDatetimeIndex(),
-    visitor: {
-      time_on_page: timer.value()
-      /* Include additional visitor info here */
-    },
-    keen: {
-      timestamp: new Date().toISOString(),
-      addons: [
-        {
-          name: 'keen:ip_to_geo',
-          input: {
-            ip: 'geo.ip_address'
-          },
-          output : 'geo.info'
-        },
-        {
-          name: 'keen:ua_parser',
-          input: {
-            ua_string: 'tech.user_agent'
-          },
-          output: 'tech.info'
-        },
-        {
-          name: 'keen:url_parser',
-          input: {
-            url: 'page.url'
-          },
-          output: 'page.info'
-        },
-        {
-          name: 'keen:referrer_parser',
-          input: {
-            referrer_url: 'referrer.url',
-            page_url: 'page.url'
-          },
-          output: 'referrer.info'
-        }
-      ]
-    }
-  }
-})
+// Track a 'pageview' event and initialize auto-tracking data model
+client.initAutoTracking({
+  recordClicks: false,
+  recordFormSubmits: false,
+  recordPageViews: true
+});
 
 const vuexLogger = store => {
-  // called when the store is initialized
+  // Called when the store is initialized
   store.subscribe((mutation, state) => {
-    // called after every mutation.
+    // Called after every mutation.
     // The mutation comes in the format of `{ type, payload }`.
     const eventBody = {
       'mutation': mutation,
@@ -104,13 +38,13 @@ const vuexLogger = store => {
         refine the state data that is recorded
         by cherry-picking specific properties
       */
-    }
-    // Filter omitted actions by action.type
+    };
+    // Filter omitted mutations by mutation.type
     // ...or whatever you name this property
-    if (OMITTED_ACTIONS.indexOf(action.type) < 0) {
-      client.deferEvent(EVENT_STREAM_NAME, eventBody)
+    if (OMITTED_MUTATIONS.indexOf(mutation.type) < 0) {
+      client.recordEvent(EVENT_STREAM_NAME, eventBody);
     }
   })
-}
+};
 
-export default vuexLogger
+export default vuexLogger;
