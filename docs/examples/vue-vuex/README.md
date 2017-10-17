@@ -66,24 +66,24 @@ export default vuexLogger;
 ```
 
 
-### Instrument the Store
+### Instrument the Vuex Store
 
 Next, import our new `keen-vuex-logger` vuex plugin into your Store definition:
 
 ```javascript
-import Vue from 'vue'
-import Vuex from 'vuex'
-import vuexLogger from './keen-vuex-logger.js'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import KeenVuexLogger from './keen-vuex-logger.js';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
-const debug = process.env.NODE_ENV !== 'production'
+const debug = process.env.NODE_ENV !== 'production';
 
 export default new Vuex.Store({
   actions,
   getters,
   modules,
   strict: debug,
-  plugins: debug ? [vuexLogger] : []
-})
+  plugins: [ KeenVuexLogger ]
+});
 ```
