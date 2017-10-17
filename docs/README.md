@@ -10,8 +10,19 @@
 
 ### Examples
 
+**App Frameworks:**
+
 * [React Flux Logger](./examples/react-flux): How to instrument a Flux ReduceStore
 * [React Redux Middleware](./examples/react-redux-middleware): How to instrument a Redux Store
+* [Vue.js Vuex Store](./examples/vue-vuex): How to instrument a Vue Vuex Store
+
+**Video Players:**
+
+* [Facebook video player](./examples/video/facebook-video)
+* [HTML5 video player](./examples/video/html5)
+* [Video.js player](./examples/video/video-js)
+* [Vimeo video player](./examples/video/vimeo)
+* [Youtube iFrame video player](./examples/video/youtube)
 
 ---
 

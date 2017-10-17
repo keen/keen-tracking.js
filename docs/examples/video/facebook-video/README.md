@@ -1,6 +1,6 @@
 # Facebook Video Player
 
-This example demonstrates how to instrument the [Facebook Video Player](https://developers.facebook.com/docs/plugins/embedded-video-player/api#control-reference) to capture usage stats with Keen IO.
+This example demonstrates how to instrument the [Facebook video player](https://developers.facebook.com/docs/plugins/embedded-video-player/api#control-reference) to capture usage stats with Keen IO.
 
 ### Installation
 

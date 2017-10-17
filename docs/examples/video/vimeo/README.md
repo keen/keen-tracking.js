@@ -1,6 +1,6 @@
 # Vimeo Player
 
-This example demonstrates how to instrument the [Vimeo Video Player](https://github.com/vimeo/player.js) to capture usage stats with Keen IO.
+This example demonstrates how to instrument the [Vimeo video player](https://github.com/vimeo/player.js) to capture usage stats with Keen IO.
 
 ### Installation
 

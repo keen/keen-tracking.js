@@ -1,6 +1,6 @@
 # Video.js Player
 
-This example demonstrates how to instrument the [Video.js Player](https://docs.videojs.com/) to capture usage stats with Keen IO.
+This example demonstrates how to instrument the [Video.js player](https://docs.videojs.com/) to capture usage stats with Keen IO.
 
 ### Installation
 

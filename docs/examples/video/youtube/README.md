@@ -1,6 +1,6 @@
 # Youtube iFrame Video Player
 
-This example demonstrates how to instrument the [Youtube iFrame Video Player](https://developers.google.com/youtube/iframe_api_reference) to capture usage stats with Keen IO.
+This example demonstrates how to instrument the [Youtube iFrame video player](https://developers.google.com/youtube/iframe_api_reference) to capture usage stats with Keen IO.
 
 ### Installation
 
