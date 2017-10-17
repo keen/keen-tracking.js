@@ -18,7 +18,7 @@ if (process.env.NODE_ENV !== 'production') {
   // Optionally prevent recording in dev mode
   Keen.enabled = false;
   // Display events in the browser console
-  client.on('recordEvent', KeenTracking.log);
+  client.on('recordEvent', Keen.log);
 }
 
 const helpers = Keen.helpers;
