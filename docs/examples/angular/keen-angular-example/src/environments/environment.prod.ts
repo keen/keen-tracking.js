@@ -1,3 +1,5 @@
 export const environment = {
-  production: true
+  production: true,
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY'
 };

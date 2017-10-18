@@ -1,11 +1,20 @@
 import { TestBed, async } from '@angular/core/testing';
+import { AppModule } from './app.module';
 import { AppComponent } from './app.component';
+import { KeenService } from './keen.service';
+
+class KeenServiceMock {};
+
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
+      imports: [
+        AppModule
       ],
+      providers: [{
+        provide: KeenService,
+        useClass: KeenServiceMock
+      }]
     }).compileComponents();
   }));
   it('should create the app', async(() => {

@@ -1,11 +1,13 @@
 {
   "name": "keen-angular-example",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start.prod": "ng serve --environment=prod",
     "build": "ng build",
+    "build.prod": "ng build --environment=prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -22,6 +24,7 @@
     "@angular/platform-browser-dynamic": "^4.2.4",
     "@angular/router": "^4.2.4",
     "core-js": "^2.4.1",
+    "keen-tracking": "^1.4.0",
     "rxjs": "^5.4.2",
     "zone.js": "^0.8.14"
   },
