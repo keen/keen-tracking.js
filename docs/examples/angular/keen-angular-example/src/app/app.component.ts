@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-
 import { KeenService } from './keen.service';
 
 @Component({
@@ -8,7 +7,7 @@ import { KeenService } from './keen.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  title = 'Keen Angular Example';
 
   constructor(private keenService: KeenService) {
 
