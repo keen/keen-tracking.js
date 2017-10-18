@@ -1,12 +1,18 @@
 import { Injectable } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import Keen from 'keen-tracking';
-import {environment} from '../environments/environment';
+import { environment } from '../environments/environment';
 
 @Injectable()
 export class KeenService {
   private client: Keen;
 
-  constructor() {
+  constructor( public router: Router ) {
+    this.initKeen();
+    this.recordRouterMavigationEvents();
+  }
+
+  private initKeen(): void {
     const { projectId, writeKey } = environment;
     
     this.client = new Keen({
@@ -90,9 +96,15 @@ export class KeenService {
         }
       };
     });
-
-    this.client.recordEvent('pageviews', {
-      title: document.title
-    });    
+  }
+ 
+  private recordRouterMavigationEvents(): void {
+    this.router.events.subscribe( event => {
+      if (event instanceof NavigationEnd) {
+        this.client.recordEvent('pageviews', {
+          title: document.title
+        });
+      }
+    });
   }
 }
