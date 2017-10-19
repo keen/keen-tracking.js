@@ -115,4 +115,11 @@ export class KeenService {
       newValue
     });
   }
+
+  public recordOnFocusEvent( formName: string, field: string ) {
+    this.client.recordEvent('onFormFieldFocus', {
+      formName,
+      field
+    });
+  }
 }

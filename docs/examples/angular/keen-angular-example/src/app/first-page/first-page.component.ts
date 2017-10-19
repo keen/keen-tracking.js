@@ -27,4 +27,8 @@ export class FirstPageComponent implements OnInit {
       this.submitMessage = '';
     }, 5000);
   }
+
+  private onFocus(formField: string) {
+    this.keenService.recordOnFocusEvent('uiStackSurvey', formField);
+  }
 }
