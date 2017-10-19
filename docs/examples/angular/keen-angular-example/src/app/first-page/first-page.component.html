@@ -1,10 +1,9 @@
 <h3>UI stack survey</h3>
-<form>
+<form (ngSubmit)="onSubmit()">
   <div>
     <label for="name">Your name</label>
-    <input type="text" id="name" required>
+    <input type="text" id="name" name="name" [(ngModel)]="name" required>
   </div>
-
   <div>
     <label for="uiStack">Favourite UI stack</label>
     <select id="uiStack" name="uiStack" [(ngModel)]="uiStack" (change)=uiStackValueChanged()>
@@ -13,6 +12,6 @@
       <option>React / Redux</option>
     </select>
   </div>
-
   <button type="submit">Submit</button>
+  <p>{{submitMessage}}</p>
 </form>

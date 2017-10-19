@@ -8,6 +8,8 @@ import { KeenService } from '../keen.service';
 })
 export class FirstPageComponent implements OnInit {
   private uiStack = 'Angular 2+';
+  private name = '';
+  private submitMessage = '';
 
   constructor( private keenService: KeenService ) { }
 
@@ -16,5 +18,13 @@ export class FirstPageComponent implements OnInit {
 
   private uiStackValueChanged() {
     this.keenService.recordValueSelectedEvent( 'uiStackSurvey', 'uiStack', this.uiStack);
+  }
+
+  private onSubmit() {
+    this.submitMessage = `Thank you for taking the survey! You (${this.name}) seem to like ${this.uiStack}.`;
+
+    setTimeout(() => {
+      this.submitMessage = '';
+    }, 5000);
   }
 }
