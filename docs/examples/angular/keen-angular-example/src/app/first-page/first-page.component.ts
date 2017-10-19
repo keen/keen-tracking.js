@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { KeenService } from '../keen.service';
 
 @Component({
   selector: 'app-first-page',
@@ -6,10 +7,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./first-page.component.css']
 })
 export class FirstPageComponent implements OnInit {
+  private uiStack = 'Angular 2+';
 
-  constructor() { }
+  constructor( private keenService: KeenService ) { }
 
   ngOnInit() {
   }
 
+  private uiStackValueChanged() {
+    this.keenService.recordValueSelectedEvent( 'uiStackSurvey', 'uiStack', this.uiStack);
+  }
 }

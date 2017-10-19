@@ -12,7 +12,7 @@ export class KeenService {
     this.recordRouterMavigationEvents();
   }
 
-  private initKeen(): void {
+  private initKeen() {
     const { projectId, writeKey } = environment;
     
     this.client = new Keen({
@@ -98,13 +98,21 @@ export class KeenService {
     });
   }
  
-  private recordRouterMavigationEvents(): void {
+  private recordRouterMavigationEvents() {
     this.router.events.subscribe( event => {
       if (event instanceof NavigationEnd) {
-        this.client.recordEvent('pageviews', {
+        this.client.recordEvent('pageView', {
           title: document.title
         });
       }
+    });
+  }
+
+  public recordValueSelectedEvent( formName: string, field: string, newValue: string ) {
+    this.client.recordEvent('valueSelected', {
+      formName,
+      field,
+      newValue
     });
   }
 }
