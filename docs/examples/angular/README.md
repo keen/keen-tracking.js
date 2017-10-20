@@ -72,7 +72,7 @@ public recordOnFocusEvent( formName: string, field: string ) {
 
 * Stream: onFormFieldFocus
 * formName - The name of the form, in the example it's always "uiStackSurvey"
-* field - The name of the form field, in the example it's always "uiStack"
+* field - The name of the form field, in the example it's either the input field, the dropdown or the submit button
 
 The dropdown on FirstPage shows both how to record an event on focus and when the value has been changed:
 
