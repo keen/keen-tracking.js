@@ -1,0 +1,17 @@
+<h2>UI stack survey</h2>
+<form (ngSubmit)="onSubmit()">
+  <div class="form-container">
+    <mat-form-field class="form-field">
+      <input matInput placeholder="Your name" type="text" id="name" name="name" [(ngModel)]="name" (focus)="onFocus('name')">
+    </mat-form-field>
+    <mat-form-field class="form-field">
+      <mat-select placeholder="Favorite UI stack" (change)=uiStackValueChanged() (focus)="onFocus('uiStack')">
+        <mat-option [value]="1">Angular 2+</mat-option>
+        <mat-option [value]="2">Aurelia</mat-option>
+        <mat-option [value]="3">React / Redux</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-button (focus)="onFocus('submitButton')">Submit</button>
+    <p>{{submitMessage}}</p>
+  </div>
+</form>
