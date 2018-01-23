@@ -2,6 +2,7 @@ var assert = require('proclaim');
 
 var getBrowserProfile = require('../../../lib/helpers/getBrowserProfile');
 var getDatetimeIndex = require('../../../lib/helpers/getDatetimeIndex');
+var getDomainName = require('../../../lib/helpers/getDomainName');
 var getDomNodePath = require('../../../lib/helpers/getDomNodePath');
 var getDomNodeProfile = require('../../../lib/helpers/getDomNodeProfile');
 var getScreenProfile = require('../../../lib/helpers/getScreenProfile');
@@ -49,6 +50,18 @@ describe('Keen.helpers', function(){
         'month'        : parseInt( 1 + now.getMonth() ),
         'year'         : now.getFullYear()
       });
+    });
+  });
+
+  describe('#getDomainName', function(){
+    it('should return the domain name of a host with a subdomain', function(){
+      assert.equal(getDomainName('subdomain.domain.name'), 'domain.name');
+    });
+    it('should return the domain name of a host with a double subdomain', function(){
+      assert.equal(getDomainName('double.subdomain.domain.name'), 'domain.name');
+    });
+    it('should return null if no domain is found', function(){
+      assert.equal(getDomainName('localhost'), null);
     });
   });
 
