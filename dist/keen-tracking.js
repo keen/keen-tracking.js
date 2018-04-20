@@ -469,7 +469,7 @@ function getDomNodeProfile(el) {
   return {
     action: el.action,
     class: el.className,
-    href: el.href,
+    href: el.href || null,
     id: el.id,
     method: el.method,
     name: el.name,
@@ -1142,9 +1142,15 @@ function deferClickEvent(evt, anchor, callback){
       evt.preventDefault();
     }
     evt.returnValue = false;
-    setTimeout(function(){
-      window.location = anchor.href;
-    }, timeout);
+    if (
+      anchor.href
+      && anchor.href !== '#'
+      && anchor.href !== (window.location + '#')
+    ) {
+      setTimeout(function(){
+        window.location = anchor.href;
+      }, timeout);
+    }
   }
   return false;
 }
