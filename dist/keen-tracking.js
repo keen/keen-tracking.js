@@ -994,7 +994,7 @@ function deepExtend(target){
         if ('undefined' !== typeof target[prop] && 'object' === typeof arguments[i][prop] && arguments[i][prop] !== null) {
           deepExtend(target[prop], clone(arguments[i][prop]));
         }
-        else if (arguments[i][prop] !== undefined && 'function' !== typeof arguments[i][prop]) {
+        else if (arguments[i][prop] !== undefined) {
           target[prop] = clone(arguments[i][prop]);
         }
       }

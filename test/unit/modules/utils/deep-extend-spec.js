@@ -33,8 +33,7 @@ describe('Keen.utils.deepExtend', function() {
       b: false,
       c: [ '3', 3, 5 ],
       d: {
-        value: 'd2',
-        f: function() {}
+        value: 'd2'
       }
     };
 
@@ -53,22 +52,6 @@ describe('Keen.utils.deepExtend', function() {
       d: {
         value: 'd2'
       }
-    });
-
-  });
-
-  it('should not blend function attributes', function() {
-    var a = {
-      value: 'a'
-    };
-
-    var b = {
-      value: 'b',
-      f: function() {}
-    };
-
-    assert.deepEqual(deepExtend(a, b), {
-      value: 'b'
     });
 
   });
