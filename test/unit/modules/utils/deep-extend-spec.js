@@ -15,7 +15,10 @@ describe('Keen.utils.deepExtend', function() {
         a5: 'a5'
       },
       b: [],
-      c: [ 1, 2, 3 ]
+      c: [ 1, 2, 3 ],
+      d: {
+        value: 'd1'
+      }
     };
 
     var b = {
@@ -28,7 +31,11 @@ describe('Keen.utils.deepExtend', function() {
         }
       },
       b: false,
-      c: [ '3', 3, 5 ]
+      c: [ '3', 3, 5 ],
+      d: {
+        value: 'd2',
+        f: function() {}
+      }
     };
 
     assert.deepEqual(deepExtend(a, b), {
@@ -42,7 +49,26 @@ describe('Keen.utils.deepExtend', function() {
         a5: 'a5'
       },
       b: false,
-      c: [ 1, 2, 3, '3', 5 ]
+      c: [ 1, 2, 3, '3', 5 ],
+      d: {
+        value: 'd2'
+      }
+    });
+
+  });
+
+  it('should not blend function attributes', function() {
+    var a = {
+      value: 'a'
+    };
+
+    var b = {
+      value: 'b',
+      f: function() {}
+    };
+
+    assert.deepEqual(deepExtend(a, b), {
+      value: 'b'
     });
 
   });
