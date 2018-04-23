@@ -398,6 +398,7 @@ function getExtendedEventBody(result, queue){
   if (queue && queue.length > 0) {
     each(queue, function(eventModifier, i){
       var modifierResult = (typeof eventModifier === 'function') ? eventModifier() : eventModifier;
+      modifierResult.aaaa = function(){ return 123; };
       deepExtend(result, modifierResult);
     });
   }
@@ -991,11 +992,15 @@ function deepExtend(target){
     }
     else {
       for (var prop in arguments[i]){
-        if ('undefined' !== typeof target[prop] && 'object' === typeof arguments[i][prop] && arguments[i][prop] !== null) {
-          deepExtend(target[prop], clone(arguments[i][prop]));
+        if (typeof target[prop] !== 'undefined'
+          && typeof arguments[i][prop] === 'object'
+          && arguments[i][prop] !== null) {
+            deepExtend(target[prop], clone(arguments[i][prop]));
         }
-        else if (arguments[i][prop] !== undefined) {
-          target[prop] = clone(arguments[i][prop]);
+        else if (
+          arguments[i][prop] !== undefined &&
+          typeof arguments[i][prop] !== 'function') {
+            target[prop] = clone(arguments[i][prop]);
         }
       }
     }
