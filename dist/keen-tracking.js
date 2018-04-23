@@ -991,11 +991,15 @@ function deepExtend(target){
     }
     else {
       for (var prop in arguments[i]){
-        if ('undefined' !== typeof target[prop] && 'object' === typeof arguments[i][prop] && arguments[i][prop] !== null) {
-          deepExtend(target[prop], clone(arguments[i][prop]));
+        if (typeof target[prop] !== 'undefined'
+          && typeof arguments[i][prop] === 'object'
+          && arguments[i][prop] !== null) {
+            deepExtend(target[prop], clone(arguments[i][prop]));
         }
-        else if (arguments[i][prop] !== undefined) {
-          target[prop] = clone(arguments[i][prop]);
+        else if (
+          arguments[i][prop] !== undefined &&
+          typeof arguments[i][prop] !== 'function') {
+            target[prop] = clone(arguments[i][prop]);
         }
       }
     }
