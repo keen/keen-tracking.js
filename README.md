@@ -222,25 +222,7 @@ Want to get up and running faster? This can also be achieved in the browser with
 
 ---
 
-### API Node.js Server Side Tracking (Back-end)
-
-```javascript
-const Keen = require('keen-tracking');
-
-const client = new Keen({
-  projectId: 'PROJECT_ID',
-  writeKey: 'WRITE_KEY'
-});
-
-client.recordEvent('purchases', {
-  item: 'Avocado',
-  price: 12
-});
-```
-
----
-
-### Block Bots and Improve Device Recognition
+### Block Bots and Improve Device Recognition (Browser/Front-end)
 
 Install [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js) to identify basic device types and block noisy bots and crawlers.
 
@@ -271,6 +253,24 @@ client.extendEvents(() => {
 Check out the many additional methods supported by [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js) to further enrich your data model.
 
 This can also be used with [automated event tracking](./docs/auto-tracking.md).
+
+---
+
+### API Node.js Server Side Tracking (Back-end)
+
+```javascript
+const Keen = require('keen-tracking');
+
+const client = new Keen({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY'
+});
+
+client.recordEvent('purchases', {
+  item: 'Avocado',
+  price: 12
+});
+```
 
 ---
 
