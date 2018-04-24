@@ -41,7 +41,7 @@ If any of this is confusing, that's our fault and we would love to help. Join ou
 
 ---
 
-### Automated Event Tracking (browser-only)
+### Automated Event Tracking (Browser-only)
 
 Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
 
@@ -62,7 +62,7 @@ Keen.ready(function(){
 
 ---
 
-### Pageview Tracking
+### Pageview Tracking (Browser/Front-end)
 
 First, let's create a new `client` instance with your Project ID and Write Key, and use the `.extendEvents()` method to define a solid baseline data model that will be applied to every single event that is recorded. Consistent data models and property names make life much easier later on, when analyzing and managing several event streams. This setup also includes our [data enrichment add-ons](https://keen.io/docs/streams/data-enrichment-overview/), which will populate additional information when an event is received on our end.
 
@@ -174,7 +174,7 @@ Want to get up and running faster? This can also be achieved in the browser with
 
 ---
 
-### Click and Form Submit Tracking
+### Click and Form Submit Tracking (Browser/Front-end)
 
 Clicks and form submissions can be captured with `.listenTo()`. This function intercepts events for designated elements and creates a brief 500ms delay, allowing an HTTP request to execute before the page begins to unload.
 
@@ -219,6 +219,24 @@ Keen.listenTo({
 ```
 
 Want to get up and running faster? This can also be achieved in the browser with [automated event tracking](./docs/auto-tracking.md).
+
+---
+
+### API Node.js Server Side Tracking (Back-end)
+
+```javascript
+const Keen = require('keen-tracking');
+
+const client = new Keen({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY'
+});
+
+client.recordEvent('purchases', {
+  item: 'Avocado',
+  price: 12
+});
+```
 
 ---
 
