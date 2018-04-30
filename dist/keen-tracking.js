@@ -1595,7 +1595,7 @@ timer.prototype.clear = function(){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.4.0'
+    version: '1.4.1'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
@@ -1872,7 +1872,7 @@ function serialize(data){
 },{"./each":29,"./extend":30}],33:[function(require,module,exports){
 module.exports={
   "name": "keen-tracking",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Data Collection SDK for Keen IO",
   "main": "lib/server.js",
   "browser": "lib/browser.js",
@@ -1885,12 +1885,13 @@ module.exports={
     "test": "gulp test:cli"
   },
   "bugs": "https://github.com/keen/keen-tracking.js/issues",
-  "author": "Dustin Larimer <dustin@keen.io> (https://keen.io/)",
+  "author": "Keen IO <team@keen.io> (https://keen.io/)",
   "contributors": [
     "Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)",
     "Eric Anderson <eric@keen.io> (https://github.com/aroc)",
     "Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)",
-    "Alex Kleissner <alex@keen.io> (https://github.com/hex337)"
+    "Alex Kleissner <alex@keen.io> (https://github.com/hex337)",
+    "Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"
   ],
   "license": "MIT",
   "dependencies": {
