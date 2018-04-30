@@ -13,12 +13,13 @@
     "test": "gulp test:cli"
   },
   "bugs": "https://github.com/keen/keen-tracking.js/issues",
-  "author": "Dustin Larimer <dustin@keen.io> (https://keen.io/)",
+  "author": "Keen IO <team@keen.io> (https://keen.io/)",
   "contributors": [
     "Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)",
     "Eric Anderson <eric@keen.io> (https://github.com/aroc)",
     "Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)",
-    "Alex Kleissner <alex@keen.io> (https://github.com/hex337)"
+    "Alex Kleissner <alex@keen.io> (https://github.com/hex337)",
+    "Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"
   ],
   "license": "MIT",
   "dependencies": {
