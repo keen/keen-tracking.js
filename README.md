@@ -142,7 +142,7 @@ client.extendEvents(() => {
   }
 });
 
-client.recordEvent('pageview', {});
+client.recordEvent('pageviews', {});
 ```
 
 Every event that is recorded will inherit this baseline data model. Additional properties defined in `client.recordEvent()` will be applied before the event is finally recorded.
