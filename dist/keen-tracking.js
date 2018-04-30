@@ -1595,7 +1595,7 @@ timer.prototype.clear = function(){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.4.1'
+    version: '1.4.0'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
@@ -1872,7 +1872,7 @@ function serialize(data){
 },{"./each":29,"./extend":30}],33:[function(require,module,exports){
 module.exports={
   "name": "keen-tracking",
-  "version": "1.4.1",
+  "version": "1.4.0",
   "description": "Data Collection SDK for Keen IO",
   "main": "lib/server.js",
   "browser": "lib/browser.js",
@@ -1882,7 +1882,10 @@ module.exports={
   },
   "scripts": {
     "start": "gulp with-tests",
-    "test": "gulp test:cli"
+    "test": "gulp test:cli",
+    "preversion": "gulp build && npm run test",
+    "version": "git add .",
+    "postversion": "git push && git push --tags"
   },
   "bugs": "https://github.com/keen/keen-tracking.js/issues",
   "author": "Keen IO <team@keen.io> (https://keen.io/)",
@@ -1900,6 +1903,7 @@ module.exports={
     "keen-core": "^0.1.3"
   },
   "devDependencies": {
+    "aws-sdk": "^2.229.1",
     "browserify": "^9.0.8",
     "chai": "^2.3.0",
     "chai-spies": "^0.6.0",
