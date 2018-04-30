@@ -6,6 +6,18 @@
 **BREAKING:**
 **CHANGE:**
 -->
+<a name="1.4.1"></a>
+# 1.4.1 Fixes
+
+**NEW:**
+* Cookie sharing across subdomains: `client.initAutoTracking({ shareUuidAcrossDomains: true });` (#104 contributed by [jmousseau](https://github.com/jmousseau))
+
+**FIXED:**
+* Gracefully handle a tags without hrefs (#105)
+* Avoid refreshing window when `href="#"` (#111)
+* Don't attempt to clone a function attribute in deepExtend (#106)
+* Record deferred events loop (#116)
+
 <a name="1.4.0"></a>
 # 1.4.0 Improved Protocol Handling and Dev Setup
 
