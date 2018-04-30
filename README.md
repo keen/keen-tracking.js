@@ -11,7 +11,7 @@ $ npm install keen-tracking --save
 Or load it from our CDN:
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.4.0.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.4.1.min.js"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)
@@ -256,7 +256,7 @@ This can also be used with [automated event tracking](./docs/auto-tracking.md).
 
 ---
 
-### API Node.js Server Side Tracking (Back-end)
+### Server Side Tracking (Back-end)
 
 ```javascript
 const Keen = require('keen-tracking');
