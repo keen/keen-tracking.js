@@ -1595,7 +1595,7 @@ timer.prototype.clear = function(){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.4.0'
+    version: '1.4.1'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
@@ -1872,7 +1872,7 @@ function serialize(data){
 },{"./each":29,"./extend":30}],33:[function(require,module,exports){
 module.exports={
   "name": "keen-tracking",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Data Collection SDK for Keen IO",
   "main": "lib/server.js",
   "browser": "lib/browser.js",
