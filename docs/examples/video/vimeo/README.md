@@ -10,7 +10,7 @@ Install the library synchronously and configure a new `client` instance to captu
 <html>
 <head>
   <meta charset="utf-8">
-  <script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.4.1.js"></script>
+  <script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-1.4.2.js"></script>
   <script src="https://player.vimeo.com/api/player.js"></script>
 </head>
 <body>
