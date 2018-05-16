@@ -9,9 +9,12 @@
     "url": "https://github.com/keen/keen-tracking.js.git"
   },
   "scripts": {
-    "start": "gulp with-tests",
+    "start": "webpack-dev-server",
     "test": "gulp test:cli",
-    "preversion": "gulp build && npm run test",
+    "build": "ENV=production webpack -p && ENV=production OPTIMIZE_MINIMIZE=1 webpack -p",
+    "profile": "webpack --profile --json > stats.json",
+    "analyze": "webpack-bundle-analyzer stats.json /dist",
+    "preversion": "npm run build && npm run test",
     "version": "git add .",
     "postversion": "git push && git push --tags"
   },
@@ -24,6 +27,9 @@
     "Alex Kleissner <alex@keen.io> (https://github.com/hex337)",
     "Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"
   ],
+  "devEngines": {
+    "node": "8.x || 9.x"
+  },
   "license": "MIT",
   "dependencies": {
     "component-emitter": "^1.2.0",
@@ -31,14 +37,19 @@
     "keen-core": "^0.1.3"
   },
   "devDependencies": {
-    "aws-sdk": "^2.229.1",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
     "browserify": "^9.0.8",
     "chai": "^2.3.0",
     "chai-spies": "^0.6.0",
     "del": "^1.1.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-loader": "^2.0.0",
+    "eslint-plugin-import": "^2.11.0",
     "gulp": "^3.8.11",
     "gulp-awspublish": "0.0.23",
-    "gulp-connect": "^2.2.0",
     "gulp-derequire": "^2.1.0",
     "gulp-mocha": "^2.0.1",
     "gulp-mocha-phantomjs": "^0.6.1",
@@ -47,9 +58,10 @@
     "gulp-replace": "^0.5.3",
     "gulp-sourcemaps": "^1.5.2",
     "gulp-strip-comments": "^1.0.1",
-    "gulp-uglify": "^1.5.2",
     "gulp-util": "^3.0.4",
     "gulp-yuicompressor": "0.0.3",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
     "karma": "^1.7.1",
     "karma-chrome-launcher": "^0.1.12",
     "karma-firefox-launcher": "^0.1.6",
@@ -63,6 +75,10 @@
     "phantomjs": "^1.9.7-15",
     "proclaim": "^3.3.0",
     "requirejs": "^2.3.5",
+    "webpack": "^4.5.0",
+    "webpack-bundle-analyzer": "^2.11.1",
+    "webpack-cli": "^2.0.13",
+    "webpack-dev-server": "^3.1.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
