@@ -54,14 +54,14 @@ describe('Keen.helpers', function(){
   });
 
   describe('#getDomainName', function(){
+    it('should return the domain name', function(){
+      assert.equal(getDomainName('domain.name'), 'domain.name');
+    });
     it('should return the domain name of a host with a subdomain', function(){
       assert.equal(getDomainName('subdomain.domain.name'), 'domain.name');
     });
     it('should return the domain name of a host with a double subdomain', function(){
       assert.equal(getDomainName('double.subdomain.domain.name'), 'domain.name');
-    });
-    it('should return null if no domain is found', function(){
-      assert.equal(getDomainName('localhost'), null);
     });
   });
 
