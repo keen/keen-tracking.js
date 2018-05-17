@@ -86,12 +86,9 @@ describe('Keen.utils.listener', () => {
     });
   });
 
-
   it('should set and handle `<a>` click events set with .on("click", fn)', function(done){
     const listenToThis = listener('body a#listen-to-anchor');
     listenToThis.on('click', callback);
-
-    this.timeout(5000);
 
     function callback(e){
       // Keen.log('click a#listen-to-anchor');
@@ -99,8 +96,8 @@ describe('Keen.utils.listener', () => {
       return false;
     }
 
-    setTimeout(() => {
-      const ev, a;
+      let ev;
+      let a;
 
       a = document.createElement("A");
       a.id = 'listen-to-anchor';
@@ -121,23 +118,20 @@ describe('Keen.utils.listener', () => {
         );
         a.dispatchEvent(ev);
       }
-    }, 1000);
   });
 
   it('should set and handle `<a>` click events set with .once("click", fn)', function(done){
     const listen = listener('a#listen-to-anchor-once');
     listen.once('click', callback);
 
-    this.timeout(5000);
-
     function callback(e){
       // Keen.log('click a#listen-to-anchor-once');
       done();
       return false;
     }
+      let ev;
+      let a;
 
-    setTimeout(() => {
-      const ev, a;
 
       a = document.createElement('A');
       a.id = 'listen-to-anchor-once';
@@ -158,7 +152,6 @@ describe('Keen.utils.listener', () => {
         );
         a.dispatchEvent(ev);
       }
-    }, 1000);
   });
 
   it('should remove specific handlers with .off("click", fn)', () => {
@@ -169,10 +162,10 @@ describe('Keen.utils.listener', () => {
     listenToThis.on('click', () => {
       // Not the same
     });
-    expect().equal(Keen.domListeners['click']['body a#on-off'].length, 3);
+    expect(Keen.domListeners['click']['body a#on-off'].length).toBe(3);
 
     listenToThis.off('click', noop);
-    expect().equal(Keen.domListeners['click']['body a#on-off'].length, 1);
+    expect(Keen.domListeners['click']['body a#on-off'].length).toBe(1);
 
     function noop(e){ }
   });
@@ -188,7 +181,6 @@ describe('Keen.utils.listener', () => {
       return false;
     });
 
-    setTimeout(() => {
       const form = document.createElement('FORM');
       form.id = 'listen-to-form';
       form.action = "./";
@@ -202,8 +194,6 @@ describe('Keen.utils.listener', () => {
 
       input.click();
       // form.submit();
-    }, 1000);
-
   });
 
 });
