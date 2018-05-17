@@ -1,7 +1,5 @@
-var assert = require('proclaim');
-
-var Cookies = require('js-cookie');
-var cookie = require('../../../../lib/utils/cookie');
+import Cookies from 'js-cookie';
+import { cookie } from '../../../../lib/utils/cookie';
 
 describe('Keen.utils.cookie', function() {
 

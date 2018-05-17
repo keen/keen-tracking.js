@@ -1,6 +1,6 @@
-var assert = require('proclaim');
-var Keen = require('../../../lib/index');
-var config = require('../helpers/client-config');
+
+var Keen from '../../../lib/index');
+import config from '../helpers/client-config';
 
 // Keen.debug = true;
 

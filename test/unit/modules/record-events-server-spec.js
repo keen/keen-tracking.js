@@ -1,11 +1,11 @@
-var chai = require('chai'),
-    expect = require('chai').expect,
-    spies = require('chai-spies');
+var chai from 'chai'),
+    expect from 'chai').expect,
+    spies from 'chai-spies');
 
 chai.use(spies);
 
-var Keen = require('../../../lib/server');
-var config = require('../helpers/client-config');
+import Keen from '../../../../lib/server';
+import config from '../helpers/client-config';
 
 // Keen.debug = true;
 

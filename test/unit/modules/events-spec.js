@@ -1,5 +1,5 @@
-var assert = require('proclaim');
-var Keen = require('../../../lib/server');
+
+import Keen from '../../../../lib/server';
 
 describe('Keen event emitter system', () => {
 

@@ -1,6 +1,6 @@
-var assert = require('proclaim');
-var Keen = require('../../../lib/server');
-var config = require('../helpers/client-config');
+
+import Keen from '../../../../lib/server';
+import config from '../helpers/client-config';
 
 describe('.deferEvent(s) methods', function() {
 

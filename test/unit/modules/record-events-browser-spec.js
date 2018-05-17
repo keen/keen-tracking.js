@@ -1,7 +1,7 @@
-var assert = require('proclaim');
 
-var Keen = require('../../../lib/browser');
-var config = require('../helpers/client-config');
+
+import Keen from '../../../../lib/browser';
+import config from '../helpers/client-config';
 
 // Keen.debug = true;
 

@@ -1,6 +1,4 @@
-var assert = require('proclaim');
-
-var queue = require('../../../../lib/utils/queue');
+import { queue } from '../../../../lib/utils/queue');
 
 describe('Keen.utils.queue', function() {
 

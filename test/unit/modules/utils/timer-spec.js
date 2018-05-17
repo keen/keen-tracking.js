@@ -1,6 +1,6 @@
-var assert = require('proclaim');
 
-var timer = require('../../../../lib/utils/timer');
+
+var timer from '../../../../lib/utils/timer');
 
 describe('Keen.utils.timer', function() {
 

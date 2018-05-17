@@ -1,6 +1,6 @@
-var assert = require('proclaim');
-var config = require('../helpers/client-config');
-var Keen = require('../../../lib/browser');
+
+import config from '../helpers/client-config';
+import Keen from '../../../../lib/browser';
 
 describe('Auto Tracking', function() {
 

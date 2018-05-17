@@ -1,14 +1,14 @@
-var assert = require('proclaim');
 
-var getBrowserProfile = require('../../../lib/helpers/getBrowserProfile');
-var getDatetimeIndex = require('../../../lib/helpers/getDatetimeIndex');
-var getDomainName = require('../../../lib/helpers/getDomainName');
-var getDomNodePath = require('../../../lib/helpers/getDomNodePath');
-var getDomNodeProfile = require('../../../lib/helpers/getDomNodeProfile');
-var getScreenProfile = require('../../../lib/helpers/getScreenProfile');
-var getScrollState = require('../../../lib/helpers/getScrollState');
-var getUniqueId = require('../../../lib/helpers/getUniqueId');
-var getWindowProfile = require('../../../lib/helpers/getWindowProfile');
+
+var getBrowserProfile from '../../../lib/helpers/getBrowserProfile');
+var getDatetimeIndex from '../../../lib/helpers/getDatetimeIndex');
+var getDomainName from '../../../lib/helpers/getDomainName');
+var getDomNodePath from '../../../lib/helpers/getDomNodePath');
+var getDomNodeProfile from '../../../lib/helpers/getDomNodeProfile');
+var getScreenProfile from '../../../lib/helpers/getScreenProfile');
+var getScrollState from '../../../lib/helpers/getScrollState');
+var getUniqueId from '../../../lib/helpers/getUniqueId');
+var getWindowProfile from '../../../lib/helpers/getWindowProfile');
 
 describe('Keen.helpers', () => {
 
