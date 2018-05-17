@@ -63,6 +63,9 @@ describe('Keen.helpers', function(){
     it('should return the domain name of a host with a double subdomain', function(){
       assert.equal(getDomainName('double.subdomain.domain.name'), 'domain.name');
     });
+    it('should return the domain name of a host with .co.uk', function(){
+      assert.equal(getDomainName('subdomain.domain.co.uk'), 'domain.co.uk');
+    });
   });
 
   if ('undefined' === typeof navigator) return;

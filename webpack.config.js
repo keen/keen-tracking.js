@@ -50,16 +50,6 @@ module.exports = {
     extensions: ['.js', '.json', '.jsx', '.css', '.scss'],
   },
 
-  performance: {
-    hints: 'warning', // enum
-    maxAssetSize: 200000, // int (in bytes),
-    maxEntrypointSize: 400000, // int (in bytes)
-    assetFilter(assetFilename) {
-      // Function predicate that provides asset filenames
-      return assetFilename.endsWith('.css') || assetFilename.endsWith('.js');
-    },
-  },
-
   optimization: {
     minimize: !!process.env.OPTIMIZE_MINIMIZE,
   },
