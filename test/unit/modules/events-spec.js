@@ -11,7 +11,7 @@ describe('Keen event emitter system', function(){
   describe('#on', function(){
     it('should attach custom event listeners with #on', function(){
       Keen.on('event', function(){});
-      assert.isArray(Keen.listeners());
+      expect().isArray(Keen.listeners());
     });
   });
 
@@ -53,7 +53,7 @@ describe('Keen event emitter system', function(){
       Keen.emit('event');
       Keen.emit('event');
       Keen.emit('event');
-      assert.equal(count, 3);
+      expect().equal(count, 3);
       // expect(callback).to.have.been.called.exactly(3);
     });
   });
@@ -68,7 +68,7 @@ describe('Keen event emitter system', function(){
       Keen.on('event', callback);
       Keen.off('event');
       Keen.emit('event');
-      assert.equal(count, 0);
+      expect().equal(count, 0);
     });
 
     it('should remove specified listeners with #off(name, callback)', function(){
@@ -83,7 +83,7 @@ describe('Keen event emitter system', function(){
       Keen.on('event', fakeback);
       Keen.off('event', fakeback);
       Keen.emit('event');
-      assert.equal(count, 1);
+      expect().equal(count, 1);
     });
   });
 
@@ -99,11 +99,11 @@ describe('Keen event emitter system', function(){
       Keen.once('event', callbackA);
       Keen.once('event', callbackB);
       Keen.emit('event');
-      assert.equal(countA, 1);
-      assert.equal(countB, 1);
+      expect().equal(countA, 1);
+      expect().equal(countB, 1);
       Keen.emit('event');
-      assert.equal(countA, 1);
-      assert.equal(countB, 1);
+      expect().equal(countA, 1);
+      expect().equal(countB, 1);
     });
   });
 });

@@ -17,9 +17,9 @@ describe('.extendEvent(s) methods', function() {
   });
 
   it('should have an extensions hash with "events" and "collections" queues', function(){
-    assert.isObject(this.client.extensions);
-    assert.isArray(this.client.extensions.events);
-    assert.isObject(this.client.extensions.collections);
+    expect().isObject(this.client.extensions);
+    expect().isArray(this.client.extensions.events);
+    expect().isObject(this.client.extensions.collections);
   });
 
   it('should store global extensions in the proper order', function(){
@@ -27,11 +27,11 @@ describe('.extendEvent(s) methods', function() {
     this.client.extendEvents(function(){ return {} });
     this.client.extendEvents({ key: 456 });
 
-    assert.isObject(this.client.extensions.events[0]);
-    assert.equal(this.client.extensions.events[0].key, 123);
-    assert.isFunction(this.client.extensions.events[1]);
-    assert.isObject(this.client.extensions.events[2]);
-    assert.equal(this.client.extensions.events[2].key, 456);
+    expect().isObject(this.client.extensions.events[0]);
+    expect().equal(this.client.extensions.events[0].key, 123);
+    expect().isFunction(this.client.extensions.events[1]);
+    expect().isObject(this.client.extensions.events[2]);
+    expect().equal(this.client.extensions.events[2].key, 456);
   });
 
   it('should store single collection extensions in the proper order', function(){
@@ -43,30 +43,30 @@ describe('.extendEvent(s) methods', function() {
     this.client.extendEvent('purchases', function(){ return {} });
     this.client.extendEvent('purchases', { key: 456 });
 
-    assert.isObject(this.client.extensions.collections['pageviews'][0]);
-    assert.equal(this.client.extensions.collections['pageviews'][0].key, 123);
-    assert.isFunction(this.client.extensions.collections['pageviews'][1]);
-    assert.isObject(this.client.extensions.collections['pageviews'][2]);
-    assert.equal(this.client.extensions.collections['pageviews'][2].key, 456);
+    expect().isObject(this.client.extensions.collections['pageviews'][0]);
+    expect().equal(this.client.extensions.collections['pageviews'][0].key, 123);
+    expect().isFunction(this.client.extensions.collections['pageviews'][1]);
+    expect().isObject(this.client.extensions.collections['pageviews'][2]);
+    expect().equal(this.client.extensions.collections['pageviews'][2].key, 456);
 
-    assert.isObject(this.client.extensions.collections['purchases'][0]);
-    assert.equal(this.client.extensions.collections['purchases'][0].key, 123);
-    assert.isFunction(this.client.extensions.collections['purchases'][1]);
-    assert.isObject(this.client.extensions.collections['purchases'][2]);
-    assert.equal(this.client.extensions.collections['purchases'][2].key, 456);
+    expect().isObject(this.client.extensions.collections['purchases'][0]);
+    expect().equal(this.client.extensions.collections['purchases'][0].key, 123);
+    expect().isFunction(this.client.extensions.collections['purchases'][1]);
+    expect().isObject(this.client.extensions.collections['purchases'][2]);
+    expect().equal(this.client.extensions.collections['purchases'][2].key, 456);
   });
 
   it('should emit an "extendEvent" event', function(){
     this.client.on('extendEvent', function(eventCollection, eventModifier){
-      assert.equal(eventCollection, 'pageviews');
-      assert.equal(eventModifier.key, 123);
+      expect().equal(eventCollection, 'pageviews');
+      expect().equal(eventModifier.key, 123);
     });
     this.client.extendEvent('pageviews', { key: 123 });
   });
 
   it('should emit an "extendEvents" event', function(){
     this.client.on('extendEvents', function(eventsModifier){
-      assert.equal(eventsModifier.key, 123);
+      expect().equal(eventsModifier.key, 123);
     });
     this.client.extendEvents({ key: 123 });
   });
@@ -76,8 +76,8 @@ describe('.extendEvent(s) methods', function() {
 
     it('should extend the event body of all events', function(){
       this.client.on('recordEvent', function(eventCollection, eventBody){
-        assert.equal(eventCollection, 'test');
-        assert.deepEqual(eventBody, { key: 123, exists: true, user: { id: '3434', active: false } });
+        expect().equal(eventCollection, 'test');
+        expect().deepEqual(eventBody, { key: 123, exists: true, user: { id: '3434', active: false } });
       });
       this.client.extendEvents({ key: 123, user: { id: '3434' } });
       this.client.recordEvent('test', { exists: true, user: { active: false } });
@@ -85,8 +85,8 @@ describe('.extendEvent(s) methods', function() {
 
     it('should extend the event body of a specific collection', function(){
       this.client.on('recordEvent', function(eventCollection, eventBody){
-        assert.equal(eventCollection, 'test');
-        assert.deepEqual(eventBody, { key: 123, exists: true, user: { id: '3434', active: false } });
+        expect().equal(eventCollection, 'test');
+        expect().deepEqual(eventBody, { key: 123, exists: true, user: { id: '3434', active: false } });
       });
       this.client.extendEvent('test', { key: 123, user: { id: '3434' } });
       this.client.recordEvent('test', { exists: true, user: { active: false } });
@@ -98,7 +98,7 @@ describe('.extendEvent(s) methods', function() {
 
     it('should extend the event body of all events', function(){
       this.client.on('recordEvents', function(eventsHash){
-        assert.deepEqual(eventsHash, {
+        expect().deepEqual(eventsHash, {
           'test 1': [
             { key: 123, exists: true, user: { id: '424234', key: 0 } }
           ],

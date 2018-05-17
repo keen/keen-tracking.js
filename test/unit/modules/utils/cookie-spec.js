@@ -16,20 +16,20 @@ describe('Keen.utils.cookie', function() {
   describe('constructor', function(){
 
     it('should return a constructed object', function() {
-      assert.isObject(this.cookie);
+      expect().isObject(this.cookie);
     });
 
     it('should have internal properties', function() {
-      assert.isObject(this.cookie.data);
-      assert.isObject(this.cookie.config.options);
-      assert.isString(this.cookie.config.key);
-      assert.equal(this.cookie.config.key, 'keen-test-cookie');
+      expect().isObject(this.cookie.data);
+      expect().isObject(this.cookie.config.options);
+      expect().isString(this.cookie.config.key);
+      expect().equal(this.cookie.config.key, 'keen-test-cookie');
     });
 
     it('should have prototype methods', function() {
-      assert.isFunction(this.cookie.get);
-      assert.isFunction(this.cookie.set);
-      assert.isFunction(this.cookie.expire);
+      expect().isFunction(this.cookie.get);
+      expect().isFunction(this.cookie.set);
+      expect().isFunction(this.cookie.expire);
     });
 
   });
@@ -38,20 +38,20 @@ describe('Keen.utils.cookie', function() {
 
     it('should return a simple string for pre-existing non-json data', function(){
       Cookies.set('keen-test-cookie', 'some thing that is not json');
-      assert.deepEqual(this.cookie.get(), 'some thing that is not json');
+      expect().deepEqual(this.cookie.get(), 'some thing that is not json');
     });
 
     it('should return an empty object when no key name is provided and no data has been stored', function(){
-      assert.deepEqual(this.cookie.get(), {});
+      expect().deepEqual(this.cookie.get(), {});
     });
 
     it('should return stored key', function(){
       this.cookie.set('mocha-test-getter', 123);
-      assert.deepEqual(this.cookie.get('mocha-test-getter'), 123);
+      expect().deepEqual(this.cookie.get('mocha-test-getter'), 123);
     });
 
     it('should return null when requesting an unstored key', function(){
-      assert.isNull(this.cookie.get('mocha-null'));
+      expect().isNull(this.cookie.get('mocha-null'));
     });
 
   });
@@ -60,22 +60,22 @@ describe('Keen.utils.cookie', function() {
 
     it('should set a string value', function(){
       this.cookie.set('library', 'keen-tracking.js');
-      assert.equal(this.cookie.get('library'), 'keen-tracking.js');
+      expect().equal(this.cookie.get('library'), 'keen-tracking.js');
     });
 
     it('should set a numeric value', function(){
       this.cookie.set('number', 123);
-      assert.equal(this.cookie.get('number'), 123);
+      expect().equal(this.cookie.get('number'), 123);
     });
 
     it('should set an array value', function(){
       this.cookie.set('array', ['1', 2, false]);
-      assert.deepEqual(this.cookie.get('array'), ['1', 2, false]);
+      expect().deepEqual(this.cookie.get('array'), ['1', 2, false]);
     });
 
     it('should set an object value to a key', function(){
       this.cookie.set('object', { object: true });
-      assert.deepEqual(this.cookie.get('object'), { object: true });
+      expect().deepEqual(this.cookie.get('object'), { object: true });
     });
 
     it('should set an object of key:value pairs', function(){
@@ -86,10 +86,10 @@ describe('Keen.utils.cookie', function() {
         object: { object: true }
       });
       var data = this.cookie.get();
-      assert.equal(data.library, 'keen-tracking.js');
-      assert.equal(data.number, 123);
-      assert.deepEqual(data.array, ['1', 2, false]);
-      assert.deepEqual(data.object, { object: true });
+      expect().equal(data.library, 'keen-tracking.js');
+      expect().equal(data.number, 123);
+      expect().deepEqual(data.array, ['1', 2, false]);
+      expect().deepEqual(data.object, { object: true });
     });
 
   });
@@ -99,7 +99,7 @@ describe('Keen.utils.cookie', function() {
     it('should expire the cookie', function(){
       this.cookie.set('library', 'keen-tracking.js');
       this.cookie.expire();
-      assert.deepEqual(this.cookie.get(), {});
+      expect().deepEqual(this.cookie.get(), {});
     });
 
   });
@@ -108,12 +108,12 @@ describe('Keen.utils.cookie', function() {
 
     it('should set options for cookies', function(){
       this.cookie.options({ secure: false });
-      assert.equal(this.cookie.config.options.secure, false);
+      expect().equal(this.cookie.config.options.secure, false);
     });
 
     it('should get options for cookies', function(){
       this.cookie.options({ secure: false });
-      assert.deepEqual(this.cookie.options(), { secure: false });
+      expect().deepEqual(this.cookie.options(), { secure: false });
     });
 
   });
@@ -121,7 +121,7 @@ describe('Keen.utils.cookie', function() {
   describe('.enabled', function(){
 
     it('should return a boolean value', function(){
-      assert.isBoolean(this.cookie.enabled());
+      expect().isBoolean(this.cookie.enabled());
     });
 
   });

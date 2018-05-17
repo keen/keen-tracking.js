@@ -25,24 +25,24 @@ describe('Auto Tracking', function() {
 
     this.client.on('recordEvent', function(stream, payload){
       if (stream === 'pageviews') {
-        assert.equal(stream, 'pageviews');
+        expect().equal(stream, 'pageviews');
         inc++;
       }
       else if (stream === 'clicks') {
-        assert.equal(stream, 'clicks');
-        assert.equal(payload.element.id, 'test-auto-tracker-clicks');
-        assert.equal(payload.element.node_name, 'A');
-        assert.isNumber(payload.page.time_on_page);
+        expect().equal(stream, 'clicks');
+        expect().equal(payload.element.id, 'test-auto-tracker-clicks');
+        expect().equal(payload.element.node_name, 'A');
+        expect().isNumber(payload.page.time_on_page);
         aNode.outerHTML = '';
         inc++;
       }
       else if (stream === 'form_submissions') {
-        assert.equal(stream, 'form_submissions');
-        assert.equal(payload.element.id, 'test-auto-tracker-submits');
-        assert.equal(payload.element.node_name, 'FORM');
-        assert.equal(payload.form.fields.email, 'team@keen.io');
-        assert.notOk(payload.form.fields.password);
-        assert.isNumber(payload.page.time_on_page);
+        expect().equal(stream, 'form_submissions');
+        expect().equal(payload.element.id, 'test-auto-tracker-submits');
+        expect().equal(payload.element.node_name, 'FORM');
+        expect().equal(payload.form.fields.email, 'team@keen.io');
+        expect().notOk(payload.form.fields.password);
+        expect().isNumber(payload.page.time_on_page);
         fNode.outerHTML = '';
         inc++;
       }

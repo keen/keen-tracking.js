@@ -75,7 +75,6 @@
     "mocha": "^2.2.5",
     "moment": "^2.10.3",
     "phantomjs": "^1.9.7-15",
-    "proclaim": "^3.3.0",
     "regenerator-runtime": "^0.11.1",
     "requirejs": "^2.3.5",
     "vinyl-buffer": "^1.0.0",

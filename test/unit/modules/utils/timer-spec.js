@@ -15,24 +15,24 @@ describe('Keen.utils.timer', function() {
   describe('constructor', function(){
 
     it('should return a constructed object', function() {
-      assert.isObject(this.timer);
+      expect().isObject(this.timer);
     });
 
     it('should have internal count property of zero', function() {
-      assert.isNumber(this.timer.count);
-      assert.equal(this.timer.count, 0);
+      expect().isNumber(this.timer.count);
+      expect().equal(this.timer.count, 0);
     });
 
     it('should have internal count property matching provided value', function() {
       var newTimer = timer(123);
-      assert.equal(newTimer.count, 123);
+      expect().equal(newTimer.count, 123);
     });
 
     it('should have prototype methods', function() {
-      assert.isFunction(this.timer.start);
-      assert.isFunction(this.timer.pause);
-      assert.isFunction(this.timer.value);
-      assert.isFunction(this.timer.clear);
+      expect().isFunction(this.timer.start);
+      expect().isFunction(this.timer.pause);
+      expect().isFunction(this.timer.value);
+      expect().isFunction(this.timer.clear);
     });
 
   });
@@ -45,14 +45,14 @@ describe('Keen.utils.timer', function() {
       this.timer.start();
       setTimeout(function(){
         self.timer.pause();
-        assert.lessThan(self.timer.value(), 2);
+        expect().lessThan(self.timer.value(), 2);
         // done();
       }, 1000);
     });
 
     it('should clear the value of the timer', function() {
       this.timer.clear();
-      assert.equal(this.timer.value(), 0);
+      expect().equal(this.timer.value(), 0);
     });
 
   });

@@ -14,36 +14,36 @@ describe('Keen.helpers', function(){
 
   describe('#getUniqueId', function(){
     it('should return a random UUID', function(){
-      assert.isString(getUniqueId());
+      expect().isString(getUniqueId());
     });
     it('should return a string of length 36', function(){
-      assert.equal(getUniqueId().length, 36);
+      expect().equal(getUniqueId().length, 36);
     });
     it('should return a string of the correct structure', function(){
       var splitStr = getUniqueId().split('-');
-      assert.equal(splitStr.length, 5);
-      assert.equal(splitStr[0].length, 8);
-      assert.equal(splitStr[1].length, 4);
-      assert.equal(splitStr[2].length, 4);
-      assert.equal(splitStr[3].length, 4);
-      assert.equal(splitStr[4].length, 12);
+      expect().equal(splitStr.length, 5);
+      expect().equal(splitStr[0].length, 8);
+      expect().equal(splitStr[1].length, 4);
+      expect().equal(splitStr[2].length, 4);
+      expect().equal(splitStr[3].length, 4);
+      expect().equal(splitStr[4].length, 12);
     });
   });
 
   describe('#getDatetimeIndex', function(){
     it('should return an object of datetime properties', function(){
       var datetime = getDatetimeIndex();
-      assert.isObject(datetime);
-      assert.isNumber(datetime.hour_of_day);
-      assert.isNumber(datetime.day_of_week);
-      assert.isNumber(datetime.day_of_month);
-      assert.isNumber(datetime.month);
-      assert.isNumber(datetime.year);
+      expect().isObject(datetime);
+      expect().isNumber(datetime.hour_of_day);
+      expect().isNumber(datetime.day_of_week);
+      expect().isNumber(datetime.day_of_month);
+      expect().isNumber(datetime.month);
+      expect().isNumber(datetime.year);
     });
     it('should return an object of datetime properties from a provided date', function(){
       var now = new Date();
       var datetime = getDatetimeIndex(now);
-      assert.deepEqual(datetime, {
+      expect().deepEqual(datetime, {
         'hour_of_day'  : now.getHours(),
         'day_of_week'  : parseInt( 1 + now.getDay() ),
         'day_of_month' : now.getDate(),
@@ -55,16 +55,16 @@ describe('Keen.helpers', function(){
 
   describe('#getDomainName', function(){
     it('should return the domain name', function(){
-      assert.equal(getDomainName('domain.name'), 'domain.name');
+      expect().equal(getDomainName('domain.name'), 'domain.name');
     });
     it('should return the domain name of a host with a subdomain', function(){
-      assert.equal(getDomainName('subdomain.domain.name'), 'domain.name');
+      expect().equal(getDomainName('subdomain.domain.name'), 'domain.name');
     });
     it('should return the domain name of a host with a double subdomain', function(){
-      assert.equal(getDomainName('double.subdomain.domain.name'), 'domain.name');
+      expect().equal(getDomainName('double.subdomain.domain.name'), 'domain.name');
     });
     it('should return the domain name of a host with .co.uk', function(){
-      assert.equal(getDomainName('subdomain.domain.co.uk'), 'domain.co.uk');
+      expect().equal(getDomainName('subdomain.domain.co.uk'), 'domain.co.uk');
     });
   });
 
@@ -72,35 +72,35 @@ describe('Keen.helpers', function(){
 
   describe('#getBrowserProfile', function(){
     it('should return an object of browser properties', function(){
-      assert.isObject(getBrowserProfile());
+      expect().isObject(getBrowserProfile());
     });
     it('should return a child object of screen properties', function(){
-      assert.isObject(getBrowserProfile().screen);
+      expect().isObject(getBrowserProfile().screen);
     });
     it('should return a child object of window properties', function(){
-      assert.isObject(getBrowserProfile().window);
+      expect().isObject(getBrowserProfile().window);
     });
   });
 
   describe('#getScreenProfile', function(){
     it('should return an object of screen properties', function(){
-      assert.isObject(getScreenProfile());
+      expect().isObject(getScreenProfile());
     });
     it('should have a height and width > 0', function(){
       var _screen = getScreenProfile();
-      assert.greaterThan(_screen.height, 0);
-      assert.greaterThan(_screen.width, 0);
+      expect().greaterThan(_screen.height, 0);
+      expect().greaterThan(_screen.width, 0);
     });
   });
 
   describe('#getWindowProfile', function(){
     it('should return an object of window properties', function(){
-      assert.isObject(getWindowProfile());
+      expect().isObject(getWindowProfile());
     });
     it('should have a height and width > 0', function(){
       var _window = getWindowProfile();
-      assert.greaterThan(_window.height, 0);
-      assert.greaterThan(_window.width, 0);
+      expect().greaterThan(_window.height, 0);
+      expect().greaterThan(_window.width, 0);
     });
   });
 
@@ -108,7 +108,7 @@ describe('Keen.helpers', function(){
     it('should return a string', function(){
       var el = document.body;
       var path = getDomNodePath(el);
-      assert.isString(path);
+      expect().isString(path);
     });
   });
 
@@ -116,19 +116,19 @@ describe('Keen.helpers', function(){
     it('should return an object of properties for a given DOM node', function(){
       var el = document.body;
       var obj = getDomNodeProfile(el);
-      assert.isObject(obj);
-      assert.equal(obj.node_name, 'BODY');
+      expect().isObject(obj);
+      expect().equal(obj.node_name, 'BODY');
     });
   });
 
   describe('#getScrollState', function(){
     it('should return an object of properties for the window scroll state', function(){
       var obj = getScrollState();
-      assert.isObject(obj);
-      assert.isNumber(obj.pixel);
-      assert.isNumber(obj.pixel_max);
-      assert.isNumber(obj.ratio);
-      assert.isNumber(obj.ratio_max);
+      expect().isObject(obj);
+      expect().isNumber(obj.pixel);
+      expect().isNumber(obj.pixel_max);
+      expect().isNumber(obj.ratio);
+      expect().isNumber(obj.ratio_max);
     });
 
     it('should accept an object and return properties showing *_max diffs', function(){
@@ -138,9 +138,9 @@ describe('Keen.helpers', function(){
         ratio: 0.50,
         ratio_max: 1
       });
-      assert.isObject(obj);
-      assert.equal(obj.pixel_max, getScrollableArea());
-      assert.equal(obj.ratio_max, 1);
+      expect().isObject(obj);
+      expect().equal(obj.pixel_max, getScrollableArea());
+      expect().equal(obj.ratio_max, 1);
       function getScrollableArea() {
         var body = document.body, html = document.documentElement;
         return Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight ) || null;

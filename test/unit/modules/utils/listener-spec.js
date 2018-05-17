@@ -1,30 +1,29 @@
-var assert = require('proclaim');
-var Keen = require('../../../../lib/browser');
-var each = require('../../../../lib/utils/each');
-var listener = require('../../../../lib/utils/listener')(Keen);
+import Keen from '../../../../lib/browser';
+import each from 'keen-core/lib/utils/each';
+import { listenerCore } from '../../../../lib/utils/listener';
+const listener = listenerCore(Keen);
 
-describe('Keen.utils.listener', function() {
+describe('Keen.utils.listener', () => {
 
-  beforeEach(function(){
-    this.timeout(5000);
+  beforeAll(() => {
     Keen.debug = true;
   });
 
   it('should be a function', function(){
-    assert.isFunction(listener);
+    expect(listener).toBeInstanceOf(Function);
   });
 
   it('should create a Keen.domListeners object', function(){
-    assert.isObject(Keen.domListeners);
+    expect().isObject(Keen.domListeners);
   });
 
   it('should create a Keen.listenTo function that creates unassigned listeners', function(){
-    assert.isFunction(Keen.listenTo);
+    expect().isFunction(Keen.listenTo);
     Keen.listenTo({
       'resize window': function(e){}
     });
-    assert.isObject(Keen.domListeners.resize);
-    assert.isArray(Keen.domListeners.resize['window']);
+    expect().isObject(Keen.domListeners.resize);
+    expect().isArray(Keen.domListeners.resize['window']);
   });
 
   it('should set window events', function(){
@@ -46,8 +45,8 @@ describe('Keen.utils.listener', function() {
     ];
     each(eventTypes, function(type){
       win.on(type, function(e){ });
-      assert.isObject(Keen.domListeners[type]);
-      assert.isObject(Keen.domListeners[type]['window']);
+      expect().isObject(Keen.domListeners[type]);
+      expect().isObject(Keen.domListeners[type]['window']);
     });
   });
 
@@ -62,8 +61,8 @@ describe('Keen.utils.listener', function() {
     ];
     each(eventTypes, function(type){
       a.on(type, function(e){ });
-      assert.isObject(Keen.domListeners[type]);
-      assert.isObject(Keen.domListeners[type]['a#test-anchors']);
+      expect().isObject(Keen.domListeners[type]);
+      expect().isObject(Keen.domListeners[type]['a#test-anchors']);
     });
   });
 
@@ -82,8 +81,8 @@ describe('Keen.utils.listener', function() {
     ];
     each(eventTypes, function(type){
       form.on(type, function(e){ });
-      assert.isObject(Keen.domListeners[type]);
-      assert.isObject(Keen.domListeners[type]['form#test-forms']);
+      expect().isObject(Keen.domListeners[type]);
+      expect().isObject(Keen.domListeners[type]['form#test-forms']);
     });
   });
 
@@ -170,10 +169,10 @@ describe('Keen.utils.listener', function() {
     listenToThis.on('click', function(){
       // Not the same
     });
-    assert.equal(Keen.domListeners['click']['body a#on-off'].length, 3);
+    expect().equal(Keen.domListeners['click']['body a#on-off'].length, 3);
 
     listenToThis.off('click', noop);
-    assert.equal(Keen.domListeners['click']['body a#on-off'].length, 1);
+    expect().equal(Keen.domListeners['click']['body a#on-off'].length, 1);
 
     function noop(e){ }
   });

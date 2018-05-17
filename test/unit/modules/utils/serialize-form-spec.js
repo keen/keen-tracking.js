@@ -36,14 +36,14 @@ describe('Keen.utils.serializeForm', function() {
   });
 
   it('should be a function', function() {
-    assert.isFunction(serializeForm);
+    expect().isFunction(serializeForm);
   });
 
   it('should accept a FORM element and return an object', function() {
     var serialized = serializeForm(this.form, { hash: true });
-    assert.isObject(serialized);
-    assert.ok(serialized.email);
-    assert.ok(serialized.password);
+    expect().isObject(serialized);
+    expect().ok(serialized.email);
+    expect().ok(serialized.password);
   });
 
   it('should omit fields by type (password example)', function() {
@@ -51,9 +51,9 @@ describe('Keen.utils.serializeForm', function() {
       hash: true,
       ignoreTypes: ['password']
     });
-    assert.isObject(serialized);
-    assert.ok(serialized.email);
-    assert.notOk(serialized.password);
+    expect().isObject(serialized);
+    expect().ok(serialized.email);
+    expect().notOk(serialized.password);
   });
 
 });

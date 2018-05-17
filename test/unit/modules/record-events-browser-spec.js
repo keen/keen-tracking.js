@@ -22,16 +22,16 @@ describe('.recordEvent(s) methods (browser)', function() {
     it('should not send events if set to \'false\'', function(){
       Keen.enabled = false;
       this.client.recordEvent('not-going', { test: 'data' }, function(err, res){
-        assert.isNotNull(err);
-        assert.isNull(res);
+        expect().isNotNull(err);
+        expect().isNull(res);
       });
       Keen.enabled = true;
     });
 
     it('should return an error message if event collection is omitted', function(){
       this.client.recordEvent(null, { test: 'data' }, function(err, res){
-        assert.isNotNull(err);
-        assert.isNull(res);
+        expect().isNotNull(err);
+        expect().isNull(res);
       });
     });
 
@@ -44,9 +44,9 @@ describe('.recordEvent(s) methods (browser)', function() {
         };
         this.client.recordEvent(config.collection + '_succeed', config.properties, function(err, res){
           count++;
-          assert.isNull(err);
-          assert.isNotNull(res);
-          assert.equal(count, 1);
+          expect().isNull(err);
+          expect().isNotNull(res);
+          expect().equal(count, 1);
         });
       });
 
@@ -58,9 +58,9 @@ describe('.recordEvent(s) methods (browser)', function() {
         this.client.config.writeKey = 'nope';
         this.client.recordEvent(config.collection + '_error', config.properties, function(err, res){
           count++;
-          assert.isNotNull(err);
-          assert.isNull(res);
-          assert.equal(count, 1);
+          expect().isNotNull(err);
+          expect().isNull(res);
+          expect().equal(count, 1);
         });
       });
 
@@ -103,20 +103,20 @@ describe('.recordEvent(s) methods (browser)', function() {
     it('should not send events if Keen.enabled is set to \'false\'', function(){
       Keen.enabled = false;
       this.client.recordEvents(this.batchData, function(err, res){
-        assert.isNotNull(err);
-        assert.isNull(res);
+        expect().isNotNull(err);
+        expect().isNull(res);
       });
       Keen.enabled = true;
     });
 
     it('should return an error message if first argument is not an object', function(){
       this.client.recordEvents([], function(err, res){
-        assert.isNotNull(err);
-        assert.isNull(res);
+        expect().isNotNull(err);
+        expect().isNull(res);
       });
       this.client.recordEvents('', function(err, res){
-        assert.isNotNull(err);
-        assert.isNull(res);
+        expect().isNotNull(err);
+        expect().isNull(res);
       });
     });
 
@@ -126,9 +126,9 @@ describe('.recordEvent(s) methods (browser)', function() {
         var count = 0;
         this.client.recordEvents(this.batchData, function(err, res){
           count++;
-          assert.isNull(err);
-          assert.isNotNull(res);
-          assert.equal(count, 1);
+          expect().isNull(err);
+          expect().isNotNull(res);
+          expect().equal(count, 1);
         });
       });
 
@@ -137,9 +137,9 @@ describe('.recordEvent(s) methods (browser)', function() {
         this.client.config.writeKey = 'nope';
         this.client.recordEvents(this.batchData, function(err, res){
           count++;
-          assert.isNotNull(err);
-          assert.isNull(res);
-          assert.equal(count, 1);
+          expect().isNotNull(err);
+          expect().isNull(res);
+          expect().equal(count, 1);
         });
       });
 
