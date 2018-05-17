@@ -19,7 +19,7 @@ describe('.recordEvent(s) methods (browser)', function() {
       });
     });
 
-    it('should not send events if set to \'false\'', function(){
+    it('should not send events if set to \'false\'', () => {
       Keen.enabled = false;
       this.client.recordEvent('not-going', { test: 'data' }, function(err, res){
         expect().isNotNull(err);
@@ -28,18 +28,18 @@ describe('.recordEvent(s) methods (browser)', function() {
       Keen.enabled = true;
     });
 
-    it('should return an error message if event collection is omitted', function(){
+    it('should return an error message if event collection is omitted', () => {
       this.client.recordEvent(null, { test: 'data' }, function(err, res){
         expect().isNotNull(err);
         expect().isNull(res);
       });
     });
 
-    describe('via XHR/CORS (if supported)', function(){
+    describe('via XHR/CORS (if supported)', () => {
 
       it('should send a POST request to the API using XHR', function() {
-        var count = 0;
-        var headers = {
+        const count = 0;
+        const headers = {
           'Content-Type': 'application/json'
         };
         this.client.recordEvent(config.collection + '_succeed', config.properties, function(err, res){
@@ -51,8 +51,8 @@ describe('.recordEvent(s) methods (browser)', function() {
       });
 
       it('should fire the callback on error', function() {
-        var count = 0;
-        var headers = {
+        const count = 0;
+        const headers = {
           'Content-Type': 'application/json'
         };
         this.client.config.writeKey = 'nope';
@@ -100,7 +100,7 @@ describe('.recordEvent(s) methods (browser)', function() {
       });
     });
 
-    it('should not send events if Keen.enabled is set to \'false\'', function(){
+    it('should not send events if Keen.enabled is set to \'false\'', () => {
       Keen.enabled = false;
       this.client.recordEvents(this.batchData, function(err, res){
         expect().isNotNull(err);
@@ -109,7 +109,7 @@ describe('.recordEvent(s) methods (browser)', function() {
       Keen.enabled = true;
     });
 
-    it('should return an error message if first argument is not an object', function(){
+    it('should return an error message if first argument is not an object', () => {
       this.client.recordEvents([], function(err, res){
         expect().isNotNull(err);
         expect().isNull(res);
@@ -120,10 +120,10 @@ describe('.recordEvent(s) methods (browser)', function() {
       });
     });
 
-    describe('via XHR/CORS (if supported)', function(){
+    describe('via XHR/CORS (if supported)', () => {
 
       it('should send a POST request to the API using XHR', function() {
-        var count = 0;
+        const count = 0;
         this.client.recordEvents(this.batchData, function(err, res){
           count++;
           expect().isNull(err);
@@ -133,7 +133,7 @@ describe('.recordEvent(s) methods (browser)', function() {
       });
 
       it('should call the error callback on error', function() {
-        var count = 0;
+        const count = 0;
         this.client.config.writeKey = 'nope';
         this.client.recordEvents(this.batchData, function(err, res){
           count++;

@@ -4,15 +4,15 @@ var timer = require('../../../../lib/utils/timer');
 
 describe('Keen.utils.timer', function() {
 
-  beforeEach(function(){
+  beforeEach(() => {
     this.timer = timer();
   });
 
-  afterEach(function(){
+  afterEach(() => {
     this.timer.clear();
   });
 
-  describe('constructor', function(){
+  describe('constructor', () => {
 
     it('should return a constructed object', function() {
       expect().isObject(this.timer);
@@ -24,7 +24,7 @@ describe('Keen.utils.timer', function() {
     });
 
     it('should have internal count property matching provided value', function() {
-      var newTimer = timer(123);
+      const newTimer = timer(123);
       expect().equal(newTimer.count, 123);
     });
 
@@ -37,13 +37,13 @@ describe('Keen.utils.timer', function() {
 
   });
 
-  describe('methods', function(){
+  describe('methods', () => {
 
-    it('should run the timer for one second and return the correct value', function(){
-      var self = this;
+    it('should run the timer for one second and return the correct value', () => {
+      const self = this;
       this.timeout(5000);
       this.timer.start();
-      setTimeout(function(){
+      setTimeout(() => {
         self.timer.pause();
         expect().lessThan(self.timer.value(), 2);
         // done();

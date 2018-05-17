@@ -11,14 +11,14 @@ var config = require('../helpers/client-config');
 
 describe('.recordEvent(s) methods (server)', function() {
 
-  beforeEach(function(){
+  beforeEach(() => {
     this.client = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey
     });
   });
 
-  // afterEach(function(){});
+  // afterEach(() => {});
 
   describe('.recordEvent()', function() {
 
@@ -93,7 +93,7 @@ describe('.recordEvent(s) methods (server)', function() {
     });
 
     it('should make an HTTP request',function(done){
-      var self = this;
+      const self = this;
       self.client.recordEvents( self.batchData, function(err, res) {
         expect(err).to.be.null;
         expect(res).to.deep.equal( self.batchResponse );
@@ -101,7 +101,7 @@ describe('.recordEvent(s) methods (server)', function() {
       });
     });
 
-    it('should not send events if Keen.enabled is set to \'false\'', function(){
+    it('should not send events if Keen.enabled is set to \'false\'', () => {
       Keen.enabled = false;
       this.client.recordEvents(this.batchData, function(err, res){
         expect(err).to.exist;
@@ -110,7 +110,7 @@ describe('.recordEvent(s) methods (server)', function() {
       Keen.enabled = true;
     });
 
-    it('should return an error message if first argument is not an object', function(){
+    it('should return an error message if first argument is not an object', () => {
       this.client.recordEvents([], function(err, res){
         expect(err).to.exist;
         expect(res).to.be.null;

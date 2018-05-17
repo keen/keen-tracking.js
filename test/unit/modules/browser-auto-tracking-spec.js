@@ -14,14 +14,14 @@ describe('Auto Tracking', function() {
     });
   });
 
-  it('should capture "pageviews," "clicks," and "form submits"', function(){
+  it('should capture "pageviews," "clicks," and "form submits"', () => {
     this.timeout(5000);
-    var aNode = document.createElement('A');
-    var bNode = document.createElement('BUTTON');
-    var fNode = document.createElement('FORM');
-    var iNode = document.createElement('INPUT');
-    var pNode = document.createElement('INPUT');
-    var inc = 0;
+    const aNode = document.createElement('A');
+    const bNode = document.createElement('BUTTON');
+    const fNode = document.createElement('FORM');
+    const iNode = document.createElement('INPUT');
+    const pNode = document.createElement('INPUT');
+    const inc = 0;
 
     this.client.on('recordEvent', function(stream, payload){
       if (stream === 'pageviews') {
@@ -96,7 +96,7 @@ describe('Auto Tracking', function() {
       aNode.click();
     }
     else if (document.createEvent) {
-      var ev1 = document.createEvent('MouseEvent');
+      const ev1 = document.createEvent('MouseEvent');
       ev1.initMouseEvent('click',
           true /* bubble */, true /* cancelable */,
           window, null,
@@ -112,7 +112,7 @@ describe('Auto Tracking', function() {
       bNode.click();
     }
     else if (document.createEvent) {
-      var ev2 = document.createEvent('MouseEvent');
+      const ev2 = document.createEvent('MouseEvent');
       ev2.initMouseEvent('click',
           true /* bubble */, true /* cancelable */,
           window, null,

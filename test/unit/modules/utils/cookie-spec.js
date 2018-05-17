@@ -5,15 +5,15 @@ var cookie = require('../../../../lib/utils/cookie');
 
 describe('Keen.utils.cookie', function() {
 
-  beforeEach(function(){
+  beforeEach(() => {
     this.cookie = cookie('keen-test-cookie');
   });
 
-  afterEach(function(){
+  afterEach(() => {
     this.cookie.expire();
   });
 
-  describe('constructor', function(){
+  describe('constructor', () => {
 
     it('should return a constructed object', function() {
       expect().isObject(this.cookie);
@@ -34,58 +34,58 @@ describe('Keen.utils.cookie', function() {
 
   });
 
-  describe('.get', function(){
+  describe('.get', () => {
 
-    it('should return a simple string for pre-existing non-json data', function(){
+    it('should return a simple string for pre-existing non-json data', () => {
       Cookies.set('keen-test-cookie', 'some thing that is not json');
       expect().deepEqual(this.cookie.get(), 'some thing that is not json');
     });
 
-    it('should return an empty object when no key name is provided and no data has been stored', function(){
+    it('should return an empty object when no key name is provided and no data has been stored', () => {
       expect().deepEqual(this.cookie.get(), {});
     });
 
-    it('should return stored key', function(){
+    it('should return stored key', () => {
       this.cookie.set('mocha-test-getter', 123);
       expect().deepEqual(this.cookie.get('mocha-test-getter'), 123);
     });
 
-    it('should return null when requesting an unstored key', function(){
+    it('should return null when requesting an unstored key', () => {
       expect().isNull(this.cookie.get('mocha-null'));
     });
 
   });
 
-  describe('.set', function(){
+  describe('.set', () => {
 
-    it('should set a string value', function(){
+    it('should set a string value', () => {
       this.cookie.set('library', 'keen-tracking.js');
       expect().equal(this.cookie.get('library'), 'keen-tracking.js');
     });
 
-    it('should set a numeric value', function(){
+    it('should set a numeric value', () => {
       this.cookie.set('number', 123);
       expect().equal(this.cookie.get('number'), 123);
     });
 
-    it('should set an array value', function(){
+    it('should set an array value', () => {
       this.cookie.set('array', ['1', 2, false]);
       expect().deepEqual(this.cookie.get('array'), ['1', 2, false]);
     });
 
-    it('should set an object value to a key', function(){
+    it('should set an object value to a key', () => {
       this.cookie.set('object', { object: true });
       expect().deepEqual(this.cookie.get('object'), { object: true });
     });
 
-    it('should set an object of key:value pairs', function(){
+    it('should set an object of key:value pairs', () => {
       this.cookie.set({
         library: 'keen-tracking.js',
         number: 123,
         array: ['1', 2, false],
         object: { object: true }
       });
-      var data = this.cookie.get();
+      const data = this.cookie.get();
       expect().equal(data.library, 'keen-tracking.js');
       expect().equal(data.number, 123);
       expect().deepEqual(data.array, ['1', 2, false]);
@@ -94,9 +94,9 @@ describe('Keen.utils.cookie', function() {
 
   });
 
-  describe('.expire', function(){
+  describe('.expire', () => {
 
-    it('should expire the cookie', function(){
+    it('should expire the cookie', () => {
       this.cookie.set('library', 'keen-tracking.js');
       this.cookie.expire();
       expect().deepEqual(this.cookie.get(), {});
@@ -104,23 +104,23 @@ describe('Keen.utils.cookie', function() {
 
   });
 
-  describe('.options', function(){
+  describe('.options', () => {
 
-    it('should set options for cookies', function(){
+    it('should set options for cookies', () => {
       this.cookie.options({ secure: false });
       expect().equal(this.cookie.config.options.secure, false);
     });
 
-    it('should get options for cookies', function(){
+    it('should get options for cookies', () => {
       this.cookie.options({ secure: false });
       expect().deepEqual(this.cookie.options(), { secure: false });
     });
 
   });
 
-  describe('.enabled', function(){
+  describe('.enabled', () => {
 
-    it('should return a boolean value', function(){
+    it('should return a boolean value', () => {
       expect().isBoolean(this.cookie.enabled());
     });
 

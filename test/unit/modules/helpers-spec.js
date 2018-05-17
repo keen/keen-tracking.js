@@ -10,17 +10,17 @@ var getScrollState = require('../../../lib/helpers/getScrollState');
 var getUniqueId = require('../../../lib/helpers/getUniqueId');
 var getWindowProfile = require('../../../lib/helpers/getWindowProfile');
 
-describe('Keen.helpers', function(){
+describe('Keen.helpers', () => {
 
-  describe('#getUniqueId', function(){
-    it('should return a random UUID', function(){
+  describe('#getUniqueId', () => {
+    it('should return a random UUID', () => {
       expect().isString(getUniqueId());
     });
-    it('should return a string of length 36', function(){
+    it('should return a string of length 36', () => {
       expect().equal(getUniqueId().length, 36);
     });
-    it('should return a string of the correct structure', function(){
-      var splitStr = getUniqueId().split('-');
+    it('should return a string of the correct structure', () => {
+      const splitStr = getUniqueId().split('-');
       expect().equal(splitStr.length, 5);
       expect().equal(splitStr[0].length, 8);
       expect().equal(splitStr[1].length, 4);
@@ -30,9 +30,9 @@ describe('Keen.helpers', function(){
     });
   });
 
-  describe('#getDatetimeIndex', function(){
-    it('should return an object of datetime properties', function(){
-      var datetime = getDatetimeIndex();
+  describe('#getDatetimeIndex', () => {
+    it('should return an object of datetime properties', () => {
+      const datetime = getDatetimeIndex();
       expect().isObject(datetime);
       expect().isNumber(datetime.hour_of_day);
       expect().isNumber(datetime.day_of_week);
@@ -40,9 +40,9 @@ describe('Keen.helpers', function(){
       expect().isNumber(datetime.month);
       expect().isNumber(datetime.year);
     });
-    it('should return an object of datetime properties from a provided date', function(){
-      var now = new Date();
-      var datetime = getDatetimeIndex(now);
+    it('should return an object of datetime properties from a provided date', () => {
+      const now = new Date();
+      const datetime = getDatetimeIndex(now);
       expect().deepEqual(datetime, {
         'hour_of_day'  : now.getHours(),
         'day_of_week'  : parseInt( 1 + now.getDay() ),
@@ -53,77 +53,77 @@ describe('Keen.helpers', function(){
     });
   });
 
-  describe('#getDomainName', function(){
-    it('should return the domain name', function(){
+  describe('#getDomainName', () => {
+    it('should return the domain name', () => {
       expect().equal(getDomainName('domain.name'), 'domain.name');
     });
-    it('should return the domain name of a host with a subdomain', function(){
+    it('should return the domain name of a host with a subdomain', () => {
       expect().equal(getDomainName('subdomain.domain.name'), 'domain.name');
     });
-    it('should return the domain name of a host with a double subdomain', function(){
+    it('should return the domain name of a host with a double subdomain', () => {
       expect().equal(getDomainName('double.subdomain.domain.name'), 'domain.name');
     });
-    it('should return the domain name of a host with .co.uk', function(){
+    it('should return the domain name of a host with .co.uk', () => {
       expect().equal(getDomainName('subdomain.domain.co.uk'), 'domain.co.uk');
     });
   });
 
   if ('undefined' === typeof navigator) return;
 
-  describe('#getBrowserProfile', function(){
-    it('should return an object of browser properties', function(){
+  describe('#getBrowserProfile', () => {
+    it('should return an object of browser properties', () => {
       expect().isObject(getBrowserProfile());
     });
-    it('should return a child object of screen properties', function(){
+    it('should return a child object of screen properties', () => {
       expect().isObject(getBrowserProfile().screen);
     });
-    it('should return a child object of window properties', function(){
+    it('should return a child object of window properties', () => {
       expect().isObject(getBrowserProfile().window);
     });
   });
 
-  describe('#getScreenProfile', function(){
-    it('should return an object of screen properties', function(){
+  describe('#getScreenProfile', () => {
+    it('should return an object of screen properties', () => {
       expect().isObject(getScreenProfile());
     });
-    it('should have a height and width > 0', function(){
-      var _screen = getScreenProfile();
+    it('should have a height and width > 0', () => {
+      const _screen = getScreenProfile();
       expect().greaterThan(_screen.height, 0);
       expect().greaterThan(_screen.width, 0);
     });
   });
 
-  describe('#getWindowProfile', function(){
-    it('should return an object of window properties', function(){
+  describe('#getWindowProfile', () => {
+    it('should return an object of window properties', () => {
       expect().isObject(getWindowProfile());
     });
-    it('should have a height and width > 0', function(){
-      var _window = getWindowProfile();
+    it('should have a height and width > 0', () => {
+      const _window = getWindowProfile();
       expect().greaterThan(_window.height, 0);
       expect().greaterThan(_window.width, 0);
     });
   });
 
-  describe('#getDomNodePath', function(){
-    it('should return a string', function(){
-      var el = document.body;
-      var path = getDomNodePath(el);
+  describe('#getDomNodePath', () => {
+    it('should return a string', () => {
+      const el = document.body;
+      const path = getDomNodePath(el);
       expect().isString(path);
     });
   });
 
-  describe('#getDomNodeProfile', function(){
-    it('should return an object of properties for a given DOM node', function(){
-      var el = document.body;
-      var obj = getDomNodeProfile(el);
+  describe('#getDomNodeProfile', () => {
+    it('should return an object of properties for a given DOM node', () => {
+      const el = document.body;
+      const obj = getDomNodeProfile(el);
       expect().isObject(obj);
       expect().equal(obj.node_name, 'BODY');
     });
   });
 
-  describe('#getScrollState', function(){
-    it('should return an object of properties for the window scroll state', function(){
-      var obj = getScrollState();
+  describe('#getScrollState', () => {
+    it('should return an object of properties for the window scroll state', () => {
+      const obj = getScrollState();
       expect().isObject(obj);
       expect().isNumber(obj.pixel);
       expect().isNumber(obj.pixel_max);
@@ -131,8 +131,8 @@ describe('Keen.helpers', function(){
       expect().isNumber(obj.ratio_max);
     });
 
-    it('should accept an object and return properties showing *_max diffs', function(){
-      var obj = getScrollState({
+    it('should accept an object and return properties showing *_max diffs', () => {
+      const obj = getScrollState({
         pixel: 800,
         pixel_max: getScrollableArea(),
         ratio: 0.50,
@@ -142,7 +142,7 @@ describe('Keen.helpers', function(){
       expect().equal(obj.pixel_max, getScrollableArea());
       expect().equal(obj.ratio_max, 1);
       function getScrollableArea() {
-        var body = document.body, html = document.documentElement;
+        const body = document.body, html = document.documentElement;
         return Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight ) || null;
       }
     });

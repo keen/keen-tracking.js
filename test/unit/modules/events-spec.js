@@ -1,24 +1,24 @@
 var assert = require('proclaim');
 var Keen = require('../../../lib/server');
 
-describe('Keen event emitter system', function(){
+describe('Keen event emitter system', () => {
 
-  beforeEach(function(){
+  beforeEach(() => {
     // Clear out events from previous tests
     Keen.off();
   });
 
-  describe('#on', function(){
-    it('should attach custom event listeners with #on', function(){
-      Keen.on('event', function(){});
+  describe('#on', () => {
+    it('should attach custom event listeners with #on', () => {
+      Keen.on('event', () => {});
       expect().isArray(Keen.listeners());
     });
   });
 
-  describe('#trigger', function(){
+  describe('#trigger', () => {
     it('should call bound functions when triggered', function(done){
-      var count = 0;
-      Keen.on('event', function(){
+      const count = 0;
+      Keen.on('event', () => {
         count++;
         if (count === 1) {
           done();
@@ -31,7 +31,7 @@ describe('Keen event emitter system', function(){
     });
 
     it('should pass arguments to bound functions when triggered', function(done){
-      var payload = { status: 'ok' }, count = 0;
+      const payload = { status: 'ok' }, count = 0;
       Keen.on('event', function(data){
         count++;
         if (count === 1 && data.status === 'ok') {
@@ -44,10 +44,10 @@ describe('Keen event emitter system', function(){
       Keen.emit('event', payload);
     });
 
-    it('should call bound functions multiple when triggered multiple times', function(){
-      // var callback = chai.spy();
-      var count = 0;
-      Keen.on('event', function(){
+    it('should call bound functions multiple when triggered multiple times', () => {
+      // const callback = chai.spy();
+      const count = 0;
+      Keen.on('event', () => {
         count++;
       });
       Keen.emit('event');
@@ -58,9 +58,9 @@ describe('Keen event emitter system', function(){
     });
   });
 
-  describe('#off', function(){
-    it('should remove all listeners for an event name with #off(name)', function(){
-      var count = 0;
+  describe('#off', () => {
+    it('should remove all listeners for an event name with #off(name)', () => {
+      const count = 0;
       function callback(){
         count++;
       };
@@ -71,8 +71,8 @@ describe('Keen event emitter system', function(){
       expect().equal(count, 0);
     });
 
-    it('should remove specified listeners with #off(name, callback)', function(){
-      var count = 0;
+    it('should remove specified listeners with #off(name, callback)', () => {
+      const count = 0;
       function callback(){
         count++;
       }
@@ -88,8 +88,8 @@ describe('Keen event emitter system', function(){
   });
 
   describe('#once', function() {
-    it('should call once handlers once when triggered', function(){
-      var countA = 0, countB = 0;
+    it('should call once handlers once when triggered', () => {
+      const countA = 0, countB = 0;
       function callbackA(){
         countA++;
       }

@@ -10,28 +10,28 @@ var PASSWORD_VALUE = 'password';
 
 describe('Keen.utils.serializeForm', function() {
 
-  beforeEach(function(){
-    var el = document.createElement('FORM');
+  beforeEach(() => {
+    const el = document.createElement('FORM');
     el.id = ELEMENT_ID;
     el.action = './';
     el.method = 'POST';
     document.body.appendChild(el);
     this.form = document.getElementById(ELEMENT_ID);
 
-    var input = document.createElement('INPUT');
+    const input = document.createElement('INPUT');
     input.name = INPUT_NAME;
     input.type = 'text';
     input.value = INPUT_VALUE;
     this.form.appendChild(input);
 
-    var password = document.createElement('INPUT');
+    const password = document.createElement('INPUT');
     password.name = PASSWORD_NAME;
     password.type = 'password';
     password.value = PASSWORD_VALUE;
     this.form.appendChild(password);
   });
 
-  afterEach(function(){
+  afterEach(() => {
     this.form.outerHTML = '';
   });
 
@@ -40,14 +40,14 @@ describe('Keen.utils.serializeForm', function() {
   });
 
   it('should accept a FORM element and return an object', function() {
-    var serialized = serializeForm(this.form, { hash: true });
+    const serialized = serializeForm(this.form, { hash: true });
     expect().isObject(serialized);
     expect().ok(serialized.email);
     expect().ok(serialized.password);
   });
 
   it('should omit fields by type (password example)', function() {
-    var serialized = serializeForm(this.form, {
+    const serialized = serializeForm(this.form, {
       hash: true,
       ignoreTypes: ['password']
     });

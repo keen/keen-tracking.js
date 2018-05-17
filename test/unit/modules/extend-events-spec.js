@@ -16,15 +16,15 @@ describe('.extendEvent(s) methods', function() {
     });
   });
 
-  it('should have an extensions hash with "events" and "collections" queues', function(){
+  it('should have an extensions hash with "events" and "collections" queues', () => {
     expect().isObject(this.client.extensions);
     expect().isArray(this.client.extensions.events);
     expect().isObject(this.client.extensions.collections);
   });
 
-  it('should store global extensions in the proper order', function(){
+  it('should store global extensions in the proper order', () => {
     this.client.extendEvents({ key: 123 });
-    this.client.extendEvents(function(){ return {} });
+    this.client.extendEvents(() => { return {} });
     this.client.extendEvents({ key: 456 });
 
     expect().isObject(this.client.extensions.events[0]);
@@ -34,13 +34,13 @@ describe('.extendEvent(s) methods', function() {
     expect().equal(this.client.extensions.events[2].key, 456);
   });
 
-  it('should store single collection extensions in the proper order', function(){
+  it('should store single collection extensions in the proper order', () => {
     this.client.extendEvent('pageviews', { key: 123 });
-    this.client.extendEvent('pageviews', function(){ return {} });
+    this.client.extendEvent('pageviews', () => { return {} });
     this.client.extendEvent('pageviews', { key: 456 });
 
     this.client.extendEvent('purchases', { key: 123 });
-    this.client.extendEvent('purchases', function(){ return {} });
+    this.client.extendEvent('purchases', () => { return {} });
     this.client.extendEvent('purchases', { key: 456 });
 
     expect().isObject(this.client.extensions.collections['pageviews'][0]);
@@ -56,7 +56,7 @@ describe('.extendEvent(s) methods', function() {
     expect().equal(this.client.extensions.collections['purchases'][2].key, 456);
   });
 
-  it('should emit an "extendEvent" event', function(){
+  it('should emit an "extendEvent" event', () => {
     this.client.on('extendEvent', function(eventCollection, eventModifier){
       expect().equal(eventCollection, 'pageviews');
       expect().equal(eventModifier.key, 123);
@@ -64,7 +64,7 @@ describe('.extendEvent(s) methods', function() {
     this.client.extendEvent('pageviews', { key: 123 });
   });
 
-  it('should emit an "extendEvents" event', function(){
+  it('should emit an "extendEvents" event', () => {
     this.client.on('extendEvents', function(eventsModifier){
       expect().equal(eventsModifier.key, 123);
     });
@@ -72,9 +72,9 @@ describe('.extendEvent(s) methods', function() {
   });
 
 
-  describe('when calling .recordEvent', function(){
+  describe('when calling .recordEvent', () => {
 
-    it('should extend the event body of all events', function(){
+    it('should extend the event body of all events', () => {
       this.client.on('recordEvent', function(eventCollection, eventBody){
         expect().equal(eventCollection, 'test');
         expect().deepEqual(eventBody, { key: 123, exists: true, user: { id: '3434', active: false } });
@@ -83,7 +83,7 @@ describe('.extendEvent(s) methods', function() {
       this.client.recordEvent('test', { exists: true, user: { active: false } });
     });
 
-    it('should extend the event body of a specific collection', function(){
+    it('should extend the event body of a specific collection', () => {
       this.client.on('recordEvent', function(eventCollection, eventBody){
         expect().equal(eventCollection, 'test');
         expect().deepEqual(eventBody, { key: 123, exists: true, user: { id: '3434', active: false } });
@@ -94,9 +94,9 @@ describe('.extendEvent(s) methods', function() {
 
   });
 
-  describe('when calling .recordEvents', function(){
+  describe('when calling .recordEvents', () => {
 
-    it('should extend the event body of all events', function(){
+    it('should extend the event body of all events', () => {
       this.client.on('recordEvents', function(eventsHash){
         expect().deepEqual(eventsHash, {
           'test 1': [

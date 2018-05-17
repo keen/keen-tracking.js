@@ -4,11 +4,11 @@ var queue = require('../../../../lib/utils/queue');
 
 describe('Keen.utils.queue', function() {
 
-  beforeEach(function(){
+  beforeEach(() => {
     this.queue = queue();
   });
 
-  describe('constructor', function(){
+  describe('constructor', () => {
 
     it('should return a constructed object', function() {
       expect().isObject(this.queue);
@@ -41,7 +41,7 @@ describe('Keen.utils.queue', function() {
 
   });
 
-  describe('methods', function(){
+  describe('methods', () => {
 
     it('should set a new timer when .start() is called', function() {
       expect().isNull(this.queue.timer);
@@ -56,7 +56,7 @@ describe('Keen.utils.queue', function() {
       this.queue.pause();
       this.queue.capacity = 1;
       this.queue.config.capacity = 1;
-      this.queue.flush = function(){
+      this.queue.flush = () => {
         expect().ok(true);
       };
       this.queue.check();
@@ -65,7 +65,7 @@ describe('Keen.utils.queue', function() {
     it('should call .pause() when .check() is called and config.interval == 0', function() {
       this.queue.pause();
       this.queue.config.interval = 0;
-      this.queue.pause = function(){
+      this.queue.pause = () => {
         expect().ok(true);
       };
       this.queue.check();
