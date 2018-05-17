@@ -142,11 +142,11 @@ function initAutoTracking(lib) {
     var uuid = cookie.get('uuid');
     if (!uuid) {
       uuid = helpers.getUniqueId();
-      var domainName = helpers.getDomainName(window.location.host);
-      cookie.set('uuid', uuid,
-        domainName && options.shareUuidAcrossDomains ? {
-          domain: '.' + domainName
-        } : {});
+      var domainName = helpers.getDomainName(window.location.hostname);
+      var cookieDomain = domainName && options.shareUuidAcrossDomains ? {
+        domain: '.' + domainName
+      } : {};
+      cookie.set('uuid', uuid, cookieDomain);
     }
     var scrollState = {};
     if (options.recordScrollState) {
@@ -493,9 +493,29 @@ function getDomNodeProfile(el) {
 }
 module.exports = getDomNodeProfile;
 },{"./getDomNodePath":7}],9:[function(require,module,exports){
-function getDomainName(host){
-  var domainRegex = /\w+\.\w+$/;
-  return domainRegex.test(host) ? host.match(domainRegex)[0] : null;
+function extractHostname(url) {
+    var hostname;
+    if (url.indexOf("://") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+    hostname = hostname.split(':')[0];
+    hostname = hostname.split('?')[0];
+    return hostname;
+}
+function getDomainName(url) {
+    var domain = extractHostname(url),
+        splitArr = domain.split('.'),
+        arrLen = splitArr.length;
+    if (arrLen > 2) {
+        domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+        if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
+            domain = splitArr[arrLen - 3] + '.' + domain;
+        }
+    }
+    return domain;
 }
 module.exports = getDomainName;
 },{}],10:[function(require,module,exports){
@@ -953,15 +973,15 @@ cookie.prototype.get = function(str){
     return data;
   }
 };
-cookie.prototype.set = function(str, value){
+cookie.prototype.set = function(str, value, options){
   if (!arguments.length || !this.enabled()) return this;
-  if (typeof str === 'string'  && arguments.length === 2) {
+  if (typeof str === 'string' && arguments.length >= 2) {
     this.data[str] = value ? value : null;
   }
   else if (typeof str === 'object' && arguments.length === 1) {
     extend(this.data, str);
   }
-  Cookies.set(this.config.key, this.data, this.config.options);
+  Cookies.set(this.config.key, this.data, extend(this.config.options, options || {}));
   return this;
 };
 cookie.prototype.expire = function(daysUntilExpire){
@@ -1595,7 +1615,7 @@ timer.prototype.clear = function(){
     debug: false,
     enabled: true,
     loaded: false,
-    version: '1.4.1'
+    version: '1.4.2'
   });
   Client.helpers = Client.helpers || {};
   Client.resources = Client.resources || {};
@@ -1872,7 +1892,7 @@ function serialize(data){
 },{"./each":29,"./extend":30}],33:[function(require,module,exports){
 module.exports={
   "name": "keen-tracking",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Data Collection SDK for Keen IO",
   "main": "lib/server.js",
   "browser": "lib/browser.js",
