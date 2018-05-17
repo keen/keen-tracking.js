@@ -1,14 +1,20 @@
 const path = require('path');
 
+const fileName = 'keen-tracking';
+
 module.exports = {
-  entry: ['./lib/index.js',
+  entry: ['./lib/browser.js',
   ],
 
   target: process.env.TARGET ? `${process.env.TARGET}` : 'web',
 
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: `keen-tracking${
+    filename: `${
+      process.env.TARGET ? `${process.env.TARGET}/` : ''
+    }${
+      fileName
+    }${
       process.env.OPTIMIZE_MINIMIZE ? '.min' : ''
     }.js`,
     library: `${!process.env.LIBRARY ? '' : process.env.LIBRARY}`,
@@ -73,6 +79,14 @@ module.exports = {
     open: true,
     inline: true,
     hot: false,
+    watchContentBase: true,
+  },
+
+  externals: process.env.TARGET === 'node' ? {
+    'component-emitter' : 'component-emitter',
+    'js-cookie' : 'js-cookie',
+    'keen-core' : 'keen-core',
+  } : {
   },
 
 };

@@ -1,13 +1,13 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
+		module.exports = factory(require("keen-core"), require("js-cookie"), require("component-emitter"));
 	else if(typeof define === 'function' && define.amd)
-		define([], factory);
+		define(["keen-core", "js-cookie", "component-emitter"], factory);
 	else {
-		var a = factory();
+		var a = typeof exports === 'object' ? factory(require("keen-core"), require("js-cookie"), require("component-emitter")) : factory(root["keen-core"], root["js-cookie"], root["component-emitter"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(window, function() {
+})(global, function(__WEBPACK_EXTERNAL_MODULE__2__, __WEBPACK_EXTERNAL_MODULE__3__, __WEBPACK_EXTERNAL_MODULE__4__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -76,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -130,554 +130,21 @@ function extend(target){
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-/* WEBPACK VAR INJECTION */(function(global) {console.log('browser');
-(function(env){
-  var previousKeen = env.Keen || undefined;
-  var each = __webpack_require__(0),
-      extend = __webpack_require__(1),
-      parseParams = __webpack_require__(9),
-      serialize = __webpack_require__(8);
-
-  var Emitter = __webpack_require__(4);
-
-  function Client(props){
-    if (this instanceof Client === false) {
-      return new Client(props);
-    }
-    this.configure(props);
-
-    // Set up event handling
-    if (Client.debug) {
-      this.on('error', Client.log);
-    }
-    this.emit('ready');
-    Client.emit('client', this);
-  }
-
-  if (previousKeen && typeof previousKeen.resources === 'undefined') {
-    Client.legacyVersion = previousKeen;
-  }
-
-  Emitter(Client);
-  Emitter(Client.prototype);
-
-  extend(Client, {
-    debug: false,
-    enabled: true,
-    loaded: false,
-    version: '__VERSION__'
-  });
-
-  // Set or extend helpers
-  Client.helpers = Client.helpers || {};
-
-  // Set or extend resources
-  Client.resources = Client.resources || {};
-  extend(Client.resources, {
-    'base'      : '{protocol}://{host}',
-    'version'   : '{protocol}://{host}/3.0',
-    'projects'  : '{protocol}://{host}/3.0/projects',
-    'projectId' : '{protocol}://{host}/3.0/projects/{projectId}',
-    'events'    : '{protocol}://{host}/3.0/projects/{projectId}/events',
-    'queries'   : '{protocol}://{host}/3.0/projects/{projectId}/queries'
-  });
-
-  // Set or extend utils
-  Client.utils = Client.utils || {};
-  extend(Client.utils, {
-    'each'        : each,
-    'extend'      : extend,
-    'parseParams' : parseParams,
-    'serialize'   : serialize
-  });
-
-  Client.extendLibrary = function(target, source) {
-    var previous = previousKeen || source;
-    if (isDefined(previous) && isDefined(previous.resources)) {
-      each(previous, function(value, key) {
-        if (typeof value === 'object') {
-          target[key] = target[key] || {};
-          extend(target[key], value);
-        }
-        else {
-          target[key] = target[key] || value;
-        }
-      });
-      extend(target.prototype, previous.prototype);
-    }
-    return target;
-  };
-
-  Client.log = function(str){
-    if (Client.debug && typeof console === 'object') {
-      console.log('[Keen]', str);
-    }
-  };
-
-  Client.noConflict = function(){
-    if (typeof env.Keen !== 'undefined') {
-      env.Keen = Client.legacyVersion || previousKeen;
-    }
-    return Client;
-  };
-
-  Client.ready = function(fn){
-    if (Client.loaded) {
-      fn();
-    }
-    else {
-      Client.once('ready', fn);
-    }
-  };
-
-  Client.prototype.configure = function(obj){
-    var config = obj || {};
-    this.config = this.config || {
-      projectId    : undefined,
-      writeKey     : undefined,
-      host         : 'api.keen.io',
-      protocol     : 'https',
-      requestType  : 'jsonp',
-      resources    : extend({}, Client.resources)
-    };
-
-    // IE<10 request shim
-    if (typeof window !== 'undefined' && window.navigator && window.navigator.userAgent && window.navigator.userAgent.indexOf('MSIE') > -1) {
-      config.protocol = document.location.protocol.replace(':', '');
-    }
-
-    if (config.host) {
-      config.host.replace(/.*?:\/\//g, '');
-    }
-
-    extend(this.config, config);
-    return this;
-  };
-
-  Client.prototype.masterKey = function(str){
-    if (!arguments.length) return this.config.masterKey;
-    this.config.masterKey = str ? String(str) : null;
-    return this;
-  };
-
-  Client.prototype.projectId = function(str){
-    if (!arguments.length) return this.config.projectId;
-    this.config.projectId = (str ? String(str) : null);
-    return this;
-  };
-
-  Client.prototype.resources = function(obj){
-    if (!arguments.length) return this.config.resources;
-    var self = this;
-    if (typeof obj === 'object') {
-      each(obj, function(value, key){
-        self.config.resources[key] = (value ? value : null);
-      });
-    }
-    return self;
-  };
-
-  Client.prototype.url = function(name){
-    var args = Array.prototype.slice.call(arguments, 1),
-        baseUrl = this.config.resources.base || '{protocol}://{host}',
-        path;
-
-    if (name && typeof name === 'string') {
-      if (this.config.resources[name]) {
-        path = this.config.resources[name];
-      }
-      else {
-        path = baseUrl + name;
-      }
-    }
-    else {
-      path = baseUrl;
-    }
-
-    each(this.config, function(value, key){
-      if (typeof value !== 'object') {
-        path = path.replace('{' + key + '}', value);
-      }
-    });
-
-    each(args, function(arg, i){
-      if (typeof arg === 'string') {
-        path += '/' + arg;
-      }
-      else if (typeof arg === 'object') {
-        path += '?';
-        each(arg, function(value, key){
-          path += key + '=' + value + '&';
-        });
-        path = path.slice(0, -1);
-      }
-    });
-
-    return path;
-  };
-
-  domReady(function(){
-    Client.loaded = true;
-    Client.emit('ready');
-  });
-
-  function domReady(fn){
-    if (Client.loaded || typeof document === 'undefined') {
-      fn();
-      return;
-    }
-    // Firefox 3.5 shim
-    if(document.readyState == null && document.addEventListener){
-      document.addEventListener('DOMContentLoaded', function DOMContentLoaded(){
-        document.removeEventListener('DOMContentLoaded', DOMContentLoaded, false);
-        document.readyState = 'complete';
-      }, false);
-      document.readyState = 'loading';
-    }
-    testDom(fn);
-  }
-
-  function testDom(fn){
-    if (/in/.test(document.readyState)) {
-      setTimeout(function(){
-        testDom(fn);
-      }, 9);
-    }
-    else {
-      fn();
-    }
-  }
-
-  function isDefined(target) {
-    return typeof target !== 'undefined';
-  }
-
-  function isUndefined(target) {
-    return typeof target === 'undefined';
-  }
-
-  module.exports = Client;
-
-}).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(10)))
+module.exports = __WEBPACK_EXTERNAL_MODULE__2__;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * JavaScript Cookie v2.1.0
- * https://github.com/js-cookie/js-cookie
- *
- * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
- * Released under the MIT license
- */
-(function (factory) {
-	if (true) {
-		!(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
-				__WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else { var api, _OldCookies; }
-}(function () {
-	function extend () {
-		var i = 0;
-		var result = {};
-		for (; i < arguments.length; i++) {
-			var attributes = arguments[ i ];
-			for (var key in attributes) {
-				result[key] = attributes[key];
-			}
-		}
-		return result;
-	}
-
-	function init (converter) {
-		function api (key, value, attributes) {
-			var result;
-
-			// Write
-
-			if (arguments.length > 1) {
-				attributes = extend({
-					path: '/'
-				}, api.defaults, attributes);
-
-				if (typeof attributes.expires === 'number') {
-					var expires = new Date();
-					expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
-					attributes.expires = expires;
-				}
-
-				try {
-					result = JSON.stringify(value);
-					if (/^[\{\[]/.test(result)) {
-						value = result;
-					}
-				} catch (e) {}
-
-				if (!converter.write) {
-					value = encodeURIComponent(String(value))
-						.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
-				} else {
-					value = converter.write(value, key);
-				}
-
-				key = encodeURIComponent(String(key));
-				key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
-				key = key.replace(/[\(\)]/g, escape);
-
-				return (document.cookie = [
-					key, '=', value,
-					attributes.expires && '; expires=' + attributes.expires.toUTCString(), // use expires attribute, max-age is not supported by IE
-					attributes.path    && '; path=' + attributes.path,
-					attributes.domain  && '; domain=' + attributes.domain,
-					attributes.secure ? '; secure' : ''
-				].join(''));
-			}
-
-			// Read
-
-			if (!key) {
-				result = {};
-			}
-
-			// To prevent the for loop in the first place assign an empty array
-			// in case there are no cookies at all. Also prevents odd result when
-			// calling "get()"
-			var cookies = document.cookie ? document.cookie.split('; ') : [];
-			var rdecode = /(%[0-9A-Z]{2})+/g;
-			var i = 0;
-
-			for (; i < cookies.length; i++) {
-				var parts = cookies[i].split('=');
-				var name = parts[0].replace(rdecode, decodeURIComponent);
-				var cookie = parts.slice(1).join('=');
-
-				if (cookie.charAt(0) === '"') {
-					cookie = cookie.slice(1, -1);
-				}
-
-				try {
-					cookie = converter.read ?
-						converter.read(cookie, name) : converter(cookie, name) ||
-						cookie.replace(rdecode, decodeURIComponent);
-
-					if (this.json) {
-						try {
-							cookie = JSON.parse(cookie);
-						} catch (e) {}
-					}
-
-					if (key === name) {
-						result = cookie;
-						break;
-					}
-
-					if (!key) {
-						result[name] = cookie;
-					}
-				} catch (e) {}
-			}
-
-			return result;
-		}
-
-		api.get = api.set = api;
-		api.getJSON = function () {
-			return api.apply({
-				json: true
-			}, [].slice.call(arguments));
-		};
-		api.defaults = {};
-
-		api.remove = function (key, attributes) {
-			api(key, '', extend(attributes, {
-				expires: -1
-			}));
-		};
-
-		api.withConverter = init;
-
-		return api;
-	}
-
-	return init(function () {});
-}));
-
+module.exports = __WEBPACK_EXTERNAL_MODULE__3__;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-
-/**
- * Expose `Emitter`.
- */
-
-if (true) {
-  module.exports = Emitter;
-}
-
-/**
- * Initialize a new `Emitter`.
- *
- * @api public
- */
-
-function Emitter(obj) {
-  if (obj) return mixin(obj);
-};
-
-/**
- * Mixin the emitter properties.
- *
- * @param {Object} obj
- * @return {Object}
- * @api private
- */
-
-function mixin(obj) {
-  for (var key in Emitter.prototype) {
-    obj[key] = Emitter.prototype[key];
-  }
-  return obj;
-}
-
-/**
- * Listen on the given `event` with `fn`.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.on =
-Emitter.prototype.addEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])
-    .push(fn);
-  return this;
-};
-
-/**
- * Adds an `event` listener that will be invoked a single
- * time then automatically removed.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.once = function(event, fn){
-  function on() {
-    this.off(event, on);
-    fn.apply(this, arguments);
-  }
-
-  on.fn = fn;
-  this.on(event, on);
-  return this;
-};
-
-/**
- * Remove the given callback for `event` or all
- * registered callbacks.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.off =
-Emitter.prototype.removeListener =
-Emitter.prototype.removeAllListeners =
-Emitter.prototype.removeEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-
-  // all
-  if (0 == arguments.length) {
-    this._callbacks = {};
-    return this;
-  }
-
-  // specific event
-  var callbacks = this._callbacks['$' + event];
-  if (!callbacks) return this;
-
-  // remove all handlers
-  if (1 == arguments.length) {
-    delete this._callbacks['$' + event];
-    return this;
-  }
-
-  // remove specific handler
-  var cb;
-  for (var i = 0; i < callbacks.length; i++) {
-    cb = callbacks[i];
-    if (cb === fn || cb.fn === fn) {
-      callbacks.splice(i, 1);
-      break;
-    }
-  }
-  return this;
-};
-
-/**
- * Emit `event` with the given args.
- *
- * @param {String} event
- * @param {Mixed} ...
- * @return {Emitter}
- */
-
-Emitter.prototype.emit = function(event){
-  this._callbacks = this._callbacks || {};
-  var args = [].slice.call(arguments, 1)
-    , callbacks = this._callbacks['$' + event];
-
-  if (callbacks) {
-    callbacks = callbacks.slice(0);
-    for (var i = 0, len = callbacks.length; i < len; ++i) {
-      callbacks[i].apply(this, args);
-    }
-  }
-
-  return this;
-};
-
-/**
- * Return array of callbacks for `event`.
- *
- * @param {String} event
- * @return {Array}
- * @api public
- */
-
-Emitter.prototype.listeners = function(event){
-  this._callbacks = this._callbacks || {};
-  return this._callbacks['$' + event] || [];
-};
-
-/**
- * Check if this emitter has `event` handlers.
- *
- * @param {String} event
- * @return {Boolean}
- * @api public
- */
-
-Emitter.prototype.hasListeners = function(event){
-  return !! this.listeners(event).length;
-};
-
+module.exports = __WEBPACK_EXTERNAL_MODULE__4__;
 
 /***/ }),
 /* 5 */
@@ -744,9 +211,9 @@ module.exports = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: ./node_modules/keen-core/lib/index0.js
-var index0 = __webpack_require__(2);
-var index0_default = /*#__PURE__*/__webpack_require__.n(index0);
+// EXTERNAL MODULE: external "keen-core"
+var external_keen_core_ = __webpack_require__(2);
+var external_keen_core_default = /*#__PURE__*/__webpack_require__.n(external_keen_core_);
 
 // EXTERNAL MODULE: ./node_modules/keen-core/lib/utils/each.js
 var each = __webpack_require__(0);
@@ -756,9 +223,9 @@ var each_default = /*#__PURE__*/__webpack_require__.n(each);
 var extend = __webpack_require__(1);
 var extend_default = /*#__PURE__*/__webpack_require__.n(extend);
 
-// EXTERNAL MODULE: ./node_modules/component-emitter/index.js
-var component_emitter = __webpack_require__(4);
-var component_emitter_default = /*#__PURE__*/__webpack_require__.n(component_emitter);
+// EXTERNAL MODULE: external "component-emitter"
+var external_component_emitter_ = __webpack_require__(4);
+var external_component_emitter_default = /*#__PURE__*/__webpack_require__.n(external_component_emitter_);
 
 // CONCATENATED MODULE: ./lib/utils/queue.js
 
@@ -781,7 +248,7 @@ function queue_queue() {
   return this;
 }
 
-component_emitter_default()(queue_queue.prototype);
+external_component_emitter_default()(queue_queue.prototype);
 
 queue_queue.prototype.check = function () {
   if (shouldFlushQueue(this)) {
@@ -831,10 +298,10 @@ function shouldFlushQueue(props) {
 
 
 
-index0_default.a.helpers = index0_default.a.helpers || {};
+external_keen_core_default.a.helpers = external_keen_core_default.a.helpers || {};
 
 // Install internal queue
-index0_default.a.on('client', function (client) {
+external_keen_core_default.a.on('client', function (client) {
   client.extensions = {
     events: [],
     collections: {}
@@ -846,15 +313,15 @@ index0_default.a.on('client', function (client) {
 });
 
 // Accessors
-index0_default.a.prototype.writeKey = function (str) {
+external_keen_core_default.a.prototype.writeKey = function (str) {
   if (!arguments.length) return this.config.writeKey;
   this.config.writeKey = str ? String(str) : null;
   return this;
 };
 
 // DEPRECATED
-index0_default.a.prototype.setGlobalProperties = function (props) {
-  index0_default.a.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
+external_keen_core_default.a.prototype.setGlobalProperties = function (props) {
+  external_keen_core_default.a.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
   if (!props || typeof props !== 'function') {
     this.emit('error', 'Invalid value for global properties: ' + props);
     return;
@@ -863,7 +330,7 @@ index0_default.a.prototype.setGlobalProperties = function (props) {
   return this;
 };
 
-/* harmony default export */ var lib_0 = (index0_default.a);
+/* harmony default export */ var lib_0 = (external_keen_core_default.a);
 // CONCATENATED MODULE: ./lib/utils/listener.js
 
 
@@ -2086,9 +1553,9 @@ function getUniqueId() {
     return v.toString(16);
   });
 }
-// EXTERNAL MODULE: ./node_modules/js-cookie/src/js.cookie.js
-var js_cookie = __webpack_require__(3);
-var js_cookie_default = /*#__PURE__*/__webpack_require__.n(js_cookie);
+// EXTERNAL MODULE: external "js-cookie"
+var external_js_cookie_ = __webpack_require__(3);
+var external_js_cookie_default = /*#__PURE__*/__webpack_require__.n(external_js_cookie_);
 
 // CONCATENATED MODULE: ./lib/utils/cookie.js
 
@@ -2113,8 +1580,8 @@ const cookie_cookie = function (str) {
 cookie_cookie.prototype.get = function (str) {
   var data = {};
 
-  if (js_cookie_default.a.get(this.config.key)) {
-    data = js_cookie_default.a.getJSON(this.config.key);
+  if (external_js_cookie_default.a.get(this.config.key)) {
+    data = external_js_cookie_default.a.getJSON(this.config.key);
   }
   if (str && typeof data === 'object' && typeof data !== null) {
     return typeof data[str] !== 'undefined' ? data[str] : null;
@@ -2130,15 +1597,15 @@ cookie_cookie.prototype.set = function (str, value, options) {
   } else if (typeof str === 'object' && arguments.length === 1) {
     extend_default()(this.data, str);
   }
-  js_cookie_default.a.set(this.config.key, this.data, extend_default()(this.config.options, options || {}));
+  external_js_cookie_default.a.set(this.config.key, this.data, extend_default()(this.config.options, options || {}));
   return this;
 };
 
 cookie_cookie.prototype.expire = function (daysUntilExpire) {
   if (daysUntilExpire) {
-    js_cookie_default.a.set(this.config.key, this.data, extend_default()(this.config.options, { expires: daysUntilExpire }));
+    external_js_cookie_default.a.set(this.config.key, this.data, extend_default()(this.config.options, { expires: daysUntilExpire }));
   } else {
-    js_cookie_default.a.remove(this.config.key);
+    external_js_cookie_default.a.remove(this.config.key);
     this.data = {};
   }
   return this;
@@ -2607,75 +2074,6 @@ const Keen = lib_0.extendLibrary(lib_0);
 
 /***/ }),
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var each = __webpack_require__(0),
-    extend = __webpack_require__(1);
-
-module.exports = serialize;
-
-function serialize(data){
-  var query = [];
-  each(data, function(value, key){
-    if ('string' !== typeof value) {
-      value = JSON.stringify(value);
-    }
-    query.push(key + '=' + encodeURIComponent(value));
-  });
-  return query.join('&');
-}
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports) {
-
-module.exports = parseParams;
-
-function parseParams(str){
-  // via: http://stackoverflow.com/a/2880929/2511985
-  var urlParams = {},
-      match,
-      pl     = /\+/g,  // Regex for replacing addition symbol with a space
-      search = /([^&=]+)=?([^&]*)/g,
-      decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-      query  = str.split("?")[1];
-
-  while (!!(match=search.exec(query))) {
-    urlParams[decode(match[1])] = decode(match[2]);
-  }
-  return urlParams;
-};
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(7);

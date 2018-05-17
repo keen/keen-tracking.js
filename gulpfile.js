@@ -49,7 +49,7 @@ gulp.task('test:mocha', ['test:browserify'], function () {
     }));
 });
 
-gulp.task('test:phantom', ['build', 'test:browserify'], function () {
+gulp.task('test:phantom', ['test:browserify'], function () {
   return gulp.src('./test/unit/index.html')
     .pipe(mochaPhantomJS())
     .once('error', function () {
@@ -60,14 +60,14 @@ gulp.task('test:phantom', ['build', 'test:browserify'], function () {
     });
 });
 
-gulp.task('test:karma', ['build', 'test:browserify'], function (done){
+gulp.task('test:karma', ['test:browserify'], function (done){
   karma.start({
     configFile: __dirname + '/karma.conf.js',
     singleRun: true
   }, done);
 });
 
-gulp.task('test:sauce', ['build', 'test:browserify'], function(){
+gulp.task('test:sauce', ['test:browserify'], function(){
   karma.start({
     browsers: Object.keys(getCustomLaunchers()),
     browserDisconnectTimeout: 10 * 1000,

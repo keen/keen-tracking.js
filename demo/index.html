@@ -2,16 +2,13 @@
 <html>
 <head></head>
 <body>
-  <xscript src="keen-tracking.js"></script>
+  <script src="keen-tracking.js"></script>
 
   <script>
-  !function(name,path,ctx){
-    var latest,prev=name!=="Keen"&&window.Keen?window.Keen:false;ctx[name]=ctx[name]||{ready:function(fn){var h=document.getElementsByTagName("head")[0],s=document.createElement("script"),w=window,loaded;s.onload=s.onerror=s.onreadystatechange=function(){if((s.readyState&&!(/^c|loade/.test(s.readyState)))||loaded){return}s.onload=s.onreadystatechange=null;loaded=1;latest=w.Keen;if(prev){w.Keen=prev}else{try{delete w.Keen}catch(e){w.Keen=void 0}}ctx[name]=latest;ctx[name].ready(fn)};s.async=1;s.src=path;h.parentNode.insertBefore(s,h)}}
-  }("KeenTracker","keen-tracking.js",this);
 
-  KeenTracker.ready(function(){
-    var cookie = window.myCookie = KeenTracker.utils.cookie('test-cookie');
-  });
+  Keen.ready(function(){
+    var cookie = window.myCookie = Keen.utils.cookie('test-cookie');
+
 
     Keen.debug = true;
 		var client = new Keen({
@@ -44,28 +41,7 @@
       Keen.log(res);
     });
 
-    // -------------------------
-    // Deprecated methods
-    // -------------------------
-    client.setGlobalProperties(function(col){
-      var output = { deprecated: false };
-      if (col.indexOf('addEvent') > -1) {
-        Keen.log('Setting global props on ' + col)
-        output.deprecated = true;
-      }
-      return output;
-    });
-    client.addEvent('addEvent', eventBody, function(err, res){
-      // Keen.log('#addEvent');
-      // Keen.log(err);
-      Keen.log(res);
-    });
-    client.addEvents({ 'addEvents': [eventBody, eventBody, eventBody] }, function(err, res){
-      // Keen.log('#addEvents');
-      // Keen.log(err);
-      Keen.log(res);
-    });
-
+  });
 	</script>
 </body>
 </html>

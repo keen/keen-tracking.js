@@ -4,7 +4,6 @@ require('./modules/defer-events-spec');
 require('./modules/extend-events-spec');
 
 // Utils
-require('./modules/utils-spec');
 require('./modules/utils/serialize-form-spec');
 require('./modules/utils/listener-spec');
 require('./modules/utils/cookie-spec');
