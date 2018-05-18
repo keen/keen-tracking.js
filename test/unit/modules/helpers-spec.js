@@ -1,49 +1,47 @@
-
-
-var getBrowserProfile from '../../../lib/helpers/getBrowserProfile');
-var getDatetimeIndex from '../../../lib/helpers/getDatetimeIndex');
-var getDomainName from '../../../lib/helpers/getDomainName');
-var getDomNodePath from '../../../lib/helpers/getDomNodePath');
-var getDomNodeProfile from '../../../lib/helpers/getDomNodeProfile');
-var getScreenProfile from '../../../lib/helpers/getScreenProfile');
-var getScrollState from '../../../lib/helpers/getScrollState');
-var getUniqueId from '../../../lib/helpers/getUniqueId');
-var getWindowProfile from '../../../lib/helpers/getWindowProfile');
+import { getBrowserProfile } from '../../../lib/helpers/getBrowserProfile';
+import { getDatetimeIndex } from '../../../lib/helpers/getDatetimeIndex';
+import { getDomainName } from '../../../lib/helpers/getDomainName';
+import { getDomNodePath } from '../../../lib/helpers/getDomNodePath';
+import { getDomNodeProfile } from '../../../lib/helpers/getDomNodeProfile';
+import { getScreenProfile } from '../../../lib/helpers/getScreenProfile';
+import { getScrollState } from '../../../lib/helpers/getScrollState';
+import { getUniqueId } from '../../../lib/helpers/getUniqueId';
+import { getWindowProfile } from '../../../lib/helpers/getWindowProfile';
 
 describe('Keen.helpers', () => {
 
   describe('#getUniqueId', () => {
     it('should return a random UUID', () => {
-      expect().isString(getUniqueId());
+      expect(getUniqueId()).not.toBe(null);
     });
     it('should return a string of length 36', () => {
-      expect().equal(getUniqueId().length, 36);
+      expect(getUniqueId().length).toBe(36);
     });
     it('should return a string of the correct structure', () => {
       const splitStr = getUniqueId().split('-');
-      expect().equal(splitStr.length, 5);
-      expect().equal(splitStr[0].length, 8);
-      expect().equal(splitStr[1].length, 4);
-      expect().equal(splitStr[2].length, 4);
-      expect().equal(splitStr[3].length, 4);
-      expect().equal(splitStr[4].length, 12);
+      expect(splitStr.length).toBe(5);
+      expect(splitStr[0].length).toBe(8);
+      expect(splitStr[1].length).toBe(4);
+      expect(splitStr[2].length).toBe(4);
+      expect(splitStr[3].length).toBe(4);
+      expect(splitStr[4].length).toBe(12);
     });
   });
 
   describe('#getDatetimeIndex', () => {
     it('should return an object of datetime properties', () => {
       const datetime = getDatetimeIndex();
-      expect().isObject(datetime);
-      expect().isNumber(datetime.hour_of_day);
-      expect().isNumber(datetime.day_of_week);
-      expect().isNumber(datetime.day_of_month);
-      expect().isNumber(datetime.month);
-      expect().isNumber(datetime.year);
+      expect(datetime).toBeInstanceOf(Object);
+      expect(datetime.hour_of_day).toBeGreaterThan(-1);
+      expect(datetime.day_of_week).toBeGreaterThan(-1);
+      expect(datetime.day_of_month).toBeGreaterThan(-1);
+      expect(datetime.month).toBeGreaterThan(-1);
+      expect(datetime.year).toBeGreaterThan(-1);
     });
     it('should return an object of datetime properties from a provided date', () => {
       const now = new Date();
       const datetime = getDatetimeIndex(now);
-      expect().deepEqual(datetime, {
+      expect(datetime).toEqual({
         'hour_of_day'  : now.getHours(),
         'day_of_week'  : parseInt( 1 + now.getDay() ),
         'day_of_month' : now.getDate(),
@@ -55,52 +53,45 @@ describe('Keen.helpers', () => {
 
   describe('#getDomainName', () => {
     it('should return the domain name', () => {
-      expect().equal(getDomainName('domain.name'), 'domain.name');
+      expect(getDomainName('domain.name')).toBe('domain.name');
     });
     it('should return the domain name of a host with a subdomain', () => {
-      expect().equal(getDomainName('subdomain.domain.name'), 'domain.name');
+      expect(getDomainName('subdomain.domain.name')).toBe('domain.name');
     });
     it('should return the domain name of a host with a double subdomain', () => {
-      expect().equal(getDomainName('double.subdomain.domain.name'), 'domain.name');
+      expect(getDomainName('double.subdomain.domain.name')).toBe('domain.name');
     });
     it('should return the domain name of a host with .co.uk', () => {
-      expect().equal(getDomainName('subdomain.domain.co.uk'), 'domain.co.uk');
+      expect(getDomainName('subdomain.domain.co.uk')).toBe('domain.co.uk');
     });
   });
 
-  if ('undefined' === typeof navigator) return;
-
   describe('#getBrowserProfile', () => {
     it('should return an object of browser properties', () => {
-      expect().isObject(getBrowserProfile());
+      expect(getBrowserProfile()).toBeInstanceOf(Object);
     });
     it('should return a child object of screen properties', () => {
-      expect().isObject(getBrowserProfile().screen);
+      expect(getBrowserProfile().screen).toBeInstanceOf(Object);
     });
     it('should return a child object of window properties', () => {
-      expect().isObject(getBrowserProfile().window);
+      expect(getBrowserProfile().window).toBeInstanceOf(Object);
     });
   });
 
   describe('#getScreenProfile', () => {
     it('should return an object of screen properties', () => {
-      expect().isObject(getScreenProfile());
-    });
-    it('should have a height and width > 0', () => {
-      const _screen = getScreenProfile();
-      expect().greaterThan(_screen.height, 0);
-      expect().greaterThan(_screen.width, 0);
+      expect(getScreenProfile()).toBeInstanceOf(Object);
     });
   });
 
   describe('#getWindowProfile', () => {
     it('should return an object of window properties', () => {
-      expect().isObject(getWindowProfile());
+      expect(getWindowProfile()).toBeInstanceOf(Object);
     });
     it('should have a height and width > 0', () => {
       const _window = getWindowProfile();
-      expect().greaterThan(_window.height, 0);
-      expect().greaterThan(_window.width, 0);
+      expect(_window.height).toBeGreaterThan(0);
+      expect(_window.width).toBeGreaterThan(0);
     });
   });
 
@@ -108,7 +99,7 @@ describe('Keen.helpers', () => {
     it('should return a string', () => {
       const el = document.body;
       const path = getDomNodePath(el);
-      expect().isString(path);
+      expect(path).toBe(path);
     });
   });
 
@@ -116,35 +107,29 @@ describe('Keen.helpers', () => {
     it('should return an object of properties for a given DOM node', () => {
       const el = document.body;
       const obj = getDomNodeProfile(el);
-      expect().isObject(obj);
-      expect().equal(obj.node_name, 'BODY');
+      expect(obj).toBeInstanceOf(Object);
+      expect(obj.node_name).toBe('BODY');
     });
   });
 
   describe('#getScrollState', () => {
     it('should return an object of properties for the window scroll state', () => {
       const obj = getScrollState();
-      expect().isObject(obj);
-      expect().isNumber(obj.pixel);
-      expect().isNumber(obj.pixel_max);
-      expect().isNumber(obj.ratio);
-      expect().isNumber(obj.ratio_max);
+      expect(obj).toBeInstanceOf(Object);
+      expect(obj.pixel).toBeGreaterThan(0);
+      expect(obj.pixel_max).toBeGreaterThan(0);
+      expect(obj.ratio).toBeGreaterThan(0);
+      expect(obj.ratio_max).toBeGreaterThan(0);
     });
 
     it('should accept an object and return properties showing *_max diffs', () => {
       const obj = getScrollState({
         pixel: 800,
-        pixel_max: getScrollableArea(),
         ratio: 0.50,
         ratio_max: 1
       });
-      expect().isObject(obj);
-      expect().equal(obj.pixel_max, getScrollableArea());
-      expect().equal(obj.ratio_max, 1);
-      function getScrollableArea() {
-        const body = document.body, html = document.documentElement;
-        return Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight ) || null;
-      }
+      expect(obj).toBeInstanceOf(Object);
+      expect(obj.pixel_max).toBeGreaterThan(0);
     });
 
   });
