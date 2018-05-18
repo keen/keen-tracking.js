@@ -1,82 +1,309 @@
+import Cookies from 'js-cookie';
+import Keen from '../../../lib/browser';
+import { deepExtend } from '../../../lib/utils/deepExtend';
+import pkg from '../../../package.json';
+import { cookie } from '../../../lib/utils/cookie';
 
-import config from '../helpers/client-config';
-import Keen from '../../../../lib/browser';
+describe('Auto Tracking', () => {
+  let client1;
+  let mockFn1 = jest.fn();
 
-describe('Auto Tracking', function() {
-
-  beforeEach(function() {
-    this.client = new Keen({
-      projectId: config.projectId,
-      writeKey: config.writeKey,
-      requestType: 'xhr',
-      host: config.host,
-      protocol: config.protocol
+  beforeEach(() => {
+    client1 = new Keen({
+      projectId: 'aa',
+      writeKey: 'bb'
     });
+    client1.on('recordEvent', mockFn1);
+    mockFn1.mockClear();
+    client1.initAutoTracking();
   });
 
-  it('should capture "pageviews," "clicks," and "form submits"', () => {
-    this.timeout(5000);
+  const extendedParams = {
+    geo: expect.any(Object),
+    ip_address: "${keen.ip}",
+    tracked_by: pkg.name + '-' + pkg.version,
+    local_time_full: expect.any(String),
+    user: {
+      uuid: expect.any(String),
+    },
+    page: {
+      title: expect.any(String),
+      description: expect.any(String),
+      time_on_page: expect.any(Number)
+    },
+    ip_address: '${keen.ip}',
+    geo: { },
+    user_agent: '${keen.user_agent}',
+    tech: {
+      profile: expect.any(Object)
+    },
+    url: {
+      full: window ? window.location.href : '',
+      info: {  }
+    },
+    referrer: {
+      full: document ? document.referrer : '',
+      info: {  }
+    },
+    time: {
+      local: {  },
+      utc: {  }
+    },
+    keen: {
+      timestamp: expect.any(String),
+      addons: [
+        {
+          name: 'keen:ip_to_geo',
+          input: {
+            ip: 'ip_address'
+          },
+          output : 'geo'
+        },
+        {
+          name: 'keen:ua_parser',
+          input: {
+            ua_string: 'user_agent'
+          },
+          output: 'tech'
+        },
+        {
+          name: 'keen:url_parser',
+          input: {
+            url: 'url.full'
+          },
+          output: 'url.info'
+        },
+        {
+          name: 'keen:url_parser',
+          input: {
+            url: 'referrer.full'
+          },
+          output: 'referrer.info'
+        },
+        {
+          name: 'keen:date_time_parser',
+          input: {
+            date_time: 'keen.timestamp'
+          },
+          output: 'time.utc'
+        },
+        {
+          name: 'keen:date_time_parser',
+          input: {
+            date_time: 'local_time_full'
+          },
+          output: 'time.local'
+        }
+      ],
+    }
+  };
+
+  const extendedParamsClick = {
+    geo: expect.any(Object),
+    ip_address: "${keen.ip}",
+    tracked_by: pkg.name + '-' + pkg.version,
+    local_time_full: expect.any(String),
+    user: {
+      uuid: expect.any(String),
+    },
+    page: {
+      title: expect.any(String),
+      description: expect.any(String),
+      time_on_page: expect.any(Number)
+    },
+    ip_address: '${keen.ip}',
+    geo: { },
+    user_agent: '${keen.user_agent}',
+    tech: {
+      profile: expect.any(Object)
+    },
+    url: {
+      full: window ? window.location.href : '',
+      info: {  }
+    },
+    referrer: {
+      full: document ? document.referrer : '',
+      info: {  }
+    },
+    time: {
+      local: {  },
+      utc: {  }
+    },
+    keen: {
+      timestamp: expect.any(String),
+      addons: [
+        {
+          name: 'keen:ip_to_geo',
+          input: {
+            ip: 'ip_address'
+          },
+          output : 'geo'
+        },
+        {
+          name: 'keen:ua_parser',
+          input: {
+            ua_string: 'user_agent'
+          },
+          output: 'tech'
+        },
+        {
+          name: 'keen:url_parser',
+          input: {
+            url: 'url.full'
+          },
+          output: 'url.info'
+        },
+        {
+          name: 'keen:url_parser',
+          input: {
+            url: 'referrer.full'
+          },
+          output: 'referrer.info'
+        },
+        {
+          name: 'keen:date_time_parser',
+          input: {
+            date_time: 'keen.timestamp'
+          },
+          output: 'time.utc'
+        },
+        {
+          name: 'keen:date_time_parser',
+          input: {
+            date_time: 'local_time_full'
+          },
+          output: 'time.local'
+        }
+      ],
+    },
+    element: expect.any(Object),
+    local_time_full: expect.any(String),
+    page: expect.any(Object)
+  };
+
+  const extendedParamsForm = {
+    geo: expect.any(Object),
+    ip_address: "${keen.ip}",
+    tracked_by: pkg.name + '-' + pkg.version,
+    local_time_full: expect.any(String),
+    user: {
+      uuid: expect.any(String),
+    },
+    page: {
+      title: expect.any(String),
+      description: expect.any(String),
+      time_on_page: expect.any(Number)
+    },
+    ip_address: '${keen.ip}',
+    geo: { },
+    user_agent: '${keen.user_agent}',
+    tech: {
+      profile: expect.any(Object)
+    },
+    url: {
+      full: window ? window.location.href : '',
+      info: {  }
+    },
+    referrer: {
+      full: document ? document.referrer : '',
+      info: {  }
+    },
+    time: {
+      local: {  },
+      utc: {  }
+    },
+    keen: {
+      timestamp: expect.any(String),
+      addons: [
+        {
+          name: 'keen:ip_to_geo',
+          input: {
+            ip: 'ip_address'
+          },
+          output : 'geo'
+        },
+        {
+          name: 'keen:ua_parser',
+          input: {
+            ua_string: 'user_agent'
+          },
+          output: 'tech'
+        },
+        {
+          name: 'keen:url_parser',
+          input: {
+            url: 'url.full'
+          },
+          output: 'url.info'
+        },
+        {
+          name: 'keen:url_parser',
+          input: {
+            url: 'referrer.full'
+          },
+          output: 'referrer.info'
+        },
+        {
+          name: 'keen:date_time_parser',
+          input: {
+            date_time: 'keen.timestamp'
+          },
+          output: 'time.utc'
+        },
+        {
+          name: 'keen:date_time_parser',
+          input: {
+            date_time: 'local_time_full'
+          },
+          output: 'time.local'
+        }
+      ],
+    },
+    element: expect.any(Object),
+    local_time_full: expect.any(String),
+    page: expect.any(Object),
+    form: {
+      action: '/',
+      method: 'get',
+      fields: {
+        email: 'team@keen.io',
+        password: undefined
+      }
+    }
+  };
+
+  it('should capture "pageviews"', () => {
+    expect(mockFn1).toBeCalledWith('pageviews', expect.objectContaining({}));
+  });
+
+  it('should capture "pageviews" with Extended params', () => {
+    expect(mockFn1).toBeCalledWith('pageviews', expect.objectContaining(extendedParams));
+  });
+
+  it('should capture "clicks" with Extended params', () => {
+    mockFn1.mockClear();
     const aNode = document.createElement('A');
+    aNode.id = 'test-auto-tracker-clicks';
+    document.body.appendChild(aNode);
+    aNode.click();
+    expect(mockFn1).toBeCalledWith('clicks', expect.objectContaining(extendedParamsClick));
+  });
+
+  it('should capture "form submits" with Extended params, ignore passwords', () => {
+    mockFn1.mockClear();
+
     const bNode = document.createElement('BUTTON');
     const fNode = document.createElement('FORM');
     const iNode = document.createElement('INPUT');
     const pNode = document.createElement('INPUT');
-    const inc = 0;
 
-    this.client.on('recordEvent', function(stream, payload){
-      if (stream === 'pageviews') {
-        expect().equal(stream, 'pageviews');
-        inc++;
-      }
-      else if (stream === 'clicks') {
-        expect().equal(stream, 'clicks');
-        expect().equal(payload.element.id, 'test-auto-tracker-clicks');
-        expect().equal(payload.element.node_name, 'A');
-        expect().isNumber(payload.page.time_on_page);
-        aNode.outerHTML = '';
-        inc++;
-      }
-      else if (stream === 'form_submissions') {
-        expect().equal(stream, 'form_submissions');
-        expect().equal(payload.element.id, 'test-auto-tracker-submits');
-        expect().equal(payload.element.node_name, 'FORM');
-        expect().equal(payload.form.fields.email, 'team@keen.io');
-        expect().notOk(payload.form.fields.password);
-        expect().isNumber(payload.page.time_on_page);
-        fNode.outerHTML = '';
-        inc++;
-      }
-      // if (inc === 3) {
-      //   done();
-      // }
-    });
-    this.client.initAutoTracking();
-
-    /*
-      Anchor Tag Listener
-    */
-    aNode.id = 'test-auto-tracker-clicks';
-    aNode.href = 'javascript:void(0);';
-    aNode.onclick = function(e){
-      e.preventDefault();
-      return false;
-    };
-    document.body.appendChild(aNode);
-
-    /*
-      Form Listener
-    */
     fNode.id = 'test-auto-tracker-submits';
-    fNode.action = 'javascript:void(0);';
-    fNode.onsubmit = function(e) {
-      e.preventDefault();
-      return false;
-    };
-    // fNode.style.display = 'none';
+    fNode.action = '/';
+    fNode.onsubmit = mockFn1;
 
     iNode.type = 'text';
     iNode.name = 'email';
-    iNode.value = 'team@keen.io';
+    iNode.value = extendedParamsForm.form.fields.email;
 
     pNode.type = 'password';
     pNode.name = 'password';
@@ -88,40 +315,15 @@ describe('Auto Tracking', function() {
     fNode.appendChild(bNode);
     document.body.appendChild(fNode);
 
-    /*
-      Init Behavior
-    */
-    // Init anchor click
-    if (aNode.click) {
-      aNode.click();
-    }
-    else if (document.createEvent) {
-      const ev1 = document.createEvent('MouseEvent');
-      ev1.initMouseEvent('click',
-          true /* bubble */, true /* cancelable */,
-          window, null,
-          0, 0, 0, 0,
-          false, false, false, false,
-          0, null
-      );
-      aNode.dispatchEvent(ev1);
-    }
+    bNode.click();
+    expect(mockFn1).toBeCalledWith('form_submissions', expect.objectContaining(extendedParamsForm));
+  });
 
-    // Init form button click (submit)
-    if (bNode.click) {
-      bNode.click();
-    }
-    else if (document.createEvent) {
-      const ev2 = document.createEvent('MouseEvent');
-      ev2.initMouseEvent('click',
-          true /* bubble */, true /* cancelable */,
-          window, null,
-          0, 0, 0, 0,
-          false, false, false, false,
-          0, null
-      );
-      bNode.dispatchEvent(ev2);
-    }
+  it('should create cookie with UUID', () => {
+    const cookie = Keen.utils.cookie('keen');
+    const uuid = cookie.get('uuid');
+    expect(uuid).not.toBe(null);
+    expect(uuid.length).toBeGreaterThan(0);
   });
 
 });
