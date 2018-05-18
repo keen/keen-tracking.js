@@ -1,58 +1,50 @@
+import { timer } from '../../../../lib/utils/timer';
 
-
-var timer from '../../../../lib/utils/timer');
-
-describe('Keen.utils.timer', function() {
+describe('Keen.utils.timer', () => {
+  let timer1;
 
   beforeEach(() => {
-    this.timer = timer();
+    timer1 = timer();
   });
 
   afterEach(() => {
-    this.timer.clear();
+    timer1.clear();
   });
 
   describe('constructor', () => {
 
-    it('should return a constructed object', function() {
-      expect().isObject(this.timer);
+    it('should return a constructed object', () => {
+      expect(timer1).toBeInstanceOf(Object);
     });
 
-    it('should have internal count property of zero', function() {
-      expect().isNumber(this.timer.count);
-      expect().equal(this.timer.count, 0);
+    it('should have internal count property of zero', () => {
+      expect(timer1.count).toBe(0);
     });
 
-    it('should have internal count property matching provided value', function() {
+    it('should have internal count property matching provided value', () => {
       const newTimer = timer(123);
-      expect().equal(newTimer.count, 123);
+      expect(newTimer.count).toBe(123);
     });
 
-    it('should have prototype methods', function() {
-      expect().isFunction(this.timer.start);
-      expect().isFunction(this.timer.pause);
-      expect().isFunction(this.timer.value);
-      expect().isFunction(this.timer.clear);
+    it('should have prototype methods', () => {
+      expect(timer1.start).toBeInstanceOf(Function);
+      expect(timer1.pause).toBeInstanceOf(Function);
+      expect(timer1.value).toBeInstanceOf(Function);
+      expect(timer1.clear).toBeInstanceOf(Function);
     });
 
   });
 
   describe('methods', () => {
 
-    it('should run the timer for one second and return the correct value', () => {
-      const self = this;
-      this.timeout(5000);
-      this.timer.start();
-      setTimeout(() => {
-        self.timer.pause();
-        expect().lessThan(self.timer.value(), 2);
-        // done();
-      }, 1000);
+    it('should run the timer and return a value', () => {
+      timer1.start();
+      expect(timer1.interval).toBeGreaterThan(0);
     });
 
-    it('should clear the value of the timer', function() {
-      this.timer.clear();
-      expect().equal(this.timer.value(), 0);
+    it('should clear the value of the timer', () => {
+      timer1.clear();
+      expect(timer1.value()).toBe(0);
     });
 
   });
