@@ -1,24 +1,25 @@
-
-var Keen from '../../../lib/index');
+import Keen from '../../../lib/index';
 import config from '../helpers/client-config';
-
 // Keen.debug = true;
 
-describe('Keen (browser)', function() {
+describe('Keen (browser)', () => {
+  let client1;
+  let matchUrlBase;
 
-  beforeEach(function() {
-    this.client = new Keen({
+  beforeEach(() => {
+    client1 = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey
     });
+    matchUrlBase = client1.config.protocol + '://' + client1.config.host;
   });
 
-  describe('client defaults', function() {
+  describe('client defaults', () => {
 
     it('should have sensible values', () => {
-      expect().equal(this.client.config.host, 'api.keen.io');
-      //expect().equal(this.client.config.protocol, 'https');
-      expect().equal(this.client.config.requestType, 'jsonp');
+      expect(client1.config.host).toBe('api.keen.io');
+      //expect().toBe(client1.config.protocol, 'https');
+      expect(client1.config.requestType).toBe('jsonp');
     });
 
   });
@@ -26,16 +27,16 @@ describe('Keen (browser)', function() {
   describe('.configure()', () => {
 
     it('should reconfigure an existing client', () => {
-      this.client.configure({
+      client1.configure({
         projectId: '123',
         writeKey: '456',
         protocol: 'http',
         host: 'none'
       });
-      expect().equal(this.client.projectId(), '123');
-      expect().equal(this.client.writeKey(), '456');
-      expect().equal(this.client.config.host, 'none');
-      expect().equal(this.client.config.protocol, 'http');
+      expect(client1.projectId()).toBe('123');
+      expect(client1.writeKey()).toBe('456');
+      expect(client1.config.host).toBe('none');
+      expect(client1.config.protocol).toBe('http');
     });
 
   });
@@ -43,94 +44,77 @@ describe('Keen (browser)', function() {
   describe('.projectId()', () => {
 
     it('should get projectId', () => {
-      expect().equal(this.client.projectId(), config.projectId);
+      expect(client1.projectId()).toBe(config.projectId);
     });
 
     it('should set projectId', () => {
-      this.client.projectId('123')
-      expect().equal(this.client.projectId(), '123');
-      this.client.projectId(config.projectId)
-      expect().equal(this.client.projectId(), config.projectId);
+      client1.projectId('123')
+      expect(client1.projectId()).toBe('123');
+      client1.projectId(config.projectId)
+      expect(client1.projectId()).toBe(config.projectId);
     });
 
     it('should get writeKey', () => {
-      expect().equal(this.client.writeKey(), config.writeKey);
+      expect(client1.writeKey()).toBe(config.writeKey);
     });
 
     it('should set writeKey', () => {
-      this.client.writeKey('123')
-      expect().equal(this.client.writeKey(), '123');
-      this.client.writeKey(config.writeKey)
-      expect().equal(this.client.writeKey(), config.writeKey);
+      client1.writeKey('123')
+      expect(client1.writeKey()).toBe('123');
+      client1.writeKey(config.writeKey)
+      expect(client1.writeKey()).toBe(config.writeKey);
     });
 
   });
 
   describe('.resources()', () => {
-    beforeEach(function() {
-      this.matchUrlBase = this.client.config.protocol + '://' + this.client.config.host;
-
-      // Hack for IE9 request shim
-      if ('undefined' !== typeof document && document.all) {
-        this.matchUrlBase = this.matchUrlBase.replace('https', 'http');
-      }
-    });
 
     it('should return the current resources object', () => {
-      expect().deepEqual(this.client.resources(), Keen.resources);
+      expect(client1.resources()).toEqual(Keen.resources);
     });
 
     it('should set a new resource', () => {
-      this.client.resources({
+      client1.resources({
         'test': '{protocol}://{host}/{projectId}'
       });
-      expect().equal(this.client.resources()['test'], '{protocol}://{host}/{projectId}');
+      expect(client1.resources()['test']).toBe('{protocol}://{host}/{projectId}');
     });
 
     it('should unset a given resource', () => {
-      this.client.resources({
+      client1.resources({
         'test': null
       });
-      expect().equal(this.client.resources()['test'], null);
+      expect(client1.resources()['test']).toBe(null);
     });
 
   });
 
   describe('.url()', () => {
 
-    beforeEach(function() {
-      this.matchUrlBase = this.client.config.protocol + '://' + this.client.config.host;
-
-      // Hack for IE9 request shim
-      if ('undefined' !== typeof document && document.all) {
-        this.matchUrlBase = this.matchUrlBase.replace('https', 'http');
-      }
-    });
-
     it('should return a base URL when no arguments are provided', () => {
-      expect().equal(this.client.url(), this.matchUrlBase);
+      expect(client1.url()).toBe(matchUrlBase);
     });
 
     it('should return a known resource URL when a matching name is provided', () => {
-      const url = this.client.url('events');
-      const match = this.matchUrlBase + '/3.0/projects/' + this.client.projectId() + '/events';
-      expect().equal(url, match);
+      const url = client1.url('events');
+      const match = matchUrlBase + '/3.0/projects/' + client1.projectId() + '/events';
+      expect(url).toBe(match);
     });
 
     it('should return a known resource URL with query string when all arguments are provided', () => {
-      const url = this.client.url('events', { test: 123 });
-      const match = this.matchUrlBase + '/3.0/projects/' + this.client.projectId() + '/events';
-      expect().equal(url, match + '?test=123');
+      const url = client1.url('events', { test: 123 });
+      const match = matchUrlBase + '/3.0/projects/' + client1.projectId() + '/events';
+      expect(url).toBe(match + '?test=123');
     });
 
     it('should return a constructed URL when one argument is provided', () => {
-      const url = this.client.url('/test/' + config.collection);
-      expect().equal(url, this.matchUrlBase + '/test/' + config.collection);
+      const url = client1.url('/test/' + config.collection);
+      expect(url).toBe(matchUrlBase + '/test/' + config.collection);
     });
 
     it('should return a constructed URL with query string when all arguments are provided', () => {
-      const url = this.client.url('/events/' + config.collection, { test: 123});
-      expect().equal(url, this.matchUrlBase + '/events/' + config.collection + '?test=123');
+      const url = client1.url('/events/' + config.collection, { test: 123});
+      expect(url).toBe(matchUrlBase + '/events/' + config.collection + '?test=123');
     });
 
   });
