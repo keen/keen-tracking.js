@@ -1,12 +1,12 @@
-var assert = require('proclaim');
-var Keen = require('../../../lib/server');
-var config = require('../helpers/client-config');
+import Keen from '../../../lib/server';
+import config from '../helpers/client-config';
 
-describe('.deferEvent(s) methods', function() {
+describe('.deferEvent(s) methods', () => {
+  let client1;
 
-  beforeEach(function() {
+  beforeEach(() => {
     Keen.enabled = false;
-    this.client = new Keen({
+    client1 = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey,
       requestType: 'xhr',
@@ -15,107 +15,104 @@ describe('.deferEvent(s) methods', function() {
     });
   });
 
-  it('should have a queue', function(){
-    assert.isObject(this.client.queue);
+  it('should have a queue', () => {
+    expect(client1.queue).toBeInstanceOf(Object);
   });
 
-  it('should overwrite capacity and interval settings with accessor methods', function(){
-    this.client.queueCapacity(10);
-    this.client.queueInterval(10);
-    assert.equal(this.client.queue.config.capacity, 10);
-    assert.equal(this.client.queue.config.interval, 10);
+  it('should overwrite capacity and interval settings with accessor methods', () => {
+    client1.queueCapacity(10);
+    client1.queueInterval(11);
+    expect(client1.queue.config.capacity).toBe(10);
+    expect(client1.queue.config.interval).toBe(11);
   });
 
-  it('should push individual deferred events into a queue', function(){
-    this.client.deferEvent('deferred event', { test: 'data' });
-    assert.isArray(this.client.queue.events['deferred event']);
-    assert.deepEqual(this.client.queue.events['deferred event'][0], { test: 'data' });
+  it('should push individual deferred events into a queue', () => {
+    client1.deferEvent('deferred event', { test: 'data' });
+    expect(client1.queue.events['deferred event']).toBeInstanceOf(Array);
+    expect(client1.queue.events['deferred event'][0]).toEqual({ test: 'data' });
   });
 
-  it('should push sets of deferred events into a queue', function(){
-    this.client.deferEvents({
+  it('should push sets of deferred events into a queue', () => {
+    client1.deferEvents({
       'deferred event': [{ test: 'data' }, { test: 'none' }],
       'another event': [{ test: 'data' }]
     });
-    assert.isArray(this.client.queue.events['deferred event']);
-    assert.isArray(this.client.queue.events['another event']);
-    assert.deepEqual(this.client.queue.events['deferred event'][0], { test: 'data' });
-    assert.deepEqual(this.client.queue.events['deferred event'][1], { test: 'none' });
-    assert.deepEqual(this.client.queue.events['another event'][0], { test: 'data' });
+    expect(client1.queue.events['deferred event']).toBeInstanceOf(Array);
+    expect(client1.queue.events['another event']).toBeInstanceOf(Array);
+    expect(client1.queue.events['deferred event'][0]).toEqual({ test: 'data' });
+    expect(client1.queue.events['deferred event'][1]).toEqual({ test: 'none' });
+    expect(client1.queue.events['another event'][0]).toEqual({ test: 'data' });
   });
 
-  it('should attempt to record events from the queue at given interval', function(){
-    this.timeout(5000);
-    this.client.queueInterval(2);
-    this.client.on('recordDeferredEvents', function(data){
-      assert.isObject(data);
-      assert.isArray(data['deferred event']);
-      assert.isArray(data['another event']);
-      assert.deepEqual(data['deferred event'][0], { test: 'data' });
-      assert.deepEqual(data['deferred event'][1], { test: 'none' });
-      assert.deepEqual(data['another event'][0], { test: 'data' });
+  it('should attempt to record events from the queue at given interval', () => {
+    client1.queueInterval(1);
+    client1.on('recordDeferredEvents', (data) => {
+      expect(data).toBeInstanceOf(Object);
+      expect(data['deferred event']).toBeInstanceOf(Array);
+      expect(data['another event']).toBeInstanceOf(Array);
+      expect(data['deferred event'][0]).toEqual({ test: 'data' });
+      expect(data['deferred event'][1]).toEqual({ test: 'none' });
+      expect(data['another event'][0]).toEqual({ test: 'data' });
     });
-    this.client.deferEvents({
-      'deferred event': [{ test: 'data' }, { test: 'none' }],
-      'another event': [{ test: 'data' }]
-    });
-  });
-
-  it('should attempt to record events from the queue when capacity is met', function(){
-    this.timeout(5000);
-    this.client.queueCapacity(3);
-    this.client.on('recordDeferredEvents', function(data){
-      assert.isObject(data);
-      assert.isArray(data['deferred event']);
-      assert.isArray(data['another event']);
-      assert.deepEqual(data['deferred event'][0], { test: 'data' });
-      assert.deepEqual(data['deferred event'][1], { test: 'none' });
-      assert.deepEqual(data['another event'][0], { test: 'data' });
-    });
-    this.client.deferEvents({
+    client1.deferEvents({
       'deferred event': [{ test: 'data' }, { test: 'none' }],
       'another event': [{ test: 'data' }]
     });
   });
 
-  it('should attempt to record events when .recordDeferredEvents is called', function(){
-    this.timeout(5000);
-    this.client.on('recordDeferredEvents', function(data){
-      assert.isObject(data);
-      assert.isArray(data['deferred event']);
-      assert.isArray(data['another event']);
-      assert.deepEqual(data['deferred event'][0], { test: 'data' });
-      assert.deepEqual(data['deferred event'][1], { test: 'none' });
-      assert.deepEqual(data['another event'][0], { test: 'data' });
+  it('should attempt to record events from the queue when capacity is met', () => {
+    client1.queueCapacity(3);
+    client1.on('recordDeferredEvents', (data) => {
+      expect(data).toBeInstanceOf(Object);
+      expect(data['deferred event']).toBeInstanceOf(Array);
+      expect(data['another event']).toBeInstanceOf(Array);
+      expect(data['deferred event'][0]).toEqual({ test: 'data' });
+      expect(data['deferred event'][1]).toEqual({ test: 'none' });
+      expect(data['another event'][0]).toEqual({ test: 'data' });
     });
-    this.client.deferEvents({
+    client1.deferEvents({
       'deferred event': [{ test: 'data' }, { test: 'none' }],
       'another event': [{ test: 'data' }]
     });
-    this.client.recordDeferredEvents();
   });
 
-  it('should not have an internal queue timer until an event is added to the queue', function(){
-    assert.isNull(this.client.queue.timer);
-    this.client.deferEvent('single-deferred-event', { prop: true });
-    assert.ok(this.client.queue.timer);
-  });
-
-  it('should not have an internal queue timer until multiple events are added to the queue', function(){
-    assert.isNull(this.client.queue.timer);
-    this.client.deferEvents({
+  it('should attempt to record events when .recordDeferredEvents is called', () => {
+    client1.on('recordDeferredEvents', (data) => {
+      expect(data).toBeInstanceOf(Object);
+      expect(data['deferred event']).toBeInstanceOf(Array);
+      expect(data['another event']).toBeInstanceOf(Array);
+      expect(data['deferred event'][0]).toEqual({ test: 'data' });
+      expect(data['deferred event'][1]).toEqual({ test: 'none' });
+      expect(data['another event'][0]).toEqual({ test: 'data' });
+    });
+    client1.deferEvents({
       'deferred event': [{ test: 'data' }, { test: 'none' }],
       'another event': [{ test: 'data' }]
     });
-    assert.ok(this.client.queue.timer);
+    client1.recordDeferredEvents();
   });
 
-  it('should clear internal queue timer when .queueInterval() is set to 0', function(){
-    assert.isNull(this.client.queue.timer);
-    this.client.deferEvent('single-deferred-event', { prop: true });
-    assert.ok(this.client.queue.timer);
-    this.client.queueInterval(0);
-    assert.isNull(this.client.queue.timer);
+  it('should not have an internal queue timer until an event is added to the queue', () => {
+    expect(client1.queue.timer).toBe(null);
+    client1.deferEvent('single-deferred-event', { prop: true });
+    expect(client1.queue.timer).not.toBe(null);
+  });
+
+  it('should not have an internal queue timer until multiple events are added to the queue', () => {
+    expect(client1.queue.timer).toBe(null);
+    client1.deferEvents({
+      'deferred event': [{ test: 'data' }, { test: 'none' }],
+      'another event': [{ test: 'data' }]
+    });
+    expect(client1.queue.timer).not.toBe(null);
+  });
+
+  it('should clear internal queue timer when .queueInterval() is set to 0', () => {
+    expect(client1.queue.timer).toBe(null);
+    client1.deferEvent('single-deferred-event', { prop: true });
+    expect(client1.queue.timer).not.toBe(null);
+    client1.queueInterval(0);
+    expect(client1.queue.timer).toBe(null);
   });
 
 });

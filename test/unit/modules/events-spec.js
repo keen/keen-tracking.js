@@ -1,109 +1,77 @@
-var assert = require('proclaim');
-var Keen = require('../../../lib/server');
+import Keen from '../../../lib/server';
 
-describe('Keen event emitter system', function(){
+describe('Keen event emitter system', () => {
+  const mockFn1 = jest.fn();
+  const mockFn2 = jest.fn();
 
-  beforeEach(function(){
+  beforeEach(() => {
     // Clear out events from previous tests
     Keen.off();
+    mockFn1.mockReset();
+    mockFn2.mockReset();
   });
 
-  describe('#on', function(){
-    it('should attach custom event listeners with #on', function(){
-      Keen.on('event', function(){});
-      assert.isArray(Keen.listeners());
+  describe('#on', () => {
+    it('should attach custom event listeners with #on', () => {
+      Keen.on('event', () => {});
+      expect(Keen.listeners()).toBeInstanceOf(Array);
     });
   });
 
-  describe('#trigger', function(){
-    it('should call bound functions when triggered', function(done){
-      var count = 0;
-      Keen.on('event', function(){
-        count++;
-        if (count === 1) {
-          done();
-        }
-        else {
-          throw Error('Called incorrectly');
-        }
-      });
+  describe('#trigger', () => {
+    it('should call bound functions when triggered', () => {
+      Keen.on('event', mockFn1);
       Keen.emit('event');
+      expect(mockFn1).toBeCalled();
     });
 
-    it('should pass arguments to bound functions when triggered', function(done){
-      var payload = { status: 'ok' }, count = 0;
-      Keen.on('event', function(data){
-        count++;
-        if (count === 1 && data.status === 'ok') {
-          done();
-        }
-        else {
-          throw Error('Called incorrectly');
-        }
-      });
+    it('should pass arguments to bound functions when triggered', () => {
+      const payload = { status: 'ok' };
+      Keen.on('event', mockFn1);
       Keen.emit('event', payload);
+      expect(mockFn1).toBeCalledWith(payload);
     });
 
-    it('should call bound functions multiple when triggered multiple times', function(){
-      // var callback = chai.spy();
-      var count = 0;
-      Keen.on('event', function(){
-        count++;
-      });
+    it('should call bound functions multiple when triggered multiple times', () => {
+      // const callback = chai.spy();
+      Keen.on('event', mockFn1);
       Keen.emit('event');
       Keen.emit('event');
       Keen.emit('event');
-      assert.equal(count, 3);
-      // expect(callback).to.have.been.called.exactly(3);
+      expect(mockFn1.mock.calls.length).toBe(3);
     });
   });
 
-  describe('#off', function(){
-    it('should remove all listeners for an event name with #off(name)', function(){
-      var count = 0;
-      function callback(){
-        count++;
-      };
-      Keen.on('event', callback);
-      Keen.on('event', callback);
+  describe('#off', () => {
+    it('should remove all listeners for an event name with #off(name)', () => {
+      Keen.on('event', mockFn1);
+      Keen.on('event', mockFn1);
       Keen.off('event');
       Keen.emit('event');
-      assert.equal(count, 0);
+      expect(mockFn1.mock.calls.length).toBe(0);
     });
 
-    it('should remove specified listeners with #off(name, callback)', function(){
-      var count = 0;
-      function callback(){
-        count++;
-      }
-      function fakeback(){
-        throw Error('Don\'t call me!');
-      };
-      Keen.on('event', callback);
-      Keen.on('event', fakeback);
-      Keen.off('event', fakeback);
+    it('should remove specified listeners with #off(name, callback)', () => {
+      Keen.on('event', mockFn1);
+      Keen.on('event', mockFn2);
+      Keen.off('event', mockFn2);
       Keen.emit('event');
-      assert.equal(count, 1);
+      expect(mockFn1).toBeCalled();
+      expect(mockFn2).not.toBeCalled();
     });
   });
 
   describe('#once', function() {
-    it('should call once handlers once when triggered', function(){
-      var countA = 0, countB = 0;
-      function callbackA(){
-        countA++;
-      }
-      function callbackB(){
-        countB++;
-      }
-      Keen.once('event', callbackA);
-      Keen.once('event', callbackB);
+    it('should call once handlers once when triggered', () => {
+      Keen.once('event', mockFn1);
+      Keen.once('event', mockFn2);
       Keen.emit('event');
-      assert.equal(countA, 1);
-      assert.equal(countB, 1);
+      expect(mockFn1.mock.calls.length).toBe(1);
+      expect(mockFn2.mock.calls.length).toBe(1);
       Keen.emit('event');
-      assert.equal(countA, 1);
-      assert.equal(countB, 1);
+      Keen.emit('event');
+      expect(mockFn1.mock.calls.length).toBe(1);
+      expect(mockFn2.mock.calls.length).toBe(1);
     });
   });
 });

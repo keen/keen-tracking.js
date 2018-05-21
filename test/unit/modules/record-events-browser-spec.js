@@ -1,85 +1,25 @@
-var assert = require('proclaim');
-
-var Keen = require('../../../lib/browser');
-var config = require('../helpers/client-config');
+import Keen from '../../../lib/browser';
+import config from '../helpers/client-config';
 
 // Keen.debug = true;
 
-describe('.recordEvent(s) methods (browser)', function() {
+// Mock XHR
+window.XMLHttpRequest = () => {};
+window.XMLHttpRequest.prototype.status = 0;
+window.XMLHttpRequest.prototype.open = () => {}
+window.XMLHttpRequest.prototype.setRequestHeader = () => {}
+window.XMLHttpRequest.prototype.send = function(){
+  this.status = 200;
+  this.readyState = 4;
+  this.responseText = config.responses.success;
+  this.onreadystatechange();
+}
 
-  describe('.recordEvent', function() {
+describe('.recordEvent(s) methods (browser)', () => {
+  let client;
+  let mockFn1 = jest.fn();
 
-    beforeEach(function() {
-      this.client = new Keen({
-        projectId: config.projectId,
-        writeKey: config.writeKey,
-        requestType: 'xhr',
-        host: config.host,
-        protocol: config.protocol
-      });
-    });
-
-    it('should not send events if set to \'false\'', function(){
-      Keen.enabled = false;
-      this.client.recordEvent('not-going', { test: 'data' }, function(err, res){
-        assert.isNotNull(err);
-        assert.isNull(res);
-      });
-      Keen.enabled = true;
-    });
-
-    it('should return an error message if event collection is omitted', function(){
-      this.client.recordEvent(null, { test: 'data' }, function(err, res){
-        assert.isNotNull(err);
-        assert.isNull(res);
-      });
-    });
-
-    describe('via XHR/CORS (if supported)', function(){
-
-      it('should send a POST request to the API using XHR', function() {
-        var count = 0;
-        var headers = {
-          'Content-Type': 'application/json'
-        };
-        this.client.recordEvent(config.collection + '_succeed', config.properties, function(err, res){
-          count++;
-          assert.isNull(err);
-          assert.isNotNull(res);
-          assert.equal(count, 1);
-        });
-      });
-
-      it('should fire the callback on error', function() {
-        var count = 0;
-        var headers = {
-          'Content-Type': 'application/json'
-        };
-        this.client.config.writeKey = 'nope';
-        this.client.recordEvent(config.collection + '_error', config.properties, function(err, res){
-          count++;
-          assert.isNotNull(err);
-          assert.isNull(res);
-          assert.equal(count, 1);
-        });
-      });
-
-    });
-
-  });
-
-  describe('.recordEvents', function() {
-
-    beforeEach(function() {
-      this.client = new Keen({
-        projectId: config.projectId,
-        writeKey: config.writeKey,
-        requestType: 'xhr',
-        host: config.host,
-        protocol: config.protocol
-      });
-
-      this.batchData = {
+  const batchData = {
         'pageview': [
           { page: 'this one' },
           { page: 'same!' }
@@ -88,8 +28,8 @@ describe('.recordEvent(s) methods (browser)', function() {
           { page: 'tada!' },
           { page: 'same again' }
         ]
-      };
-      this.batchResponse = JSON.stringify({
+  };
+  const batchResponse = JSON.stringify({
         click: [
           { 'success': true }
         ],
@@ -97,54 +37,67 @@ describe('.recordEvent(s) methods (browser)', function() {
           { 'success': true },
           { 'success': true }
         ]
-      });
-    });
+  });
 
-    it('should not send events if Keen.enabled is set to \'false\'', function(){
+  beforeEach(() => {
+    mockFn1.mockClear();
+    client = new Keen({
+      projectId: config.projectId,
+      writeKey: config.writeKey,
+      requestType: 'xhr',
+      host: config.host,
+      protocol: config.protocol
+    });
+  });
+
+  describe('.recordEvent', () => {
+
+    it('should not send events if set to \'false\'', () => {
       Keen.enabled = false;
-      this.client.recordEvents(this.batchData, function(err, res){
-        assert.isNotNull(err);
-        assert.isNull(res);
-      });
+      client.recordEvent('not-going', { test: 'data' }, mockFn1);
+      expect(mockFn1).toBeCalledWith(expect.any(String), null);
       Keen.enabled = true;
     });
 
-    it('should return an error message if first argument is not an object', function(){
-      this.client.recordEvents([], function(err, res){
-        assert.isNotNull(err);
-        assert.isNull(res);
-      });
-      this.client.recordEvents('', function(err, res){
-        assert.isNotNull(err);
-        assert.isNull(res);
-      });
+    it('should return an error message if event collection is omitted', () => {
+      client.recordEvent(null, { test: 'data' }, mockFn1);
+      expect(mockFn1).toBeCalledWith(expect.any(String), null);
     });
 
-    describe('via XHR/CORS (if supported)', function(){
+    describe('via XHR/CORS (if supported)', () => {
 
-      it('should send a POST request to the API using XHR', function() {
-        var count = 0;
-        this.client.recordEvents(this.batchData, function(err, res){
-          count++;
-          assert.isNull(err);
-          assert.isNotNull(res);
-          assert.equal(count, 1);
-        });
-      });
-
-      it('should call the error callback on error', function() {
-        var count = 0;
-        this.client.config.writeKey = 'nope';
-        this.client.recordEvents(this.batchData, function(err, res){
-          count++;
-          assert.isNotNull(err);
-          assert.isNull(res);
-          assert.equal(count, 1);
-        });
+      it('should send a POST request to the API using XHR', () => {
+        client.recordEvent(config.collection + '_succeed', config.properties, mockFn1);
+        expect(mockFn1).toBeCalledWith(null, expect.any(Object));
       });
 
     });
 
+  });
+
+  describe('.recordEvents', () => {
+
+    it('should not send events if Keen.enabled is set to \'false\'', () => {
+      Keen.enabled = false;
+      client.recordEvents(batchData, mockFn1);
+      expect(mockFn1).toBeCalledWith(expect.any(String), null);
+      Keen.enabled = true;
+    });
+
+    it('should return an error message if first argument is not an object', () => {
+      client.recordEvents([], mockFn1);
+      expect(mockFn1).toBeCalledWith(expect.any(String), null);
+      mockFn1.mockClear();
+      client.recordEvents('', mockFn1);
+      expect(mockFn1).toBeCalledWith(expect.any(String), null);
+    });
+
+    describe('via XHR/CORS (if supported)', () => {
+      it('should send a POST request to the API using XHR', () => {
+        client.recordEvents(batchData, mockFn1);
+        expect(mockFn1).toBeCalledWith(null, expect.any(Object));
+      });
+    });
   });
 
 });

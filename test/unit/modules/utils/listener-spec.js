@@ -1,35 +1,34 @@
-var assert = require('proclaim');
-var Keen = require('../../../../lib/browser');
-var each = require('../../../../lib/utils/each');
-var listener = require('../../../../lib/utils/listener')(Keen);
+import Keen from '../../../../lib/browser';
+import each from 'keen-core/lib/utils/each';
+import { listenerCore } from '../../../../lib/utils/listener';
+const listener = listenerCore(Keen);
 
-describe('Keen.utils.listener', function() {
+describe('Keen.utils.listener', () => {
 
-  beforeEach(function(){
-    this.timeout(5000);
+  beforeAll(() => {
     Keen.debug = true;
   });
 
-  it('should be a function', function(){
-    assert.isFunction(listener);
+  it('should be a function', () => {
+    expect(listener).toBeInstanceOf(Function);
   });
 
-  it('should create a Keen.domListeners object', function(){
-    assert.isObject(Keen.domListeners);
+  it('should create a Keen.domListeners object', () => {
+    expect(Keen.domListeners).toBeInstanceOf(Object);
   });
 
-  it('should create a Keen.listenTo function that creates unassigned listeners', function(){
-    assert.isFunction(Keen.listenTo);
+  it('should create a Keen.listenTo function that creates unassigned listeners', () => {
+    expect(Keen.listenTo).toBeInstanceOf(Function);
     Keen.listenTo({
       'resize window': function(e){}
     });
-    assert.isObject(Keen.domListeners.resize);
-    assert.isArray(Keen.domListeners.resize['window']);
+    expect(Keen.domListeners.resize).toBeInstanceOf(Object);
+    expect(Keen.domListeners.resize['window']).toBeInstanceOf(Array);
   });
 
-  it('should set window events', function(){
-    var win = listener('window');
-    var eventTypes = [
+  it('should set window events', () => {
+    const win = listener('window');
+    const eventTypes = [
       'keydown',
       'keypress',
       'keyup',
@@ -46,14 +45,14 @@ describe('Keen.utils.listener', function() {
     ];
     each(eventTypes, function(type){
       win.on(type, function(e){ });
-      assert.isObject(Keen.domListeners[type]);
-      assert.isObject(Keen.domListeners[type]['window']);
+      expect(Keen.domListeners[type]).toBeInstanceOf(Object);
+      expect(Keen.domListeners[type]['window']).toBeInstanceOf(Object);
     });
   });
 
-  it('should set `<a>` events', function(){
-    var a = listener('a#test-anchors');
-    var eventTypes = [
+  it('should set `<a>` events', () => {
+    const a = listener('a#test-anchors');
+    const eventTypes = [
       'mousedown',
       'mousemove',
       'mouseout',
@@ -62,14 +61,14 @@ describe('Keen.utils.listener', function() {
     ];
     each(eventTypes, function(type){
       a.on(type, function(e){ });
-      assert.isObject(Keen.domListeners[type]);
-      assert.isObject(Keen.domListeners[type]['a#test-anchors']);
+      expect(Keen.domListeners[type]).toBeInstanceOf(Object);
+      expect(Keen.domListeners[type]['a#test-anchors']).toBeInstanceOf(Object);
     });
   });
 
-  it('should set `<form>` events', function(){
-    var form = listener('form#test-forms');
-    var eventTypes = [
+  it('should set `<form>` events', () => {
+    const form = listener('form#test-forms');
+    const eventTypes = [
       'keydown',
       'keypress',
       'keyup',
@@ -82,17 +81,14 @@ describe('Keen.utils.listener', function() {
     ];
     each(eventTypes, function(type){
       form.on(type, function(e){ });
-      assert.isObject(Keen.domListeners[type]);
-      assert.isObject(Keen.domListeners[type]['form#test-forms']);
+      expect(Keen.domListeners[type]).toBeInstanceOf(Object);
+      expect(Keen.domListeners[type]['form#test-forms']).toBeInstanceOf(Object);
     });
   });
 
-
   it('should set and handle `<a>` click events set with .on("click", fn)', function(done){
-    var listenToThis = listener('body a#listen-to-anchor');
+    const listenToThis = listener('body a#listen-to-anchor');
     listenToThis.on('click', callback);
-
-    this.timeout(5000);
 
     function callback(e){
       // Keen.log('click a#listen-to-anchor');
@@ -100,8 +96,8 @@ describe('Keen.utils.listener', function() {
       return false;
     }
 
-    setTimeout(function(){
-      var ev, a;
+      let ev;
+      let a;
 
       a = document.createElement("A");
       a.id = 'listen-to-anchor';
@@ -122,23 +118,20 @@ describe('Keen.utils.listener', function() {
         );
         a.dispatchEvent(ev);
       }
-    }, 1000);
   });
 
   it('should set and handle `<a>` click events set with .once("click", fn)', function(done){
-    var listen = listener('a#listen-to-anchor-once');
+    const listen = listener('a#listen-to-anchor-once');
     listen.once('click', callback);
-
-    this.timeout(5000);
 
     function callback(e){
       // Keen.log('click a#listen-to-anchor-once');
       done();
       return false;
     }
+      let ev;
+      let a;
 
-    setTimeout(function(){
-      var ev, a;
 
       a = document.createElement('A');
       a.id = 'listen-to-anchor-once';
@@ -159,21 +152,20 @@ describe('Keen.utils.listener', function() {
         );
         a.dispatchEvent(ev);
       }
-    }, 1000);
   });
 
-  it('should remove specific handlers with .off("click", fn)', function(){
-    var listenToThis = listener('body a#on-off');
+  it('should remove specific handlers with .off("click", fn)', () => {
+    const listenToThis = listener('body a#on-off');
 
     listenToThis.on('click', noop);
     listenToThis.on('click', noop);
-    listenToThis.on('click', function(){
+    listenToThis.on('click', () => {
       // Not the same
     });
-    assert.equal(Keen.domListeners['click']['body a#on-off'].length, 3);
+    expect(Keen.domListeners['click']['body a#on-off'].length).toBe(3);
 
     listenToThis.off('click', noop);
-    assert.equal(Keen.domListeners['click']['body a#on-off'].length, 1);
+    expect(Keen.domListeners['click']['body a#on-off'].length).toBe(1);
 
     function noop(e){ }
   });
@@ -182,19 +174,18 @@ describe('Keen.utils.listener', function() {
   if(!document.addEventListener) return;
 
   it('should handle `<form>` submit events', function(done){
-    var listen = listener('form#listen-to-form');
+    const listen = listener('form#listen-to-form');
     listen.on('submit', function(e){
       Keen.log('submit form#listen-to-form');
       done();
       return false;
     });
 
-    setTimeout(function(){
-      var form = document.createElement('FORM');
+      const form = document.createElement('FORM');
       form.id = 'listen-to-form';
       form.action = "./";
 
-      var input = window.input = document.createElement('INPUT');
+      const input = window.input = document.createElement('INPUT');
       input.id = 'listen-to-form-btn';
       input.type = 'submit';
 
@@ -203,8 +194,6 @@ describe('Keen.utils.listener', function() {
 
       input.click();
       // form.submit();
-    }, 1000);
-
   });
 
 });

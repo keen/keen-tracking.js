@@ -16,7 +16,6 @@ env:
       ArybZFvN+wpvWfwoJAhRV7yQv9yoGT1fEtMtn3GB9mQiCFO70L/MrqXePJAr
       ajs3LH0wqhj1zW8UUmhTxBSLvzRyW++W5yx2hYr92EkrlpFZZUg=
 install:
-  - npm install -g browserify
   - npm install
 notifications:
   email: never

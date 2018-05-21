@@ -1,59 +1,59 @@
-var assert = require('proclaim');
+import { serializeForm } from '../../../../lib/utils/serializeForm';
 
-var serializeForm = require('../../../../lib/utils/serializeForm');
+const ELEMENT_ID = 'test-serialize-form';
+const INPUT_NAME = 'email';
+const INPUT_VALUE = 'team@keen.io';
+const PASSWORD_NAME = 'password';
+const PASSWORD_VALUE = 'password';
 
-var ELEMENT_ID = 'test-serialize-form';
-var INPUT_NAME = 'email';
-var INPUT_VALUE = 'team@keen.io';
-var PASSWORD_NAME = 'password';
-var PASSWORD_VALUE = 'password';
+let form;
 
 describe('Keen.utils.serializeForm', function() {
 
-  beforeEach(function(){
-    var el = document.createElement('FORM');
+  beforeAll(() => {
+    const el = document.createElement('FORM');
     el.id = ELEMENT_ID;
     el.action = './';
     el.method = 'POST';
     document.body.appendChild(el);
-    this.form = document.getElementById(ELEMENT_ID);
+    form = document.getElementById(ELEMENT_ID);
 
-    var input = document.createElement('INPUT');
+    const input = document.createElement('INPUT');
     input.name = INPUT_NAME;
     input.type = 'text';
     input.value = INPUT_VALUE;
-    this.form.appendChild(input);
+    form.appendChild(input);
 
-    var password = document.createElement('INPUT');
+    const password = document.createElement('INPUT');
     password.name = PASSWORD_NAME;
     password.type = 'password';
     password.value = PASSWORD_VALUE;
-    this.form.appendChild(password);
+    form.appendChild(password);
   });
 
-  afterEach(function(){
-    this.form.outerHTML = '';
+  afterAll(() => {
+    form.outerHTML = '';
   });
 
   it('should be a function', function() {
-    assert.isFunction(serializeForm);
+    expect(serializeForm).toBeInstanceOf(Function);
   });
 
   it('should accept a FORM element and return an object', function() {
-    var serialized = serializeForm(this.form, { hash: true });
-    assert.isObject(serialized);
-    assert.ok(serialized.email);
-    assert.ok(serialized.password);
+    const serialized = serializeForm(form, { hash: true });
+    expect(serialized).toBeInstanceOf(Object);
+    expect(serialized.email).toBeTruthy();
+    expect(serialized.password).toBeTruthy();
   });
 
   it('should omit fields by type (password example)', function() {
-    var serialized = serializeForm(this.form, {
+    const serialized = serializeForm(form, {
       hash: true,
       ignoreTypes: ['password']
     });
-    assert.isObject(serialized);
-    assert.ok(serialized.email);
-    assert.notOk(serialized.password);
+    expect(serialized).toBeInstanceOf(Object);
+    expect(serialized.email).toBeTruthy();
+    expect(serialized.password).toBeFalsy();
   });
 
 });

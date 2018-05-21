@@ -1,12 +1,8 @@
-var assert = require('proclaim');
+import { deepExtend } from '../../../../lib/utils/deepExtend';
 
-var deepExtend = require('../../../../lib/utils/deepExtend');
-
-describe('Keen.utils.deepExtend', function() {
-
-  it('should blend objects and arrays together', function(){
-
-    var a = {
+describe('Keen.utils.deepExtend', () => {
+  test('should blend objects and arrays together', () => {
+    const a = {
       a: {
         a1: null,
         a2: true,
@@ -21,7 +17,7 @@ describe('Keen.utils.deepExtend', function() {
       }
     };
 
-    var b = {
+    const b = {
       a: {
         a1: 'string',
         a2: 123,
@@ -38,7 +34,7 @@ describe('Keen.utils.deepExtend', function() {
       }
     };
 
-    assert.deepEqual(deepExtend(a, b), {
+    expect(deepExtend(a, b)).toEqual({
       a: {
         a1: 'string',
         a2: 123,
@@ -57,17 +53,17 @@ describe('Keen.utils.deepExtend', function() {
 
   });
 
-  it('should not blend function attributes', function() {
-    var a = {
+  test('should not blend function attributes', () => {
+    const a = {
       value: 'a'
     };
 
-    var b = {
+    const b = {
       value: 'b',
       someFunction: function() {}
     };
 
-    assert.deepEqual(deepExtend(a, b), {
+    expect(deepExtend(a, b)).toEqual({
       value: 'b'
     });
 

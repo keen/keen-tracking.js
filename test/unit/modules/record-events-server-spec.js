@@ -1,76 +1,30 @@
-var chai = require('chai'),
-    expect = require('chai').expect,
-    spies = require('chai-spies');
+const mockFnData = jest.fn();
+const mockFnOptions = jest.fn();
+jest.mock('https', () => {
+  const httpsMock = {};
+  httpsMock.request = (options, response) => {
+    mockFnOptions(options);
+    response.on = (emit, callback) => {};
+    const requestMock = {};
+    requestMock.onCallbacks = {};
+    requestMock.write = (data) => mockFnData(JSON.parse(data));
+    requestMock.on = (emit, callback) => {};
+    requestMock.end = () => {  };
+    return requestMock;
+  };
+  return httpsMock;
+});
 
-chai.use(spies);
-
-var Keen = require('../../../lib/server');
-var config = require('../helpers/client-config');
+import Keen from '../../../lib/server';
+import config from '../helpers/client-config';
 
 // Keen.debug = true;
 
-describe('.recordEvent(s) methods (server)', function() {
+describe('.recordEvent(s) methods (server)', () => {
+  let client;
+  let mockFn1 = jest.fn();
 
-  beforeEach(function(){
-    this.client = new Keen({
-      projectId: config.projectId,
-      writeKey: config.writeKey
-    });
-  });
-
-  // afterEach(function(){});
-
-  describe('.recordEvent()', function() {
-
-    it('should make an HTTP request',function(done){
-      this.client.recordEvent( config.collection, config.properties, function(err, res) {
-        expect(err).to.be.null;
-        expect(res).to.deep.equal( JSON.parse(config.responses.success) );
-        done();
-      });
-    });
-
-    it('should default to HTTPS',function(done){
-      this.client.config.host = 'nonexistenthost';
-      this.client.recordEvent( config.collection, config.properties, function(err) {
-        expect(err.port).to.equal(443);
-        done();
-      });
-    });
-
-    it('should respect client HTTP protocol',function(done){
-      this.client.config.host = 'nonexistenthost';
-      this.client.config.protocol = 'http';
-      this.client.recordEvent( config.collection, config.properties, function(err) {
-        expect(err.port).to.equal(80);
-        done();
-      });
-    });
-
-    it('should not make an HTTP request if Keen.enabled is set to \'false\'', function(done){
-      Keen.enabled = false;
-      this.client.recordEvent( config.collection, config.properties, function(err, res){
-        expect(err).to.exist;
-        expect(res).to.not.exist;
-        done();
-      });
-      Keen.enabled = true;
-    });
-
-    it('should return an error message if event collection is omitted', function(done){
-      this.client.recordEvent( null, config.properties, function(err, res){
-        expect(err).to.exist;
-        expect(res).to.not.exist;
-        done();
-      });
-    });
-
-  });
-
-  describe('.recordEvents()', function() {
-
-    beforeEach(function() {
-      this.batchData = {
+  const batchData = {
         'pageview': [
           { page: 'this one' },
           { page: 'same!' }
@@ -79,44 +33,85 @@ describe('.recordEvent(s) methods (server)', function() {
           { page: 'tada!' },
           { page: 'same again' }
         ]
-      };
-      this.batchResponse = {
+  };
+  const batchResponse = JSON.stringify({
         click: [
-          { 'success': true },
           { 'success': true }
         ],
         pageview: [
           { 'success': true },
           { 'success': true }
         ]
-      };
-    });
+  });
 
-    it('should make an HTTP request',function(done){
-      var self = this;
-      self.client.recordEvents( self.batchData, function(err, res) {
-        expect(err).to.be.null;
-        expect(res).to.deep.equal( self.batchResponse );
-        done();
+  beforeEach(() => {
+    mockFn1.mockClear();
+    mockFnOptions.mockClear();
+    mockFnData.mockClear();
+    client = new Keen({
+      projectId: config.projectId,
+      writeKey: config.writeKey
+    });
+  });
+
+  describe('.recordEvent()', () => {
+
+    it('should make an HTTP request', () => {
+      client.recordEvent( config.collection, config.properties, mockFn1);
+      expect(mockFnData).toBeCalledWith(config.properties);
+      expect(mockFnOptions).toBeCalledWith({
+        headers: expect.any(Object),
+        host: 'api.keen.io',
+        method: 'POST',
+        path: expect.any(String)
       });
     });
 
-    it('should not send events if Keen.enabled is set to \'false\'', function(){
+    it('should default to HTTPS', () => {
+      client.config.host = 'nonexistenthost';
+      client.recordEvent( config.collection, config.properties, mockFn1);
+      expect(mockFnData).toBeCalled();
+    });
+
+    it('should respect client HTTP protocol', () => {
+      client.config.host = 'nonexistenthost';
+      client.config.protocol = 'http';
+      client.recordEvent( config.collection, config.properties, mockFn1);
+      expect(mockFnData).not.toBeCalled();
+    });
+
+    it('should not make an HTTP request if Keen.enabled is set to \'false\'', () => {
       Keen.enabled = false;
-      this.client.recordEvents(this.batchData, function(err, res){
-        expect(err).to.exist;
-        expect(res).to.be.null;
-      });
+      client.recordEvent( config.collection, config.properties, mockFn1);
+      expect(mockFnData).not.toBeCalled();
       Keen.enabled = true;
     });
 
-    it('should return an error message if first argument is not an object', function(){
-      this.client.recordEvents([], function(err, res){
-        expect(err).to.exist;
-        expect(res).to.be.null;
+    it('should return an error message if event collection is omitted', () => {
+      client.recordEvent( null, config.properties, mockFn1);
+      expect(mockFn1).toBeCalledWith(expect.any(String), null);
+    });
+  });
+
+  describe('.recordEvents()', () => {
+
+    it('should make an HTTP request', () => {
+      client.recordEvents( batchData, mockFn1);
+      expect(mockFnData).toBeCalledWith(batchData);
+      expect(mockFnOptions).toBeCalledWith({
+        headers: expect.any(Object),
+        host: 'api.keen.io',
+        method: 'POST',
+        path: expect.any(String)
       });
     });
 
+    it('should not make an HTTP request if Keen.enabled is set to \'false\'', () => {
+      Keen.enabled = false;
+      client.recordEvents(batchData, mockFn1);
+      expect(mockFnData).not.toBeCalled();
+      Keen.enabled = true;
+    });
   });
 
 });
