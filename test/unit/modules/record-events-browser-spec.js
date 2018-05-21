@@ -11,7 +11,7 @@ window.XMLHttpRequest.prototype.setRequestHeader = () => {}
 window.XMLHttpRequest.prototype.send = function(){
   this.status = 200;
   this.readyState = 4;
-  this.responseText = '{ "created": true }';
+  this.responseText = config.responses.success;
   this.onreadystatechange();
 }
 
