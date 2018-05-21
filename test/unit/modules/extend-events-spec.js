@@ -8,7 +8,7 @@ describe('.extendEvent(s) methods', () => {
   beforeEach(() => {
     mockFn1.mockReset();
     Keen.enabled = false;
-    Keen.debug = true;
+    // Keen.debug = true;
     client1 = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey,
