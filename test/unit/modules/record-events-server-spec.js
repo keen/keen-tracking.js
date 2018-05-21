@@ -9,10 +9,11 @@ import config from '../helpers/client-config';
 
 // Keen.debug = true;
 
-describe('.recordEvent(s) methods (server)', function() {
+describe('.recordEvent(s) methods (server)', () => {
+  let client;
 
   beforeEach(() => {
-    this.client = new Keen({
+    client = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey
     });
@@ -20,10 +21,10 @@ describe('.recordEvent(s) methods (server)', function() {
 
   // afterEach(() => {});
 
-  describe('.recordEvent()', function() {
+  describe('.recordEvent()', () => {
 
     it('should make an HTTP request',function(done){
-      this.client.recordEvent( config.collection, config.properties, function(err, res) {
+      client.recordEvent( config.collection, config.properties, (err, res) => {
         expect(err).to.be.null;
         expect(res).to.deep.equal( JSON.parse(config.responses.success) );
         done();
@@ -31,17 +32,17 @@ describe('.recordEvent(s) methods (server)', function() {
     });
 
     it('should default to HTTPS',function(done){
-      this.client.config.host = 'nonexistenthost';
-      this.client.recordEvent( config.collection, config.properties, function(err) {
+      client.config.host = 'nonexistenthost';
+      client.recordEvent( config.collection, config.properties, function(err) {
         expect(err.port).to.equal(443);
         done();
       });
     });
 
     it('should respect client HTTP protocol',function(done){
-      this.client.config.host = 'nonexistenthost';
-      this.client.config.protocol = 'http';
-      this.client.recordEvent( config.collection, config.properties, function(err) {
+      client.config.host = 'nonexistenthost';
+      client.config.protocol = 'http';
+      client.recordEvent( config.collection, config.properties, function(err) {
         expect(err.port).to.equal(80);
         done();
       });
@@ -49,7 +50,7 @@ describe('.recordEvent(s) methods (server)', function() {
 
     it('should not make an HTTP request if Keen.enabled is set to \'false\'', function(done){
       Keen.enabled = false;
-      this.client.recordEvent( config.collection, config.properties, function(err, res){
+      client.recordEvent( config.collection, config.properties, (err, res) => {
         expect(err).to.exist;
         expect(res).to.not.exist;
         done();
@@ -58,7 +59,7 @@ describe('.recordEvent(s) methods (server)', function() {
     });
 
     it('should return an error message if event collection is omitted', function(done){
-      this.client.recordEvent( null, config.properties, function(err, res){
+      client.recordEvent( null, config.properties, (err, res) => {
         expect(err).to.exist;
         expect(res).to.not.exist;
         done();
@@ -67,9 +68,9 @@ describe('.recordEvent(s) methods (server)', function() {
 
   });
 
-  describe('.recordEvents()', function() {
+  describe('.recordEvents()', () => {
 
-    beforeEach(function() {
+    beforeEach(() => {
       this.batchData = {
         'pageview': [
           { page: 'this one' },
@@ -94,7 +95,7 @@ describe('.recordEvent(s) methods (server)', function() {
 
     it('should make an HTTP request',function(done){
       const self = this;
-      self.client.recordEvents( self.batchData, function(err, res) {
+      self.client.recordEvents( self.batchData, (err, res) => {
         expect(err).to.be.null;
         expect(res).to.deep.equal( self.batchResponse );
         done();
@@ -103,7 +104,7 @@ describe('.recordEvent(s) methods (server)', function() {
 
     it('should not send events if Keen.enabled is set to \'false\'', () => {
       Keen.enabled = false;
-      this.client.recordEvents(this.batchData, function(err, res){
+      client.recordEvents(this.batchData, (err, res) => {
         expect(err).to.exist;
         expect(res).to.be.null;
       });
@@ -111,7 +112,7 @@ describe('.recordEvent(s) methods (server)', function() {
     });
 
     it('should return an error message if first argument is not an object', () => {
-      this.client.recordEvents([], function(err, res){
+      client.recordEvents([], (err, res) => {
         expect(err).to.exist;
         expect(res).to.be.null;
       });
