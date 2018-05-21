@@ -2,12 +2,8 @@ var gulp = require('gulp'),
     pkg = require('./package.json');
 
 var aws = require('gulp-awspublish'),
-    browserify = require('browserify'),
     buffer = require('vinyl-buffer'),
     del = require('del'),
-    karma = require('karma').server,
-    mocha = require('gulp-mocha'),
-    mochaPhantomJS = require('gulp-mocha-phantomjs'),
     moment = require('moment'),
     rename = require('gulp-rename'),
     replace = require('gulp-replace'),
@@ -17,78 +13,7 @@ var aws = require('gulp-awspublish'),
     stripComments = require('gulp-strip-comments'),
     util = require('gulp-util');
 
-// -------------------------
-// Test tasks
-// -------------------------
-
-gulp.task('test:clean', function(callback){
-  del(['./test/unit/build'], callback);
-});
-
-gulp.task('test:browserify', ['test:clean'], function() {
-  var b = browserify({
-    entries: './test/unit/browser.js',
-    debug: true
-  });
-  return b.bundle()
-    .pipe(source('browserified-tests.js'))
-    .pipe(buffer())
-      // Wipe out requirejs cooties in dependencies
-      .pipe(replace('typeof define === \'function\' && define.amd', 'false'))
-      // Set current version
-      .pipe(replace('__VERSION__', pkg.version))
-      .on('error', util.log)
-    .pipe(gulp.dest('./test/unit/build/'));
-});
-
-gulp.task('test:mocha', ['test:browserify'], function () {
-  return gulp.src('./test/unit/server.js', { read: false })
-    .pipe(mocha({
-      reporter: 'nyan',
-      timeout: 5000
-    }));
-});
-
-gulp.task('test:phantom', ['test:browserify'], function () {
-  return gulp.src('./test/unit/index.html')
-    .pipe(mochaPhantomJS())
-    .once('error', function () {
-      process.exit(1);
-    })
-    .once('end', function () {
-      process.exit();
-    });
-});
-
-gulp.task('test:karma', ['test:browserify'], function (done){
-  karma.start({
-    configFile: __dirname + '/karma.conf.js',
-    singleRun: true
-  }, done);
-});
-
-gulp.task('test:sauce', ['test:browserify'], function(){
-  karma.start({
-    browsers: Object.keys(getCustomLaunchers()),
-    browserDisconnectTimeout: 10 * 1000,
-    browserDisconnectTolerance: 3,
-    browserNoActivityTimeout: 20 * 1000,
-    captureTimeout: 300 * 1000,
-    configFile : __dirname + '/karma.conf.js',
-    customLaunchers: getCustomLaunchers(),
-    logColors: true,
-    reporters: [ 'saucelabs' ],
-    sauceLabs: {
-      testName: pkg.name + '.js: ' + moment().format(' ddd, MMM Do, h:mm:ss a'),
-      recordScreenshots: false,
-      recordVideo: true
-    },
-    singleRun  : true,
-    action     : 'run'
-  });
-});
-
-gulp.task('deploy', ['test:mocha', 'test:karma'], function() {
+gulp.task('deploy', function() {
 
   if (!process.env.AWS_KEY || !process.env.AWS_SECRET) {
     throw 'AWS credentials are required!';
