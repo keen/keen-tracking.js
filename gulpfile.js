@@ -2,16 +2,8 @@ var gulp = require('gulp'),
     pkg = require('./package.json');
 
 var aws = require('gulp-awspublish'),
-    buffer = require('vinyl-buffer'),
-    del = require('del'),
-    moment = require('moment'),
     rename = require('gulp-rename'),
-    replace = require('gulp-replace'),
-    removeEmptyLines = require('gulp-remove-empty-lines'),
-    source = require('vinyl-source-stream'),
-    sourcemaps = require('gulp-sourcemaps'),
-    stripComments = require('gulp-strip-comments'),
-    util = require('gulp-util');
+    replace = require('gulp-replace');
 
 gulp.task('deploy', function() {
 

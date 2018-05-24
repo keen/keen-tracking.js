@@ -2,6 +2,34 @@
 <html>
 <head>
   <meta name="description" content="Keen IO Javascript SDK Unit Tests">
+  <meta charset="utf-8">
+  <script src="demo-config.js"></script>
+  <script>
+    const file = 'keen-tracking.js';
+    let path = '';
+    if (window.location.protocol === 'file:') {
+      path = '../../dist/';
+    }
+    !function(name,path,ctx){
+      let latest,prev=name!=="Keen"&&window.Keen?window.Keen:false;ctx[name]=ctx[name]||{ready:function(fn){var h=document.getElementsByTagName("head")[0],s=document.createElement("script"),w=window,loaded;s.onload=s.onreadystatechange=function(){if((s.readyState&&!(/^c|loade/.test(s.readyState)))||loaded){return}s.onload=s.onreadystatechange=null;loaded=1;latest=w.Keen;if(prev){w.Keen=prev}else{try{delete w.Keen}catch(e){w.Keen=void 0}}ctx[name]=latest;ctx[name].ready(fn)};s.async=1;s.src=path;h.parentNode.insertBefore(s,h)}}
+    }("Keen", `${path}${file}`,this);
+  </script>
+  <script>
+    Keen.ready(function(){
+      const client = new Keen(demoConfig);
+      Keen.debug = true;
+      client.extendEvents({ extended: true });
+      client.on('recordEvent', Keen.log);
+      client.initAutoTracking({
+        // ignoreDisabledFormFields: false,
+        // ignoreFormFieldTypes: ['password'],
+        // recordClicks: false,
+        // recordFormSubmits: false,
+        // recordPageViews: true
+        recordScrollState: true
+      });
+    });
+  </script>
 </head>
 <body style="height: 9000px;">
 
@@ -21,33 +49,5 @@
     <button type="submit">Submit</button>
   </form>
 
-  <script data-main="./loaders/require/app.js" src="../vendor/require.js"></script>
-  <script>
-    !function(name,path,ctx){
-      var latest,prev=name!=="Keen"&&window.Keen?window.Keen:false;ctx[name]=ctx[name]||{ready:function(fn){var h=document.getElementsByTagName("head")[0],s=document.createElement("script"),w=window,loaded;s.onload=s.onerror=s.onreadystatechange=function(){if((s.readyState&&!(/^c|loade/.test(s.readyState)))||loaded){return}s.onload=s.onreadystatechange=null;loaded=1;latest=w.Keen;if(prev){w.Keen=prev}else{try{delete w.Keen}catch(e){w.Keen=void 0}}ctx[name]=latest;ctx[name].ready(fn)};s.async=1;s.src=path;h.parentNode.insertBefore(s,h)}}
-    }("Keen","../dist/keen-tracking.js",this);
-
-    Keen.ready(function(){
-      Keen.debug = true;
-
-      var client = new Keen({
-  			projectId: '52f00ec205cd66404b000000',
-  			writeKey: '554a723d023da6cb24e51c56a9a54555e9dcf8403d4b71ffa37e9112295622e78a10eed43a13c83b14ce171b0f1317bb09aa8df43d50f73b77709ab431af611ea47ed65f4d74c0ea5f2bde8407322ab70559afef294673ee6c224308b1744c9e069508799edefc51264b3f75a1ba9e26',
-        requestType: 'xhr'
-  		});
-      client.extendEvents({ extended: true });
-      client.on('recordEvent', Keen.log);
-      client.initAutoTracking({
-        // ignoreDisabledFormFields: false,
-        // ignoreFormFieldTypes: ['password'],
-        // recordClicks: false,
-        // recordFormSubmits: false,
-        // recordPageViews: true
-        recordScrollState: true
-      });
-      // client.recordEvent('pageviews');
-
-    });
-	</script>
 </body>
 </html>

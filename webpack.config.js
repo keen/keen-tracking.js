@@ -1,10 +1,11 @@
 const path = require('path');
+const webpack = require('webpack');
 
 const fileName = 'keen-tracking';
+const entry = ( process.env.TARGET !== 'node' ) ? './lib/browser.js' : './lib/server.js' ;
 
 module.exports = {
-  entry: ['./lib/browser.js',
-  ],
+  entry,
 
   target: process.env.TARGET ? `${process.env.TARGET}` : 'web',
 
@@ -62,10 +63,10 @@ module.exports = {
 
   plugins: [],
 
-  mode: !process.env.ENV ? 'development' : process.env.ENV,
+  mode: process.env.NODE_ENV,
 
   devServer: {
-    contentBase: path.join(__dirname, 'demo'),
+    contentBase: path.join(__dirname, 'test/demo'),
     open: true,
     inline: true,
     hot: false,
