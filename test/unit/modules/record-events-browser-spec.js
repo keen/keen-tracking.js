@@ -1,4 +1,4 @@
-import Keen from '../../../lib/browser';
+import Keen from '../../../dist/keen-tracking.min.js';
 import config from '../helpers/client-config';
 
 // Keen.debug = true;

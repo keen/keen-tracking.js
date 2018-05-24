@@ -2,16 +2,8 @@ var gulp = require('gulp'),
     pkg = require('./package.json');
 
 var aws = require('gulp-awspublish'),
-    buffer = require('vinyl-buffer'),
-    del = require('del'),
-    moment = require('moment'),
     rename = require('gulp-rename'),
-    replace = require('gulp-replace'),
-    removeEmptyLines = require('gulp-remove-empty-lines'),
-    source = require('vinyl-source-stream'),
-    sourcemaps = require('gulp-sourcemaps'),
-    stripComments = require('gulp-strip-comments'),
-    util = require('gulp-util');
+    replace = require('gulp-replace');
 
 gulp.task('deploy', function() {
 
@@ -50,56 +42,3 @@ gulp.task('deploy', function() {
     .pipe(aws.reporter());
 
 });
-
-// Future: reconnect SauceLabs with Travis?
-gulp.task('test:cli', ['test:mocha', 'test:phantom']);
-
-
-function getCustomLaunchers(){
-  return {
-    sl_ie_11: {
-      base: 'SauceLabs',
-      browserName: 'internet explorer',
-      platform: 'Windows 8.1',
-      version: '11'
-    },
-    sl_ie_10: {
-      base: 'SauceLabs',
-      browserName: 'internet explorer',
-      platform: 'Windows 8',
-      version: '10'
-    },
-    sl_ie_9: {
-      base: 'SauceLabs',
-      browserName: 'internet explorer',
-      platform: 'Windows 7',
-      version: '9'
-    },
-    sl_ie_8: {
-      base: 'SauceLabs',
-      browserName: 'internet explorer',
-      platform: 'Windows XP',
-      version: '8'
-    },
-
-    // sl_ie_7: {
-    //   base: 'SauceLabs',
-    //   browserName: 'internet explorer',
-    //   platform: 'Windows XP',
-    //   version: '7'
-    // }
-
-    sl_ios: {
-      base: 'SauceLabs',
-      browserName: 'iPhone',
-      platform: 'OS X 10.10',
-      version: '8.1'
-    },
-    sl_android: {
-      base: 'SauceLabs',
-      browserName: 'android',
-      platform: 'Linux',
-      version: '4.4'
-    }
-  };
-}

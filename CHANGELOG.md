@@ -6,6 +6,12 @@
 **BREAKING:**
 **CHANGE:**
 -->
+<a name="2.0.0"></a>
+# Move from Gulp to Webpack / UMD
+
+**NEW:**
+* JS/dist files are now bundled by Webpack 4.8.3 - UMDs!
+
 <a name="1.4.1"></a>
 # 1.4.1 Fixes
 

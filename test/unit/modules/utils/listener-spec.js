@@ -2,11 +2,16 @@ import Keen from '../../../../lib/browser';
 import each from 'keen-core/lib/utils/each';
 import { listenerCore } from '../../../../lib/utils/listener';
 const listener = listenerCore(Keen);
+const mockFn1 = jest.fn();
 
 describe('Keen.utils.listener', () => {
 
   beforeAll(() => {
     Keen.debug = true;
+  });
+
+  beforeEach(() => {
+    mockFn1.mockReset();
   });
 
   it('should be a function', () => {
@@ -86,113 +91,94 @@ describe('Keen.utils.listener', () => {
     });
   });
 
-  it('should set and handle `<a>` click events set with .on("click", fn)', function(done){
+  it('should set and handle `<a>` click events set with .on("click", fn)', async () => {
     const listenToThis = listener('body a#listen-to-anchor');
-    listenToThis.on('click', callback);
+    listenToThis.on('click', mockFn1);
 
-    function callback(e){
-      // Keen.log('click a#listen-to-anchor');
-      done();
-      return false;
+    const a = document.createElement("A");
+    a.id = 'listen-to-anchor';
+    a.href = './index.html';
+    document.body.appendChild(a);
+
+    if (a.click) {
+      await a.click();
     }
-
-      let ev;
-      let a;
-
-      a = document.createElement("A");
-      a.id = 'listen-to-anchor';
-      a.href = './index.html';
-      document.body.appendChild(a);
-
-      if (a.click) {
-        a.click();
-      }
-      else if(document.createEvent) {
-        ev = document.createEvent("MouseEvent");
-        ev.initMouseEvent("click",
-            true /* bubble */, true /* cancelable */,
-            window, null,
-            0, 0, 0, 0,
-            false, false, false, false,
-            0, null
-        );
-        a.dispatchEvent(ev);
-      }
+    else if(document.createEvent) {
+      const ev = document.createEvent("MouseEvent");
+      ev.initMouseEvent("click",
+          true /* bubble */, true /* cancelable */,
+          window, null,
+          0, 0, 0, 0,
+          false, false, false, false,
+          0, null
+      );
+      await a.dispatchEvent(ev);
+    }
+    expect(mockFn1).toHaveBeenCalled();
   });
 
-  it('should set and handle `<a>` click events set with .once("click", fn)', function(done){
+  it('should set and handle `<a>` click events set with .once("click", fn)', async () => {
     const listen = listener('a#listen-to-anchor-once');
-    listen.once('click', callback);
+    listen.once('click', mockFn1);
 
-    function callback(e){
-      // Keen.log('click a#listen-to-anchor-once');
-      done();
-      return false;
+    const a = document.createElement('A');
+    a.id = 'listen-to-anchor-once';
+    a.href = './index.html';
+    document.body.appendChild(a);
+
+    if (a.click) {
+      a.click();
+      a.click();
     }
-      let ev;
-      let a;
+    else if(document.createEvent) {
+      ev = document.createEvent('MouseEvent');
+      ev.initMouseEvent("click",
+          true /* bubble */, true /* cancelable */,
+          window, null,
+          0, 0, 0, 0,
+          false, false, false, false,
+          0, null
+      );
+      a.dispatchEvent(ev);
+      a.dispatchEvent(ev);
+    }
 
-
-      a = document.createElement('A');
-      a.id = 'listen-to-anchor-once';
-      a.href = './index.html';
-      document.body.appendChild(a);
-
-      if (a.click) {
-        a.click();
-      }
-      else if(document.createEvent) {
-        ev = document.createEvent('MouseEvent');
-        ev.initMouseEvent("click",
-            true /* bubble */, true /* cancelable */,
-            window, null,
-            0, 0, 0, 0,
-            false, false, false, false,
-            0, null
-        );
-        a.dispatchEvent(ev);
-      }
+    expect(mockFn1).toHaveBeenCalledTimes(1);
   });
 
   it('should remove specific handlers with .off("click", fn)', () => {
     const listenToThis = listener('body a#on-off');
 
-    listenToThis.on('click', noop);
-    listenToThis.on('click', noop);
+    listenToThis.on('click', mockFn1);
+    listenToThis.on('click', mockFn1);
     listenToThis.on('click', () => {
       // Not the same
     });
     expect(Keen.domListeners['click']['body a#on-off'].length).toBe(3);
 
-    listenToThis.off('click', noop);
+    listenToThis.off('click', mockFn1);
     expect(Keen.domListeners['click']['body a#on-off'].length).toBe(1);
 
-    function noop(e){ }
   });
 
-  // // Not testable by IE8
-  if(!document.addEventListener) return;
-
-  it('should handle `<form>` submit events', function(done){
+  it('should handle `<form>` submit events', async () => {
     const listen = listener('form#listen-to-form');
-    listen.on('submit', function(e){
-      Keen.log('submit form#listen-to-form');
-      done();
-      return false;
-    });
+    listen.on('submit', mockFn1);
 
-      const form = document.createElement('FORM');
-      form.id = 'listen-to-form';
-      form.action = "./";
+    const form = document.createElement('FORM');
+    form.id = 'listen-to-form';
+    form.action = "./";
 
-      const input = window.input = document.createElement('INPUT');
-      input.id = 'listen-to-form-btn';
-      input.type = 'submit';
+    const input = window.input = document.createElement('INPUT');
+    input.id = 'listen-to-form-btn';
+    input.type = 'submit';
 
-      form.appendChild(input);
-      document.body.appendChild(form);
+    form.appendChild(input);
+    document.body.appendChild(form);
 
-      input.click();
+    await input.click();
+    expect(mockFn1).toHaveBeenCalled();
+
       // form.submit();
   });
 
