@@ -2,8 +2,7 @@ var gulp = require('gulp'),
     pkg = require('./package.json');
 
 var aws = require('gulp-awspublish'),
-    rename = require('gulp-rename'),
-    replace = require('gulp-replace');
+    rename = require('gulp-rename');
 
 gulp.task('deploy', function() {
 
