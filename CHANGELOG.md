@@ -6,6 +6,11 @@
 **BREAKING:**
 **CHANGE:**
 -->
+<a name="2.0.1"></a>
+
+**FIXED:**
+* Listener for HTML A tags containing downloadable base64 data. (#128 contributed by [hinaloe](https://github.com/hinaloe))
+
 <a name="2.0.0"></a>
 # Move from Gulp to Webpack / UMD
 

@@ -10,7 +10,7 @@ Install the library synchronously and configure a new `client` instance to captu
 <html>
 <head>
   <meta charset="utf-8">
-  <script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.0.js"></script>
+  <script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.1.js"></script>
 
   <!-- Video.js Assets -->
   <link href="https://vjs.zencdn.net/5.8.8/video-js.css" rel="stylesheet">
