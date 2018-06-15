@@ -6,6 +6,12 @@
 **BREAKING:**
 **CHANGE:**
 -->
+# Promises
+<a name="3.0.0"></a>
+
+**New:**
+* Fetch API is now the default method of communication.
+
 <a name="2.0.1"></a>
 
 **FIXED:**

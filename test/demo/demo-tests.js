@@ -1,4 +1,9 @@
 const demoTests = (demoConfig, Keen) => {
+  demoConfig.requestType = 'jsonp';
+
+  // demoConfig.referrerPolicy: 'origin',
+  // https://googlechrome.github.io/samples/fetch-api/fetch-referrer-policy.html
+
   const client = new Keen(demoConfig);
   Keen.debug = true;
 
@@ -15,22 +20,44 @@ const demoTests = (demoConfig, Keen) => {
     }
   };
 
-  client.recordEvent('recordEvent', eventBody, function(err, res){
-    if (err) {
-      console.log('err', err);
-    } else {
+
+  client
+    .recordEvent('recordEvent', eventBody, function(err, res){
+      console.log('with callback');
+      if (err) {
+        console.log('err', err);
+      } else {
+        Keen.log('#recordEvents');
+        Keen.log(res);
+      }
+    })
+    .then((res) => {
       Keen.log('#recordEvent');
       Keen.log(res);
-    }
-  });
+      console.log('ok');
+    })
+    .catch(some => {
+      console.log('failed',some);
+    });
+
   client.recordEvents({ 'recordEvents': [eventBody, eventBody, eventBody] }, function(err, res){
+    console.log('with callback');
     if (err) {
       console.log('err', err);
     } else {
       Keen.log('#recordEvents');
       Keen.log(res);
     }
+  })
+  .then((res) => {
+    Keen.log('#recordEventS');
+    Keen.log(res);
+    console.log('okokok');
+  })
+  .catch(some => {
+    console.log('failed',some);
   });
+  /*  */
 }
 
 if (typeof window !== 'undefined') {
