@@ -1,9 +1,13 @@
+import XHRmock from 'xhr-mock';
+jest.mock('promise-polyfill', () => {});
+jest.mock('whatwg-fetch', () => {});
+// Keen.debug = true;
+
 import Keen from '../../../dist/keen-tracking.min.js';
 import config from '../helpers/client-config';
 
-// Keen.debug = true;
-
 // Mock XHR
+/*
 window.XMLHttpRequest = () => {};
 window.XMLHttpRequest.prototype.status = 0;
 window.XMLHttpRequest.prototype.open = () => {}
@@ -14,7 +18,7 @@ window.XMLHttpRequest.prototype.send = function(){
   this.responseText = config.responses.success;
   this.onreadystatechange();
 }
-
+*/
 describe('.recordEvent(s) methods (browser)', () => {
   let client;
   let mockFn1 = jest.fn();
@@ -40,6 +44,7 @@ describe('.recordEvent(s) methods (browser)', () => {
   });
 
   beforeEach(() => {
+    XHRmock.setup();
     mockFn1.mockClear();
     client = new Keen({
       projectId: config.projectId,
@@ -48,6 +53,10 @@ describe('.recordEvent(s) methods (browser)', () => {
       host: config.host,
       protocol: config.protocol
     });
+  });
+
+  afterEach(() => {
+    XHRmock.teardown();
   });
 
   describe('.recordEvent', () => {
@@ -65,10 +74,16 @@ describe('.recordEvent(s) methods (browser)', () => {
     });
 
     describe('via XHR/CORS (if supported)', () => {
-
-      it('should send a POST request to the API using XHR', () => {
-        client.recordEvent(config.collection + '_succeed', config.properties, mockFn1);
-        expect(mockFn1).toBeCalledWith(null, expect.any(Object));
+      it('should send a POST request to the API using XHR', (done) => {
+        let mockFn1local = jest.fn((error, response) => {
+          expect(error).toBe(null);
+          expect(response).toBeInstanceOf(Object);
+          done();
+        });
+        XHRmock.post(new RegExp(config.collection + '_succeed'), (req, res) => {
+          return res.status(200).body(JSON.stringify({ created: true }));
+        });
+        client.recordEvent(config.collection + '_succeed', config.properties, mockFn1local);
       });
 
     });
@@ -93,9 +108,16 @@ describe('.recordEvent(s) methods (browser)', () => {
     });
 
     describe('via XHR/CORS (if supported)', () => {
-      it('should send a POST request to the API using XHR', () => {
-        client.recordEvents(batchData, mockFn1);
-        expect(mockFn1).toBeCalledWith(null, expect.any(Object));
+      it('should send a POST request to the API using XHR', (done) => {
+        let mockFn1local = jest.fn((error, response) => {
+          expect(error).toBe(null);
+          expect(response).toBeInstanceOf(Object);
+          done();
+        });
+        XHRmock.post(new RegExp('events'), (req, res) => {
+          return res.status(200).body(JSON.stringify({ somkey: [{ success: true }] }));
+        });
+        client.recordEvents(batchData, mockFn1local);
       });
     });
   });

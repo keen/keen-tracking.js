@@ -176,6 +176,12 @@ _keenCore2.default.prototype.writeKey = function (str) {
   return this;
 };
 
+_keenCore2.default.prototype.referrerPolicy = function (str) {
+  if (!arguments.length) return this.config.referrerPolicy;
+  this.config.referrerPolicy = str ? String(str) : null;
+  return this;
+};
+
 // DEPRECATED
 _keenCore2.default.prototype.setGlobalProperties = function (props) {
   _keenCore2.default.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');

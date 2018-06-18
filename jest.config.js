@@ -1,6 +1,6 @@
 const files = `<rootDir>/test/unit/modules/*${
   process.env.TEST_ENV ? `-${process.env.TEST_ENV}-` : ``
-}*.js`;
+}*browser-spec.js`;
 
 module.exports = {
   verbose: true,

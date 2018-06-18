@@ -4,6 +4,9 @@ import { deepExtend } from '../../../lib/utils/deepExtend';
 import pkg from '../../../package.json';
 import { cookie } from '../../../lib/utils/cookie';
 
+jest.mock('promise-polyfill', () => {});
+jest.mock('whatwg-fetch', () => {});
+
 describe('Auto Tracking', () => {
   let client1;
   let mockFn1 = jest.fn();

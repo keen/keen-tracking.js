@@ -393,6 +393,12 @@ _keenCore2.default.prototype.writeKey = function (str) {
   return this;
 };
 
+_keenCore2.default.prototype.referrerPolicy = function (str) {
+  if (!arguments.length) return this.config.referrerPolicy;
+  this.config.referrerPolicy = str ? String(str) : null;
+  return this;
+};
+
 // DEPRECATED
 _keenCore2.default.prototype.setGlobalProperties = function (props) {
   _keenCore2.default.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
@@ -1854,7 +1860,7 @@ function initAutoTrackingCore(lib) {
             scroll_state: scrollState
           }
         };
-        client.recordEvent('clicks', props);
+        return client.recordEvent('clicks', props);
       });
     }
 
@@ -1877,7 +1883,7 @@ function initAutoTrackingCore(lib) {
             scroll_state: scrollState
           }
         };
-        client.recordEvent('form_submissions', props);
+        return client.recordEvent('form_submissions', props);
       });
     }
 
@@ -3090,6 +3096,7 @@ function recordEvent(eventCollection, eventBody, callback, asyncMode) {
   // Apply client.globalProperties
   // ------------------------------
   if (this.config.globalProperties) {
+    console.log('config.globalProperties are deprecated');
     data = this.config.globalProperties(eventCollection);
   }
   (0, _extend2.default)(data, eventBody);
@@ -3133,7 +3140,9 @@ function recordEvent(eventCollection, eventBody, callback, asyncMode) {
         }
         break;
       default:
-        if (getRequestUrlOkLength) {
+        if (typeof fetch !== 'undefined') {
+          return sendFetch.call(this, 'POST', url, extendedEventBody, cb);
+        } else if (getRequestUrlOkLength) {
           sendJSONp.call(this, getRequestUrl, cb);
         } else {
           attemptPostXhr.call(this, url, extendedEventBody, 'JSONp URL length exceeds current browser limit, and XHR is not supported.', cb);
@@ -3184,6 +3193,7 @@ function recordEvents(eventsHash, callback) {
   // Apply client.globalProperties
   // ------------------------------
   if (this.config.globalProperties) {
+    console.log('config.globalProperties are deprecated');
     // Loop over each set of events
     (0, _each2.default)(eventsHash, function (events, collection) {
       // Loop over each individual event
@@ -3225,12 +3235,10 @@ function recordEvents(eventsHash, callback) {
     return false;
   }
 
-  if (getXhr()) {
+  if (typeof fetch !== 'undefined') {
+    return sendFetch.call(this, 'POST', url, extendedEventsHash, cb);
+  } else if (getXhr()) {
     sendXhr.call(this, 'POST', url, extendedEventsHash, cb);
-  } else {
-    // each(eventsHash, function(eventArray, eventCollection){
-    //    ... send each individually?
-    // });
   }
 
   callback = cb = null;
@@ -3242,11 +3250,13 @@ function recordEvents(eventsHash, callback) {
 // ----------------------
 
 function addEvent() {
+  console.log('addEvent method is depracated. Check out #recordEvent: https://github.com/keen/keen-tracking.js#record-a-single-event');
   this.emit('error', 'This method has been deprecated. Check out #recordEvent: https://github.com/keen/keen-tracking.js#record-a-single-event');
   recordEvent.apply(this, arguments);
 }
 
 function addEvents() {
+  console.log('addEvents method is depracated. Check out #recordEvents: https://github.com/keen/keen-tracking.js#record-multiple-events');
   this.emit('error', 'This method has been deprecated. Check out #recordEvents: https://github.com/keen/keen-tracking.js#record-multiple-events');
   recordEvents.apply(this, arguments);
 }
@@ -3282,7 +3292,7 @@ function handleValidationError(message, cb) {
 function getUrlMaxLength() {
   if ('undefined' !== typeof window && navigator) {
     if (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > 0) {
-      return 2000;
+      return 1900;
     }
   }
   return 16000;
@@ -3298,6 +3308,76 @@ function attemptPostXhr(url, data, noXhrError, callback) {
   } else {
     handleValidationError.call(this, noXhrError);
   }
+}
+
+function sendFetch(method, url, data) {
+  var callback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : undefined;
+
+  var self = this;
+
+  return fetch(url, {
+    method: method,
+    body: data ? JSON.stringify(data) : '',
+    mode: 'cors',
+    redirect: 'follow',
+    referrerPolicy: self.referrerPolicy() || 'unsafe-url',
+    headers: {
+      'Authorization': self.writeKey(),
+      'Content-Type': 'application/json'
+    }
+  }).then(function (response) {
+    if (response.ok) {
+      return response.json();
+    }
+
+    return response.json().then(function (responseJSON) {
+      return Promise.reject({
+        error_code: responseJSON.error_code,
+        body: responseJSON.message,
+        status: response.status,
+        ok: false,
+        statusText: response.statusText
+      });
+    });
+  }).then(function (responseJSON) {
+    var eventsSavedSuccessfuly = checkEventsSavedSuccessfuly(responseJSON);
+    if (eventsSavedSuccessfuly) {
+      if (typeof callback !== 'undefined') {
+        callback.call(self, null, responseJSON);
+      }
+      return Promise.resolve(responseJSON);
+    } else {
+      if (typeof callback !== 'undefined') {
+        callback.call(self, responseJSON, null);
+      }
+      return Promise.reject(responseJSON);
+    }
+  });
+}
+
+function checkEventsSavedSuccessfuly(response) {
+  // single event
+  if (typeof response.created !== 'undefined') {
+    if (response.created) {
+      return true;
+    }
+    return false;
+  }
+  // multiple events
+  var responseKeys = Object.keys(response);
+  var notSavedEvents = responseKeys.map(function (collection) {
+    return response[collection].filter(function (event) {
+      return !event.success;
+    });
+  }).filter(function (collection) {
+    return collection.length > 0;
+  });
+
+  if (notSavedEvents.length === 0) {
+    return true;
+  }
+
+  return false;
 }
 
 function sendXhr(method, url, data, callback) {
@@ -3698,9 +3778,19 @@ function deferClickEvent(evt, anchor, callback) {
       }
       evt.returnValue = false;
       if (anchor.href && anchor.href !== '#' && anchor.href !== window.location + '#') {
-        setTimeout(function () {
-          window.location = anchor.href;
-        }, timeout);
+        if (cbResponse.then) {
+          // promise
+          cbResponse.then(function () {
+            window.location = anchor.href;
+          }).catch(function (err) {
+            // change location anyway - to not let user hanging
+            window.location = anchor.href;
+          });
+        } else {
+          setTimeout(function () {
+            window.location = anchor.href;
+          }, timeout);
+        }
       }
     }
 
@@ -3731,9 +3821,19 @@ function deferFormSubmit(evt, form, callback) {
         evt.preventDefault();
       }
       evt.returnValue = false;
-      setTimeout(function () {
-        form.submit();
-      }, timeout);
+      if (cbResponse.then) {
+        // promise
+        cbResponse.then(function () {
+          form.submit();
+        }).catch(function (err) {
+          // submit form anyway - to not let user hanging
+          form.submit();
+        });
+      } else {
+        setTimeout(function () {
+          form.submit();
+        }, timeout);
+      }
     }
 
   return false;
@@ -4152,7 +4252,6 @@ _index2.default.listenTo = function (listenerHash) {
 
 // ------------------------------
 // DEPRECATED
-// Apply client.globalProperties
 // ------------------------------
 function trackExternalLink(jsEvent, eventCollection, payload, timeout, timeoutCallback) {
   this.emit('error', 'This method has been deprecated. Check out DOM listeners: https://github.com/keen/keen-tracking.js#listeners');

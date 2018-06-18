@@ -1,9 +1,8 @@
 const demoTests = (demoConfig, Keen) => {
-  demoConfig.requestType = 'jsonp';
+  // demoConfig.requestType = 'xhr';
 
   // demoConfig.referrerPolicy: 'origin',
   // https://googlechrome.github.io/samples/fetch-api/fetch-referrer-policy.html
-
   const client = new Keen(demoConfig);
   Keen.debug = true;
 
@@ -27,11 +26,12 @@ const demoTests = (demoConfig, Keen) => {
       if (err) {
         console.log('err', err);
       } else {
-        Keen.log('#recordEvents');
+        Keen.log('#recordEvent');
         Keen.log(res);
       }
     })
     .then((res) => {
+      console.log('with promise');
       Keen.log('#recordEvent');
       Keen.log(res);
       console.log('ok');
@@ -50,12 +50,13 @@ const demoTests = (demoConfig, Keen) => {
     }
   })
   .then((res) => {
-    Keen.log('#recordEventS');
+    console.log('with promise');
+    Keen.log('#recordEvents');
     Keen.log(res);
-    console.log('okokok');
+    console.log('ok');
   })
-  .catch(some => {
-    console.log('failed',some);
+  .catch(err => {
+    console.log('failed', err);
   });
   /*  */
 }
