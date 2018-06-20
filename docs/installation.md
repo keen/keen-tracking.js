@@ -3,7 +3,7 @@
 Install this package from npm:
 
 ```ssh
-$ npm install keen-tracking --save
+npm install keen-tracking --save
 ```
 
 Or load it from our CDN:
