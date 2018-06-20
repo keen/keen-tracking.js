@@ -5,8 +5,9 @@ These methods handle an internal queue of events, which is pushed to the [events
 ### Defer a single event
 
 ```javascript
-import Keen from 'keen-tracking';
-const client = new Keen({ /*configure*/ });
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({ /*configure*/ });
 
 client.deferEvent('purchase', {
   user_id: '35465434643'
@@ -17,8 +18,9 @@ client.deferEvent('purchase', {
 ### Defer multiple events
 
 ```javascript
-import Keen from 'keen-tracking';
-const client = new Keen({ /*configure*/ });
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({ /*configure*/ });
 
 client.deferEvents([
   'collection-1': [
@@ -34,8 +36,9 @@ client.deferEvents([
 Determine the maximum number of events to store before flushing the queue by passing a number (total) to `client.queueCapacity()`. Calling this method without an argument returns the current setting. The default capacity is `5000` events.
 
 ```javascript
-import Keen from 'keen-tracking';
-const client = new Keen({ /*configure*/ });
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({ /*configure*/ });
 
 client.queueCapacity(5000);
 client.queueCapacity(); // 5000
@@ -46,8 +49,9 @@ client.queueCapacity(); // 5000
 Determine how often the queue should be flushed by passing a number (seconds) to `client.queueInterval()`. Calling this method without an argument returns the current setting. The default interval is `15` seconds.
 
 ```javascript
-import Keen from 'keen-tracking';
-const client = new Keen({ /*configure*/ });
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({ /*configure*/ });
 
 client.queueInterval(15);
 client.queueInterval(); // 15
@@ -61,8 +65,9 @@ client.queueInterval(); // 15
 Flush all events currently queued by calling `client.recordDeferredEvents()`.
 
 ```javascript
-import Keen from 'keen-tracking';
-const client = new Keen({ /*configure*/ });
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({ /*configure*/ });
 
 client.deferEvent('purchase', {
   /* Data Model */

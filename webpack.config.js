@@ -77,6 +77,8 @@ module.exports = {
     'component-emitter' : 'component-emitter',
     'js-cookie' : 'js-cookie',
     'keen-core' : 'keen-core',
+    'whatwg-fetch': 'whatwg-fetch',
+    'promise-polyfill': 'promise-polyfill'
   } : {
   },
 

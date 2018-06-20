@@ -1,3 +1,5 @@
+import 'promise-polyfill/src/polyfill';
+
 import Keen from '../../../../lib/browser';
 import each from 'keen-core/lib/utils/each';
 import { listenerCore } from '../../../../lib/utils/listener';
@@ -11,7 +13,7 @@ describe('Keen.utils.listener', () => {
   });
 
   beforeEach(() => {
-    mockFn1.mockReset();
+    mockFn1.mockClear();
   });
 
   it('should be a function', () => {

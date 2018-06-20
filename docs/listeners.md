@@ -1,24 +1,24 @@
 # DOM Listeners
 
-`Keen.utils.listener()` helps surface common DOM element events like "click", "scroll", and "submit". There is also a `Keen.listenTo()` method for quickly setting a series of listeners (below)
+`KeenTracking.utils.listener()` helps surface common DOM element events like "click", "scroll", and "submit". There is also a `KeenTracking.listenTo()` method for quickly setting a series of listeners (below)
 
 **Important:** Form submits and clicks will be delayed by 500ms, unless the event is cancelled within a given listener's callback.
 
 ```javascript
-import Keen from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
 // Listen to DOM events
 
 // Create a new element listener (assigned)
-var navLinks = Keen.utils.listener('.nav li > a');
+const navLinks = KeenTracking.utils.listener('.nav li > a');
 
 // Listen for a given event
-navLinks.on('click', function(e){
-  // You have 500ms to record an event!
+navLinks.on('click', (e) => {
+  // handle click
 });
 
 // Listen for event once
-myClicker.once('click', function(e){
+myClicker.once('click', (e) => {
   // First click!
 });
 
@@ -26,6 +26,7 @@ myClicker.once('click', function(e){
 function clickHandler(e){
   // do something!
 }
+
 myClicker.on('click', clickHandler);
 myClicker.off('click', clickHandler);
 
@@ -35,27 +36,34 @@ myClicker.off('click');
 myClicker.off();
 
 
-var formListener = Keen.utils.listener('form#signup');
-formListener.on('submit', function(e){
-  client.recordEvent('signup', {
+const formListener = KeenTracking.utils.listener('form#signup');
+formListener.on('submit', (e) => {
+  return client.recordEvent('signup', {
     // record signup data
+    somedata: 123
   });
 });
 ```
 
-### Keen.listenTo()
+### KeenTracking.listenTo()
 
-This is a convenience function for quickly creating multiple listeners. These listeners are constructed with the `Keen.utils.listener` utility, so the behavior will be identical to calling `Keen.utils.listener(selector).on(eventType, callback);`.
+This is a convenience function for quickly creating multiple listeners. These listeners are constructed with the `KeenTracking.utils.listener` utility, so the behavior will be identical to calling `KeenTracking.utils.listener(selector).on(eventType, callback);`.
 
 ```javascript
-import Keen from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
-Keen.listenTo({
-  'click .nav li > a': function(e){
-    // You have 500ms to record an event!
+KeenTracking.listenTo({
+  'click .nav li > a': (e) => {
+    // record signup data
+    return client.recordEvent('signup', {
+      somedata: 1234
+    });
   },
-  'submit form#signup': function(e){
+  'submit form#signup': (e) => {
     // Record a signup event
+    return client.recordEvent('signup', {
+      somedata: 1234
+    });
   }
 });
 ```
@@ -63,10 +71,10 @@ Keen.listenTo({
 This technique does not return a reference to the listener, but can be deactivated by defining a listener with the same selector and calling the `.off(eventType)` event:
 
 ```JavaScript
-import Keen from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
-Keen.utils.listener('.nav li > a').off('click');
-Keen.utils.listener('form#signup').off('submit');
+KeenTracking.utils.listener('.nav li > a').off('click');
+KeenTracking.utils.listener('form#signup').off('submit');
 ```
 
 
@@ -81,10 +89,12 @@ To capture events from anchor tags that contain nested elements, such as `<img>`
 ```
 
 ```javascript
-import Keen from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
-Keen.utils.listener('a.my-btn, a.my-btn *').on('click', function(e){
-  // You have 500ms to record an event!
+KeenTracking.utils.listener('a.my-btn, a.my-btn *').on('click', (e) => {
+  return client.recordEvent('signup', {
+    // record signup data
+  });
 });
 ```
 
@@ -92,16 +102,16 @@ Keen.utils.listener('a.my-btn, a.my-btn *').on('click', function(e){
 ### Window events
 
 ```javascript
-import Keen from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
-var winListener = Keen.utils.listener('window')
-  .once('scroll', function(e){
+const winListener = KeenTracking.utils.listener('window')
+  .once('scroll', (e) => {
     // user is interacting with the page
   })
-  .on('hashchange', function(e){
+  .on('hashchange', (e) => {
     // user clicked an internal anchor (eg: /#some-heading)
   })
-  .on('resize', function(e){
+  .on('resize', (e) => {
     // ...
   });
 ```
