@@ -1,24 +1,9 @@
 import XHRmock from 'xhr-mock';
-jest.mock('promise-polyfill', () => {});
-jest.mock('whatwg-fetch', () => {});
 // Keen.debug = true;
 
-import Keen from '../../../dist/keen-tracking.min.js';
+import Keen from '../../../lib/browser';
 import config from '../helpers/client-config';
 
-// Mock XHR
-/*
-window.XMLHttpRequest = () => {};
-window.XMLHttpRequest.prototype.status = 0;
-window.XMLHttpRequest.prototype.open = () => {}
-window.XMLHttpRequest.prototype.setRequestHeader = () => {}
-window.XMLHttpRequest.prototype.send = function(){
-  this.status = 200;
-  this.readyState = 4;
-  this.responseText = config.responses.success;
-  this.onreadystatechange();
-}
-*/
 describe('.recordEvent(s) methods (browser)', () => {
   let client;
   let mockFn1 = jest.fn();
@@ -49,7 +34,6 @@ describe('.recordEvent(s) methods (browser)', () => {
     client = new Keen({
       projectId: config.projectId,
       writeKey: config.writeKey,
-      requestType: 'xhr',
       host: config.host,
       protocol: config.protocol
     });
@@ -73,8 +57,38 @@ describe('.recordEvent(s) methods (browser)', () => {
       expect(mockFn1).toBeCalledWith(expect.any(String), null);
     });
 
-    describe('via XHR/CORS (if supported)', () => {
+    describe('via Fetch (default transport method)', () => {
+      it('should send a POST request to the API', (done) => {
+        XHRmock.post(new RegExp(config.collection + '_succeed'), (req, res) => {
+          expect(req._headers['content-type']).toBe('application/json');
+          expect(req._body).toBe(JSON.stringify(config.properties));
+          done();
+          return res.status(400);
+        });
+        client.recordEvent(config.collection + '_succeed', config.properties);
+      });
+
+      it('should return a Promise', (done) => {
+        XHRmock.post(/./g, (req, res) => {
+          return res.status(400);
+        });
+        client
+          .recordEvent(config.collection + '_succeed', config.properties)
+          .then(() => {}).catch(err => {
+            done();
+          });
+      });
+    });
+
+    describe('*deprecated* via XHR/CORS (if supported)', () => {
       it('should send a POST request to the API using XHR', (done) => {
+        const clientWithXHR = new Keen({
+          projectId: config.projectId,
+          writeKey: config.writeKey,
+          host: config.host,
+          protocol: config.protocol,
+          requestType: 'xhr'
+        });
         let mockFn1local = jest.fn((error, response) => {
           expect(error).toBe(null);
           expect(response).toBeInstanceOf(Object);
@@ -83,7 +97,7 @@ describe('.recordEvent(s) methods (browser)', () => {
         XHRmock.post(new RegExp(config.collection + '_succeed'), (req, res) => {
           return res.status(200).body(JSON.stringify({ created: true }));
         });
-        client.recordEvent(config.collection + '_succeed', config.properties, mockFn1local);
+        clientWithXHR.recordEvent(config.collection + '_succeed', config.properties, mockFn1local);
       });
 
     });
@@ -107,8 +121,38 @@ describe('.recordEvent(s) methods (browser)', () => {
       expect(mockFn1).toBeCalledWith(expect.any(String), null);
     });
 
-    describe('via XHR/CORS (if supported)', () => {
+    describe('via Fetch (default transport method)', () => {
+      it('should send a POST request to the API', (done) => {
+        XHRmock.post(new RegExp('events'), (req, res) => {
+          expect(req._headers['content-type']).toBe('application/json');
+          expect(req._body).toBe(JSON.stringify(batchData));
+          done();
+          return res.status(400);
+        });
+        client.recordEvents(batchData);
+      });
+
+      it('should return a Promise', (done) => {
+        XHRmock.post(/./g, (req, res) => {
+          return res.status(400);
+        });
+        client
+          .recordEvents(batchData)
+          .then(() => {}).catch(err => {
+            done();
+          });
+      });
+    });
+
+    describe('*Deprecated* via XHR/CORS (if supported)', () => {
       it('should send a POST request to the API using XHR', (done) => {
+        const clientWithXHR = new Keen({
+          projectId: config.projectId,
+          writeKey: config.writeKey,
+          host: config.host,
+          protocol: config.protocol,
+          requestType: 'xhr'
+        });
         let mockFn1local = jest.fn((error, response) => {
           expect(error).toBe(null);
           expect(response).toBeInstanceOf(Object);
@@ -117,9 +161,10 @@ describe('.recordEvent(s) methods (browser)', () => {
         XHRmock.post(new RegExp('events'), (req, res) => {
           return res.status(200).body(JSON.stringify({ somkey: [{ success: true }] }));
         });
-        client.recordEvents(batchData, mockFn1local);
+        clientWithXHR.recordEvents(batchData, mockFn1local);
       });
     });
+
   });
 
 });

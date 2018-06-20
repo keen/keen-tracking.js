@@ -7,10 +7,10 @@ Automatically record pageviews, clicks, and form submissions, with a robust data
 ### Installation
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.1.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.2.min.js"></script>
 <script>
 Keen.ready(function(){
-  var client = new Keen({
+  const client = new Keen({
     projectId: 'YOUR_PROJECT_ID',
     writeKey: 'YOUR_WRITE_KEY'
   });
@@ -24,7 +24,7 @@ Keen.ready(function(){
 The following configuration options are available to let you specify which types of events to track (defaults shown):
 
 ```javascript
-var client = new Keen({
+const client = new Keen({
   projectId: 'YOUR_PROJECT_ID',
   writeKey: 'YOUR_WRITE_KEY'
 });
@@ -45,7 +45,7 @@ Scroll state tracking powered by the `getScrollState()` helper and a `window` sc
 Add additional properties to any or all events with [`extendEvent` or `extendEvents` methods](./extend-events.md):
 
 ```javascript
-var client = new Keen({
+const client = new Keen({
   projectId: 'YOUR_PROJECT_ID',
   writeKey: 'YOUR_WRITE_KEY'
 });
@@ -85,16 +85,17 @@ client.initAutoTracking();
 Install [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js) to identify basic device types and block noisy bots and crawlers.
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.3.7/mobile-detect.js"></script>
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.4.2/mobile-detect.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.2.min.js"></script>
 <script>
 Keen.ready(function(){
-  var md = new MobileDetect();
+  const md = new MobileDetect(window.navigator.userAgent);
+  // for Node.js example go https://github.com/hgoebl/mobile-detect.js#nodejs--express
   if (md.is('bot')) {
     return false;
   }
 
-  var client = new Keen({
+  const client = new Keen({
     projectId: 'YOUR_PROJECT_ID',
     writeKey: 'YOUR_WRITE_KEY'
   });

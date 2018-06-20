@@ -5,23 +5,23 @@ These methods extend the event body of every event sent through `recordEvent()` 
 `extendEvents` transforms will be applied first, followed by collection-specific `extendEvent` transforms. In either case, transforms will be applied in the order that they are defined. Properties provided in the originating `recordEvent/s()` call will override any matching properties (static or dynamic) returned by these methods.
 
 ```javascript
-import Keen from 'keen-tracking';
-const client = new Keen({ /*configure*/ });
+import KeenTracking from 'keen-tracking';
+const client = new KeenTracking({ /*configure*/ });
 // Extend events for a single collection
 client.extendEvent('transaction', {});
-client.extendEvent('transaction', function(){
+client.extendEvent('transaction', () => {
   return {};
 });
 
 // Extend events for all collections
 client.extendEvents({});
-client.extendEvents(function(){
+client.extendEvents(() => {
   return {};
 });
 
 // Example usage
 
-var userProps = {
+const userProps = {
   full_name: 'User Dude',
   email: 'name@domain.com',
   id: 'f1233423h',
@@ -39,7 +39,7 @@ client.extendEvents({
 });
 
 // Include a dynamic 'keen.timestamp' property with every event
-client.extendEvents(function(){
+client.extendEvents(() => {
   return {
     keen: {
       timestamp: new Date().toISOString()
@@ -51,16 +51,11 @@ client.extendEvents(function(){
 **Example usage:**
 
 ```javascript
-import Keen from 'keen-tracking';
-const client = new Keen({ /*configure*/ });
+import KeenTracking from 'keen-tracking';
+const client = new KeenTracking({ /*configure*/ });
 
 // Object (static)
 client.extendEvents({
-  page: {
-    href: document.location.href,
-    title: document.title
-  },
-  referrer: document.referrer,
   user: {
     email: 'name@domain.com',
     id: 'f1233423h',
@@ -70,7 +65,7 @@ client.extendEvents({
 
 // Function that returns an object (dynamic)
 // Useful for attaching time-sensitive data
-client.extendEvents(function(){
+client.extendEvents(() => {
   return {
     keen: {
       timestamp: new Date().toISOString()
@@ -88,11 +83,6 @@ client.recordEvent('pageviews');
     id: 'f1233423h',
     username: 'someuser123'
   },
-  page: {
-    href: 'https://github.com/keen/keen-tracking.js#extend-events',
-    title: document.title
-  },
-  referrer: 'https://github.com/keen/',
   keen: {
     timestamp: '2015-06-28T22:01:38.824Z'
   }

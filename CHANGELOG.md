@@ -6,11 +6,15 @@
 **BREAKING:**
 **CHANGE:**
 -->
-# Promises
-<a name="3.0.0"></a>
+# Fetch & Promises
+<a name="2.0.2"></a>
 
 **New:**
 * Fetch API is now the default method of communication.
+* client.recordEvent returns a Promise
+
+**FIXED:**
+* auto-tracking listeners will wait more than 500ms if necessary
 
 <a name="2.0.1"></a>
 

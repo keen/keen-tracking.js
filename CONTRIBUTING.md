@@ -6,18 +6,17 @@ Run the following commands to install and build this project:
 
 ```ssh
 # Clone the repo
-$ git clone https://github.com/keen/keen-tracking.js.git && cd keen-tracking.js
+git clone https://github.com/keen/keen-tracking.js.git && cd keen-tracking.js
 
 # Install project dependencies
-$ npm install
+npm install
 
-# Build project with gulp
-# npm install -g gulp
-$ gulp
+# Start a dev server
+npm run start
 
-# Build and launch to view test results
-$ gulp with-tests
-$ open http://localhost:9000
+# Build project with webpack
+npm run build
+
 ```
 
 ## Submitting a Pull Request

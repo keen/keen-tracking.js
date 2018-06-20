@@ -47,27 +47,27 @@
 
 ### Debugging
 
-Dev console errors and messages are turned off by default, but can be activated by setting `Keen.debug = true;`. Additionally, you can disable writing events to the API by setting `Keen.enabled = false;`.
+Dev console errors and messages are turned off by default, but can be activated by setting `KeenTracking.debug = true;`. Additionally, you can disable writing events to the API by setting `KeenTracking.enabled = false;`.
 
 ```javascript
-import Keen from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
 // Track errors and messages in the dev console
-Keen.debug = true;
+KeenTracking.debug = true;
 
 // Disable event writes to the API
-Keen.enabled = false;
+KeenTracking.enabled = false;
 
-const client = new Keen({ /*configure*/ });
+const client = new KeenTracking({ /*configure*/ });
 
 // Observe what's happening in each method
-client.on('recordEvent', Keen.log);
-client.on('recordEvents', Keen.log);
-client.on('deferEvent', Keen.log);
-client.on('deferEvents', Keen.log);
-client.on('recordDeferredEvents', Keen.log);
-client.on('extendEvent', Keen.log);
-client.on('extendEvents', Keen.log);
+client.on('recordEvent', KeenTracking.log);
+client.on('recordEvents', KeenTracking.log);
+client.on('deferEvent', KeenTracking.log);
+client.on('deferEvents', KeenTracking.log);
+client.on('recordDeferredEvents', KeenTracking.log);
+client.on('extendEvent', KeenTracking.log);
+client.on('extendEvents', KeenTracking.log);
 ```
 
 ---

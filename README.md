@@ -5,13 +5,13 @@
 Install this package from npm:
 
 ```ssh
-$ npm install keen-tracking --save
+npm install keen-tracking --save
 ```
 
 Or load it from our CDN:
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.1.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.2.min.js"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)
@@ -46,10 +46,10 @@ If any of this is confusing, that's our fault and we would love to help. Join ou
 Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.1.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.2.min.js"></script>
 <script>
 Keen.ready(function(){
-  var client = new Keen({
+  const client = new Keen({
     projectId: 'YOUR_PROJECT_ID',
     writeKey: 'YOUR_WRITE_KEY'
   });
@@ -62,19 +62,19 @@ Keen.ready(function(){
 
 ---
 
-### Pageview Tracking (Browser/Front-end)
+### Pageview Tracking (Front-end)
 
 First, let's create a new `client` instance with your Project ID and Write Key, and use the `.extendEvents()` method to define a solid baseline data model that will be applied to every single event that is recorded. Consistent data models and property names make life much easier later on, when analyzing and managing several event streams. This setup also includes our [data enrichment add-ons](https://keen.io/docs/streams/data-enrichment-overview/), which will populate additional information when an event is received on our end.
 
 ```javascript
-import Keen from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
-const client = new Keen({
+const client = new KeenTracking({
   projectId: 'PROJECT_ID',
   writeKey: 'WRITE_KEY'
 });
-const helpers = Keen.helpers;
-const utils = Keen.utils;
+const helpers = KeenTracking.helpers;
+const utils = KeenTracking.utils;
 
 const sessionCookie = utils.cookie('rename-this-example-cookie');
 if (!sessionCookie.get('guest_id')) {
@@ -84,22 +84,25 @@ if (!sessionCookie.get('guest_id')) {
 client.extendEvents(() => {
   return {
     geo: {
-      info: { /* Enriched */ },
       ip_address: '${keen.ip}',
+      info: {
+        /* Enriched data from API will be saved here */
+        /* https://keen.io/docs/api/?javascript#ip-to-geo-parser */
+      }
     },
     page: {
-      info: { /* Enriched */ },
       title: document.title,
-      url: document.location.href
+      url: document.location.href,
+      info: { /* Enriched */ }
     },
     referrer: {
-      info: { /* Enriched */ },
-      url: document.referrer
+      url: document.referrer,
+      info: { /* Enriched */ }
     },
     tech: {
       browser: helpers.getBrowserProfile(),
-      info: { /* Enriched */ },
-      user_agent: '${keen.user_agent}'
+      user_agent: '${keen.user_agent}',
+      info: { /* Enriched */ }
     },
     time: helpers.getDatetimeIndex(),
     visitor: {
@@ -142,7 +145,13 @@ client.extendEvents(() => {
   }
 });
 
-client.recordEvent('pageviews', {});
+client
+  .recordEvent('pageviews', {})
+  .then((response) => {
+    // handle responses
+  }).catch(error => {
+    // handle errors
+  });
 ```
 
 Every event that is recorded will inherit this baseline data model. Additional properties defined in `client.recordEvent()` will be applied before the event is finally recorded.
@@ -174,26 +183,26 @@ Want to get up and running faster? This can also be achieved in the browser with
 
 ---
 
-### Click and Form Submit Tracking (Browser/Front-end)
+### Click and Form Submit Tracking (Front-end)
 
 Clicks and form submissions can be captured with `.listenTo()`. This function intercepts events for designated elements and creates a brief 500ms delay, allowing an HTTP request to execute before the page begins to unload.
 
 This example further extends the `client` instance defined previously, and activates a simple timer when the page the loaded. Once a `click` or `submit` event is captured, the timer's value will be recorded as `visitor.time_on_page`.
 
 ```javascript
-import Keen from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
-const client = new Keen({
+const client = new KeenTracking({
   projectId: 'PROJECT_ID',
   writeKey: 'WRITE_KEY'
 });
-const helpers = Keen.helpers;
-const timer = Keen.utils.timer();
+const helpers = KeenTracking.helpers;
+const timer = KeenTracking.utils.timer();
 timer.start();
 
-Keen.listenTo({
-  'click .nav a': function(e){
-    client.recordEvent('click', {
+KeenTracking.listenTo({
+  'click .nav a': (e) => {
+    return client.recordEvent('click', {
       action: {
         intent: 'navigate',
         target_path: helpers.getDomNodePath(e.target)
@@ -203,8 +212,8 @@ Keen.listenTo({
       }
     });
   },
-  'submit form#signup': function(e){
-    client.recordEvent('form-submit', {
+  'submit form#signup': (e) => {
+    return client.recordEvent('form-submit', {
       action: {
         intent: 'signup',
         target_path: helpers.getDomNodePath(e.target)
@@ -227,7 +236,7 @@ Want to get up and running faster? This can also be achieved in the browser with
 Install [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js) to identify basic device types and block noisy bots and crawlers.
 
 ```ssh
-$ npm install mobile-detect --save
+npm install mobile-detect --save
 ```
 
 This example further extends the `client` instance defined above, inserting a new `tech.device_type` property with three possible values: `'desktop'`, `'mobile'`, and `'tablet'`. If the user agent is determined to be a bot, it may be ideal to abort and avoid recording an event.
@@ -235,7 +244,7 @@ This example further extends the `client` instance defined above, inserting a ne
 ```javascript
 import MobileDetect from 'mobile-detect';
 
-const md = new MobileDetect();
+const md = new MobileDetect(window.navigator.userAgent);
 if (md.is('bot')) {
   return false;
 }
@@ -259,17 +268,24 @@ This can also be used with [automated event tracking](./docs/auto-tracking.md).
 ### Server Side Tracking (Back-end)
 
 ```javascript
-const Keen = require('keen-tracking');
+const KeenTracking = require('keen-tracking');
 
-const client = new Keen({
+const client = new KeenTracking({
   projectId: 'PROJECT_ID',
   writeKey: 'WRITE_KEY'
 });
 
-client.recordEvent('purchases', {
-  item: 'Avocado',
-  price: 12
-});
+client
+  .recordEvent('purchases', {
+    item: 'Avocado',
+    price: 123
+  }, (error, response) => {
+    if (error) {
+      // handle errors
+      return;
+    }
+    // handle responses
+  });
 ```
 
 ---

@@ -5,7 +5,7 @@
 This utility uses [js-cookie](https://github.com/js-cookie/js-cookie).
 
 ```javascript
-var sessionCookie = Keen.utils.cookie('visitor-stats');
+const sessionCookie = Keen.utils.cookie('visitor-stats');
 
 // Set a single value
 sessionCookie.set('user_id', '222323843234');
@@ -43,11 +43,12 @@ sessionCookie.options({
 Prior to the 1.0 release, this library used [Cookies.js](https://github.com/ScottHamper/Cookies), but incorrectly encoded the cookie data twice. Data stored in cookies by v0.1.1 or earlier can be accessed and resolved like so:
 
 ```javascript
-var cookies = document.cookie.split(';');
-var myCookie = Keen.utils.cookie('your-cookie-name');
-var badData, newData;
+const cookies = document.cookie.split(';');
+const myCookie = Keen.utils.cookie('your-cookie-name');
+let badData;
+let newData;
 
-for (var i = 0; i < cookies.length; i++) {
+for (let i = 0; i < cookies.length; i++) {
   if (cookies[i].indexOf('your-cookie-name=') < 0) continue;
   badData = cookies[i].split('your-cookie-name=')[1];
   newData = JSON.parse(
