@@ -2,16 +2,16 @@
 
 ### Installation
 
-**Recommended** Install this package from npm:
+Install this package from NPM *Recommended*
 
 ```ssh
 npm install keen-tracking --save
 ```
 
-Or load it from our CDN:
+Or load it from our CDN
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.2.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.5.min.js"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)
@@ -46,7 +46,7 @@ Need help? Ask for it on our [Slack community channel](https://slack.keen.io) or
 Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.2.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.5.min.js"></script>
 <script>
 Keen.ready(function(){
   const client = new Keen({
