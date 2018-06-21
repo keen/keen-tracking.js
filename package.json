@@ -18,9 +18,10 @@
     "profile": "webpack --profile --json > stats.json",
     "analyze": "webpack-bundle-analyzer stats.json /dist",
     "preversion": "npm run build && npm run test",
-    "version": "git add .",
+    "version": "npm run update_docs && git add .",
     "postversion": "git push && git push --tags",
-    "demo": "node ./test/demo/index.node.js"
+    "demo": "node ./test/demo/index.node.js",
+    "update_docs": "node ./node_modules/replace-in-file/bin/cli.js --configFile=replace-config.js"
   },
   "bugs": "https://github.com/keen/keen-tracking.js/issues",
   "author": "Keen IO <team@keen.io> (https://keen.io/)",
@@ -58,6 +59,7 @@
     "html-webpack-plugin": "^3.2.0",
     "jest": "^22.4.3",
     "nock": "^9.2.6",
+    "replace-in-file": "^3.4.0",
     "regenerator-runtime": "^0.11.1",
     "webpack": "^4.5.0",
     "webpack-bundle-analyzer": "^2.11.1",
