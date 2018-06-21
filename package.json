@@ -18,8 +18,8 @@
     "profile": "webpack --profile --json > stats.json",
     "analyze": "webpack-bundle-analyzer stats.json /dist",
     "preversion": "npm run build && npm run test",
-    "version": "npm run update_docs",
-    "postversion": "git add . && git commit -m \"%s\" && git push && git push --tags",
+    "version": "npm run update_docs && git add .",
+    "postversion": "git push && git push --tags",
     "demo": "node ./test/demo/index.node.js",
     "update_docs": "node ./node_modules/replace-in-file/bin/cli.js --configFile=replace-config.js"
   },
