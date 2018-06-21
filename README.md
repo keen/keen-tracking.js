@@ -2,7 +2,7 @@
 
 ### Installation
 
-Install this package from npm:
+**Recommended** Install this package from npm:
 
 ```ssh
 npm install keen-tracking --save
@@ -28,7 +28,7 @@ Not interested in web analytics? Use these examples as a primer for getting up a
 
 [Full documentation is available here](./docs/README.md)
 
-If any of this is confusing, that's our fault and we would love to help. Join our  [Slack community](https://slack.keen.io) or send us a [message](https://keen.io/support/).
+Need help? Ask for it on our [Slack community channel](https://slack.keen.io) or send us a [message](https://keen.io/support/).
 
 **Using React? Check out these setup guides:**
 
@@ -59,6 +59,33 @@ Keen.ready(function(){
 ```
 
 [Learn how to configure and customize this functionality here](./docs/auto-tracking.md)
+
+---
+
+### Record Events using JavaScript bundlers like Webpack, RollUp, Parcel
+
+```javascript
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY'
+});
+
+client
+  .recordEvent('purchases', {
+    item: 'Avocado',
+    number_of_items: 10,
+    user: {
+      name: 'John Smith'
+    }
+  })
+  .then((response) => {
+    // handle successful responses
+  }).catch(error => {
+    // handle errors
+  });
+```
 
 ---
 
@@ -146,7 +173,9 @@ client.extendEvents(() => {
 });
 
 client
-  .recordEvent('pageviews', {})
+  .recordEvent('pageviews', {
+    // more custom data
+  })
   .then((response) => {
     // handle responses
   }).catch(error => {
@@ -278,7 +307,7 @@ const client = new KeenTracking({
 client
   .recordEvent('purchases', {
     item: 'Avocado',
-    price: 123
+    number_of_items: 10
   }, (error, response) => {
     if (error) {
       // handle errors

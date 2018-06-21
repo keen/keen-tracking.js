@@ -1,6 +1,6 @@
 # Installation
 
-Install this package from npm:
+**Recommended** Install this package from npm:
 
 ```ssh
 npm install keen-tracking --save
@@ -81,7 +81,7 @@ const client = new KeenTracking({
   writeKey: 'YOUR_WRITE_KEY',
   // host: 'api.keen.io',
   // protocol: 'https',
-  // request types: 'fetch', 'xhr', 'beacon'
+  // request types: 'fetch' (default), 'xhr', 'beacon'
 });
 
 // Optional accessor methods are available too
@@ -93,4 +93,4 @@ client.writeKey('WRITE_KEY');
 
 * `host` and `writePath`: these options can be overwritten to make it easier than ever to proxy events through your own intermediary host.
 * `protocol`: older versions of IE feature a fun little quirk where cross-domain requests to a secure resource (https) from an insecure host (!https) fail. In these rare cases the library will match the current host's protocol.
-* `requestType`: this option sets a default for GET requests, which is only supported when recording single events. There are limits to the URL string length of a request, so if this limit is exceeded we'll attempt to execute a POST instead, using XHR. In rare cases where XHR isn't supported, the request will fail.
+* `requestType`: this option sets a default for GET requests, which is only supported when recording single events. There are limits to the URL string length of a request, so if this limit is exceeded we'll attempt to execute a POST instead, using Fetch API.
