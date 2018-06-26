@@ -1712,7 +1712,7 @@ function getDocumentDescription() {
 /* 23 */
 /***/ (function(module) {
 
-module.exports = {"name":"keen-tracking","version":"2.0.5","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"npm run update_docs && git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js","update_docs":"node ./node_modules/replace-in-file/bin/cli.js --configFile=replace-config.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","gulp":"^3.8.11","gulp-awspublish":"0.0.23","gulp-rename":"^1.2.2","gulp-replace":"^0.5.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","nock":"^9.2.6","replace-in-file":"^3.4.0","regenerator-runtime":"^0.11.1","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
+module.exports = {"name":"keen-tracking","version":"2.0.6","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"npm run update_docs && git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js","update_docs":"node ./node_modules/replace-in-file/bin/cli.js --configFile=replace-config.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","gulp":"^3.8.11","gulp-awspublish":"0.0.23","gulp-rename":"^1.2.2","gulp-replace":"^0.5.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
 
 /***/ }),
 /* 24 */
@@ -1745,7 +1745,8 @@ function initAutoTrackingCore(lib) {
       recordFormSubmits: true,
       recordPageViews: true,
       recordScrollState: true,
-      shareUuidAcrossDomains: false
+      shareUuidAcrossDomains: false,
+      collectIpAddress: true
     }, obj);
 
     var now = new Date();
@@ -1769,6 +1770,52 @@ function initAutoTrackingCore(lib) {
       });
     }
 
+    var addons = [{
+      name: 'keen:ua_parser',
+      input: {
+        ua_string: 'user_agent'
+      },
+      output: 'tech'
+    }, {
+      name: 'keen:url_parser',
+      input: {
+        url: 'url.full'
+      },
+      output: 'url.info'
+    }, {
+      name: 'keen:url_parser',
+      input: {
+        url: 'referrer.full'
+      },
+      output: 'referrer.info'
+    }, {
+      name: 'keen:date_time_parser',
+      input: {
+        date_time: 'keen.timestamp'
+      },
+      output: 'time.utc'
+    }, {
+      name: 'keen:date_time_parser',
+      input: {
+        date_time: 'local_time_full'
+      },
+      output: 'time.local'
+    }];
+
+    var ip_address;
+    if (options.collectIpAddress) {
+      ip_address = '${keen.ip}';
+      addons.push({
+        name: 'keen:ip_to_geo',
+        input: {
+          ip: 'ip_address'
+        },
+        output: 'geo'
+      });
+    } else {
+      ip_address = undefined;
+    }
+
     client.extendEvents(function () {
       var browserProfile = helpers.getBrowserProfile();
       return {
@@ -1783,7 +1830,7 @@ function initAutoTrackingCore(lib) {
           time_on_page: getSecondsSinceDate(now)
         },
 
-        ip_address: '${keen.ip}',
+        ip_address: ip_address,
         geo: {/* Enriched */},
 
         user_agent: '${keen.user_agent}',
@@ -1809,43 +1856,7 @@ function initAutoTrackingCore(lib) {
 
         keen: {
           timestamp: new Date().toISOString(),
-          addons: [{
-            name: 'keen:ip_to_geo',
-            input: {
-              ip: 'ip_address'
-            },
-            output: 'geo'
-          }, {
-            name: 'keen:ua_parser',
-            input: {
-              ua_string: 'user_agent'
-            },
-            output: 'tech'
-          }, {
-            name: 'keen:url_parser',
-            input: {
-              url: 'url.full'
-            },
-            output: 'url.info'
-          }, {
-            name: 'keen:url_parser',
-            input: {
-              url: 'referrer.full'
-            },
-            output: 'referrer.info'
-          }, {
-            name: 'keen:date_time_parser',
-            input: {
-              date_time: 'keen.timestamp'
-            },
-            output: 'time.utc'
-          }, {
-            name: 'keen:date_time_parser',
-            input: {
-              date_time: 'local_time_full'
-            },
-            output: 'time.local'
-          }]
+          addons: addons
         }
       };
     });
