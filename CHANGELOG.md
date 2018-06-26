@@ -6,6 +6,15 @@
 **BREAKING:**
 **CHANGE:**
 -->
+# AutoTracking - IP addresses
+<a name="2.0.3"></a>
+
+**New:**
+* Turn off IP collecting with:
+`client.initAutoTracking({
+  collectIpAddress: false
+});`
+
 # Fetch & Promises
 <a name="2.0.2"></a>
 
