@@ -34,7 +34,13 @@ client.initAutoTracking({
   recordClicks: true,
   recordFormSubmits: true,
   recordPageViews: true,
-  recordScrollState: true
+  recordScrollState: true,
+
+  // GDPR related option
+  collectIpAddress: true, // default
+
+  // share UUID cookies across subdomains
+  shareUuidAcrossDomains: false // default
 });
 ```
 

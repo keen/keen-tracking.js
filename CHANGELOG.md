@@ -7,7 +7,7 @@
 **CHANGE:**
 -->
 # AutoTracking - IP addresses
-<a name="2.0.3"></a>
+<a name="2.0.7"></a>
 
 **New:**
 * Turn off IP collecting with:
