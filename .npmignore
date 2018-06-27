@@ -7,7 +7,12 @@
 
 bower.json
 gulpfile.js
-karma.conf.js
+.babelrc
+test
+.travis.yml
+jest.config.js
+replace-config.js
+webpack.config.js
 
 bower_components
 docs
