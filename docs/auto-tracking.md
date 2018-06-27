@@ -7,7 +7,7 @@ Automatically record pageviews, clicks, and form submissions, with a robust data
 ### Installation
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.7.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.8.min.js"></script>
 <script>
 Keen.ready(function(){
   const client = new Keen({
@@ -92,7 +92,7 @@ Install [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js) to identi
 
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mobile-detect/1.4.2/mobile-detect.min.js"></script>
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.7.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.8.min.js"></script>
 <script>
 Keen.ready(function(){
   const md = new MobileDetect(window.navigator.userAgent);

@@ -9,7 +9,7 @@ npm install keen-tracking --save
 Or load it from our CDN:
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.7.min.js"></script>
+<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.8.min.js"></script>
 ```
 
 Prefer asynchronous loading? Copy/paste this snippet of JavaScript above the `</head>` tag of your page to load the tracking library asynchronously. This technique sneaks the library into your page without significantly impacting page load speed.
@@ -19,7 +19,7 @@ Prefer asynchronous loading? Copy/paste this snippet of JavaScript above the `</
 // Loads the library asynchronously from any URI
 !function(name,path,ctx){
   var latest,prev=name!=='Keen'&&window.Keen?window.Keen:false;ctx[name]=ctx[name]||{ready:function(fn){var h=document.getElementsByTagName('head')[0],s=document.createElement('script'),w=window,loaded;s.onload=s.onreadystatechange=function(){if((s.readyState&&!(/^c|loade/.test(s.readyState)))||loaded){return}s.onload=s.onreadystatechange=null;loaded=1;latest=w.Keen;if(prev){w.Keen=prev}else{try{delete w.Keen}catch(e){w.Keen=void 0}}ctx[name]=latest;ctx[name].ready(fn)};s.async=1;s.src=path;h.parentNode.insertBefore(s,h)}}
-}('KeenTracking','https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.7.min.js',this);
+}('KeenTracking','https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.8.min.js',this);
 
 // Executes when the library is loaded and ready
 KeenTracking.ready(function(){
