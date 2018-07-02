@@ -46,7 +46,7 @@ Need help? Ask for it on our [Slack community channel](https://slack.keen.io) or
 Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.8.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/keen-tracking@2"></script>
 <script>
 Keen.ready(function(){
   const client = new Keen({
