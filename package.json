@@ -1,6 +1,6 @@
 {
   "name": "keen-tracking",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "Data Collection SDK for Keen IO",
   "main": "dist/node/keen-tracking.js",
   "browser": "dist/keen-tracking.js",
