@@ -13,6 +13,7 @@ test
 jest.config.js
 replace-config.js
 webpack.config.js
+.eslintrc
 
 bower_components
 docs
