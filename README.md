@@ -1,4 +1,4 @@
-# keen-tracking.js [![Build Status](https://travis-ci.org/keen/keen-tracking.js.svg?branch=master)](https://travis-ci.org/keen/keen-tracking.js)
+# keen-tracking.js
 
 ### Installation
 
@@ -8,10 +8,10 @@ Install this package from NPM *Recommended*
 npm install keen-tracking --save
 ```
 
-Or load it from our CDN
+Or load it from public CDN
 
 ```html
-<script src="https://d26b395fwzu5fz.cloudfront.net/keen-tracking-2.0.8.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/keen-tracking@2"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)
