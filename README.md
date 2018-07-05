@@ -319,6 +319,33 @@ client
 
 ---
 
+### Connection problems
+
+When KeenTracking encounters connection problems, it will retry to send the data.
+
+```javascript
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY',
+
+  // customize the default values to better fit your needs
+  retry: {
+    limit: 10, // how many times try to send Event
+    initialDelay: 200, // initial delay between consecutive calls. Each next retry will be delayed by (2^retries * 100) milliseconds,
+    retryOnResponseStatuses: [ // array of invalid http response statuses
+      408,
+      500,
+      502,
+      503,
+      504
+    ]
+  }
+});
+
+---
+
 ### Contributing
 
 This is an open source project and we love involvement from the community! Hit us up with pull requests and issues.

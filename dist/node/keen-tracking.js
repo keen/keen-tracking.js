@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("component-emitter"), require("keen-core")) : factory(root["component-emitter"], root["keen-core"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(global, function(__WEBPACK_EXTERNAL_MODULE__14__, __WEBPACK_EXTERNAL_MODULE__15__) {
+})(global, function(__WEBPACK_EXTERNAL_MODULE__16__, __WEBPACK_EXTERNAL_MODULE__17__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -76,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 18);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -139,7 +139,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keenCore = __webpack_require__(15);
+var _keenCore = __webpack_require__(17);
 
 var _keenCore2 = _interopRequireDefault(_keenCore);
 
@@ -313,7 +313,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.queue = queue;
 
-var _componentEmitter = __webpack_require__(14);
+var _componentEmitter = __webpack_require__(16);
 
 var _componentEmitter2 = _interopRequireDefault(_componentEmitter);
 
@@ -386,7 +386,7 @@ function shouldFlushQueue(props) {
 /* 6 */
 /***/ (function(module) {
 
-module.exports = {"name":"keen-tracking","version":"2.0.8","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"npm run update_docs && git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js","update_docs":"node ./node_modules/replace-in-file/bin/cli.js --configFile=replace-config.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","gulp":"^3.8.11","gulp-awspublish":"0.0.23","gulp-rename":"^1.2.2","gulp-replace":"^0.5.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
+module.exports = {"name":"keen-tracking","version":"2.0.9","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"npm run update_docs && git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js","update_docs":"node ./node_modules/replace-in-file/bin/cli.js --configFile=replace-config.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","gulp":"^3.8.11","gulp-awspublish":"0.0.23","gulp-rename":"^1.2.2","gulp-replace":"^0.5.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
 
 /***/ }),
 /* 7 */
@@ -441,15 +441,22 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getUniqueId = getUniqueId;
-// via: http://stackoverflow.com/a/2117523/2511985
-
 function getUniqueId() {
-  var str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
-  return str.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0,
-        v = c == 'x' ? r : r & 0x3 | 0x8;
-    return v.toString(16);
-  });
+  // uuidv4
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    // browser
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+      return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+    });
+  } else {
+    // node & older browsers
+    var str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+    return str.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0,
+          v = c == 'x' ? r : r & 0x3 | 0x8;
+      return v.toString(16);
+    });
+  }
 }
 
 /***/ }),
@@ -590,18 +597,6 @@ function handleValidationError(message) {
 
 /***/ }),
 /* 11 */
-/***/ (function(module, exports) {
-
-module.exports = require("https");
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-module.exports = require("http");
-
-/***/ }),
-/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -610,6 +605,123 @@ module.exports = require("http");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var configDefault = exports.configDefault = {
+  retry: {
+    limit: 10,
+    initialDelay: 200,
+    retryOnResponseStatuses: [408, 500, 502, 503, 504]
+  }
+};
+exports.default = configDefault;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+module.exports = require("https");
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
+module.exports = require("http");
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function (options) {
+  var retriesLimit = options.retry && options.retry.limit ? options.retry.limit : _configDefault2.default.retry.limit;
+  var retryDelay = options.retry && options.retry.initialDelay ? options.retry.initialDelay : _configDefault2.default.retry.initialDelay;
+  var retryOn = options.retry && options.retry.retryOnResponseStatuses ? options.retry.retryOnResponseStatuses : _configDefault2.default.retry.retryOnResponseStatuses;
+  var retriesCount = 0;
+
+  if (options && options.retryOn) {
+    if (!(options.retryOn instanceof Array)) {
+      throw {
+        name: 'ArgumentError',
+        message: 'retryOn property expects an array'
+      };
+    }
+  }
+
+  var protocol = options.protocol === 'http' ? _http2.default : _https2.default;
+
+  var wrappedRequest = function wrappedRequest(n) {
+    var req = protocol.request(options.config, function (response) {
+      var body = '';
+      response.on('data', function (d) {
+        body += d;
+      });
+      response.on('end', function () {
+        if (retryOn.indexOf(response.statusCode) === -1) {
+          options.callbackOnSuccess(body);
+        } else {
+          if (n > 0) {
+            retry();
+          } else {
+            options.callbackOnError(body);
+          }
+        }
+      });
+    });
+    req.on('error', function (err) {
+      if (n > 0) {
+        retry();
+      } else {
+        options.callbackOnError(err);
+      }
+    });
+    req.write(options.data);
+    req.end();
+  };
+
+  function retry() {
+    retriesCount = retriesCount + 1;
+    setTimeout(function () {
+      wrappedRequest(retriesLimit - retriesCount);
+    }, 2 ^ retriesCount * retryDelay);
+  }
+
+  wrappedRequest(retriesLimit - retriesCount);
+};
+
+var _http = __webpack_require__(13);
+
+var _http2 = _interopRequireDefault(_http);
+
+var _https = __webpack_require__(12);
+
+var _https2 = _interopRequireDefault(_https);
+
+var _configDefault = __webpack_require__(11);
+
+var _configDefault2 = _interopRequireDefault(_configDefault);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 exports.recordEvent = recordEvent;
 exports.recordEvents = recordEvents;
 exports.addEvent = addEvent;
@@ -629,13 +741,9 @@ var _extend2 = _interopRequireDefault(_extend);
 
 var _extendEvents = __webpack_require__(4);
 
-var _http = __webpack_require__(12);
+var _nodeRequestRetry = __webpack_require__(14);
 
-var _http2 = _interopRequireDefault(_http);
-
-var _https = __webpack_require__(11);
-
-var _https2 = _interopRequireDefault(_https);
+var _nodeRequestRetry2 = _interopRequireDefault(_nodeRequestRetry);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -804,32 +912,32 @@ function handleValidationError(message, cb) {
 }
 
 function sendEventData(path, eventData, callback) {
-  var data = JSON.stringify(eventData),
-      url;
+  var data = JSON.stringify(eventData);
 
-  url = this.url('events', path);
-  url = url.replace(this.config.protocol + '://' + this.config.host, '');
+  var urlPath = this.url('events', path).replace(this.config.protocol + '://' + this.config.host, '');
 
-  var options = {
+  var config = _extends({
     host: this.config.host,
-    path: url,
+    path: urlPath,
     method: 'POST',
     headers: {
-      'Authorization': this.writeKey(),
+      'Authorizationx': this.writeKey(),
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(data)
     }
-  };
-  var protocol = this.config.protocol === 'http' ? _http2.default : _https2.default;
-  var req = protocol.request(options, function (response) {
-    var body = '';
-    response.on('data', function (d) {
-      body += d;
-    });
-    response.on('end', function () {
-      var response, error;
+  }, this.config.nodeRequestConfig);
+
+  (0, _nodeRequestRetry2.default)({
+    retry: this.config.retry,
+    protocol: this.config.protocol,
+    config: config,
+    data: data,
+    callbackOnError: callback,
+    callbackOnSuccess: function callbackOnSuccess(responseBody) {
+      var response = void 0;
+      var error = void 0;
       try {
-        response = JSON.parse(body);
+        response = JSON.parse(responseBody);
       } catch (e) {
         // Parsing Error
         error = e;
@@ -847,27 +955,24 @@ function sendEventData(path, eventData, callback) {
           callback(null, response);
         }
       }
-    });
+    }
   });
-  req.on('error', callback);
-  req.write(data);
-  req.end();
 }
 
 /***/ }),
-/* 14 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__14__;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__15__;
-
-/***/ }),
 /* 16 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__16__;
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__17__;
+
+/***/ }),
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -886,7 +991,7 @@ var _extend = __webpack_require__(1);
 
 var _extend2 = _interopRequireDefault(_extend);
 
-var _recordEventsServer = __webpack_require__(13);
+var _recordEventsServer = __webpack_require__(15);
 
 var _deferEvents = __webpack_require__(10);
 
