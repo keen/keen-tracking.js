@@ -9,14 +9,7 @@ const demoTests = (demoConfig, Keen) => {
     limit: 3,
     initialDelay: 1000
   };
-
-  demoConfig.queue = {
-    capacity: 22,
-    interval: 10
-  };
   */
-
-
 
   const client = new Keen(demoConfig);
   Keen.debug = true;
@@ -37,7 +30,6 @@ const demoTests = (demoConfig, Keen) => {
     }
   };
 
-  // client.queueCapacity(2);
   client.deferEvent('x', {
     user_id: '35465434643'
   });
