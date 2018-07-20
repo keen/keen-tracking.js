@@ -10,7 +10,7 @@ Install the library synchronously and configure a new `client` instance to captu
 <html>
 <head>
   <meta charset="utf-8">
-  <script src="https://cdn.jsdelivr.net/npm/keen-tracking@2"></script>
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
 
   <!-- Video.js Assets -->
   <link href="https://vjs.zencdn.net/5.8.8/video-js.css" rel="stylesheet">

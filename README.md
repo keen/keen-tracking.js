@@ -11,7 +11,7 @@ npm install keen-tracking --save
 Or load it from public CDN
 
 ```html
-<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@2"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)
@@ -46,7 +46,7 @@ Need help? Ask for it on our [Slack community channel](https://slack.keen.io) or
 Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/keen-tracking@2"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
 <script>
 Keen.ready(function(){
   const client = new Keen({
