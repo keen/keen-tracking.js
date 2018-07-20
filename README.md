@@ -344,6 +344,7 @@ const client = new KeenTracking({
     ]
   }
 });
+```
 
 ---
 
