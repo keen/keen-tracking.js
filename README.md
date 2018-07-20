@@ -11,7 +11,7 @@ npm install keen-tracking --save
 Or load it from public CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/keen-tracking@2"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@2"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)
