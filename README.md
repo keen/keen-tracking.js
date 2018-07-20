@@ -11,7 +11,7 @@ npm install keen-tracking --save
 Or load it from public CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/keen-tracking@2"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@2"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)
@@ -316,6 +316,34 @@ client
     // handle responses
   });
 ```
+
+---
+
+### Handling connection problems
+
+When KeenTracking encounters connection problems, it will retry to send the data.
+
+```javascript
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY',
+
+  // customize the default values
+  retry: {
+    limit: 10, // how many times retry to record an event
+    initialDelay: 200, // initial delay between consecutive calls.
+    // Each next retry will be delayed by (2^retries_count * 100) milliseconds,
+    retryOnResponseStatuses: [ // array of invalid http response statuses
+      408,
+      500,
+      502,
+      503,
+      504
+    ]
+  }
+});
 
 ---
 

@@ -76,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 37);
+/******/ 	return __webpack_require__(__webpack_require__.s = 39);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -356,7 +356,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keenCore = __webpack_require__(36);
+var _keenCore = __webpack_require__(38);
 
 var _keenCore2 = _interopRequireDefault(_keenCore);
 
@@ -368,7 +368,7 @@ var _extend = __webpack_require__(1);
 
 var _extend2 = _interopRequireDefault(_extend);
 
-var _queue = __webpack_require__(11);
+var _queue = __webpack_require__(14);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -380,7 +380,7 @@ _keenCore2.default.on('client', function (client) {
     events: [],
     collections: {}
   };
-  client.queue = (0, _queue.queue)();
+  client.queue = (0, _queue.queue)(client.config.queue);
   client.queue.on('flush', function () {
     client.recordDeferredEvents();
   });
@@ -634,1451 +634,6 @@ function getExtendedEventBody(result, queue) {
 
 /***/ }),
 /* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.queue = queue;
-
-var _componentEmitter = __webpack_require__(4);
-
-var _componentEmitter2 = _interopRequireDefault(_componentEmitter);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function queue() {
-  if (this instanceof queue === false) {
-    return new queue();
-  }
-  this.capacity = 0;
-  this.config = {
-    capacity: 5000,
-    interval: 15
-  };
-  this.events = {
-    // "collection-1": [],
-    // "collection-2": []
-  };
-  this.interval = 0;
-  this.timer = null;
-  return this;
-}
-
-(0, _componentEmitter2.default)(queue.prototype);
-
-queue.prototype.check = function () {
-  if (shouldFlushQueue(this)) {
-    this.flush();
-  }
-  if (this.config.interval === 0 || this.capacity === 0) {
-    this.pause();
-  }
-  return this;
-};
-
-queue.prototype.flush = function () {
-  this.emit('flush');
-  this.interval = 0;
-  return this;
-};
-
-queue.prototype.pause = function () {
-  if (this.timer) {
-    clearInterval(this.timer);
-    this.timer = null;
-  }
-  return this;
-};
-
-queue.prototype.start = function () {
-  var self = this;
-  self.pause();
-  self.timer = setInterval(function () {
-    self.interval++;
-    self.check();
-  }, 1000);
-  return self;
-};
-
-function shouldFlushQueue(props) {
-  if (props.capacity > 0 && props.interval >= props.config.interval) {
-    return true;
-  } else if (props.capacity >= props.config.capacity) {
-    return true;
-  }
-  return false;
-}
-
-/***/ }),
-/* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(setImmediate) {/* harmony import */ var _finally__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
-
-
-// Store setTimeout reference so promise-polyfill will be unaffected by
-// other code modifying setTimeout (like sinon.useFakeTimers())
-var setTimeoutFunc = setTimeout;
-
-function noop() {}
-
-// Polyfill for Function.prototype.bind
-function bind(fn, thisArg) {
-  return function() {
-    fn.apply(thisArg, arguments);
-  };
-}
-
-function Promise(fn) {
-  if (!(this instanceof Promise))
-    throw new TypeError('Promises must be constructed via new');
-  if (typeof fn !== 'function') throw new TypeError('not a function');
-  this._state = 0;
-  this._handled = false;
-  this._value = undefined;
-  this._deferreds = [];
-
-  doResolve(fn, this);
-}
-
-function handle(self, deferred) {
-  while (self._state === 3) {
-    self = self._value;
-  }
-  if (self._state === 0) {
-    self._deferreds.push(deferred);
-    return;
-  }
-  self._handled = true;
-  Promise._immediateFn(function() {
-    var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
-    if (cb === null) {
-      (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
-      return;
-    }
-    var ret;
-    try {
-      ret = cb(self._value);
-    } catch (e) {
-      reject(deferred.promise, e);
-      return;
-    }
-    resolve(deferred.promise, ret);
-  });
-}
-
-function resolve(self, newValue) {
-  try {
-    // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
-    if (newValue === self)
-      throw new TypeError('A promise cannot be resolved with itself.');
-    if (
-      newValue &&
-      (typeof newValue === 'object' || typeof newValue === 'function')
-    ) {
-      var then = newValue.then;
-      if (newValue instanceof Promise) {
-        self._state = 3;
-        self._value = newValue;
-        finale(self);
-        return;
-      } else if (typeof then === 'function') {
-        doResolve(bind(then, newValue), self);
-        return;
-      }
-    }
-    self._state = 1;
-    self._value = newValue;
-    finale(self);
-  } catch (e) {
-    reject(self, e);
-  }
-}
-
-function reject(self, newValue) {
-  self._state = 2;
-  self._value = newValue;
-  finale(self);
-}
-
-function finale(self) {
-  if (self._state === 2 && self._deferreds.length === 0) {
-    Promise._immediateFn(function() {
-      if (!self._handled) {
-        Promise._unhandledRejectionFn(self._value);
-      }
-    });
-  }
-
-  for (var i = 0, len = self._deferreds.length; i < len; i++) {
-    handle(self, self._deferreds[i]);
-  }
-  self._deferreds = null;
-}
-
-function Handler(onFulfilled, onRejected, promise) {
-  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
-  this.onRejected = typeof onRejected === 'function' ? onRejected : null;
-  this.promise = promise;
-}
-
-/**
- * Take a potentially misbehaving resolver function and make sure
- * onFulfilled and onRejected are only called once.
- *
- * Makes no guarantees about asynchrony.
- */
-function doResolve(fn, self) {
-  var done = false;
-  try {
-    fn(
-      function(value) {
-        if (done) return;
-        done = true;
-        resolve(self, value);
-      },
-      function(reason) {
-        if (done) return;
-        done = true;
-        reject(self, reason);
-      }
-    );
-  } catch (ex) {
-    if (done) return;
-    done = true;
-    reject(self, ex);
-  }
-}
-
-Promise.prototype['catch'] = function(onRejected) {
-  return this.then(null, onRejected);
-};
-
-Promise.prototype.then = function(onFulfilled, onRejected) {
-  var prom = new this.constructor(noop);
-
-  handle(this, new Handler(onFulfilled, onRejected, prom));
-  return prom;
-};
-
-Promise.prototype['finally'] = _finally__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"];
-
-Promise.all = function(arr) {
-  return new Promise(function(resolve, reject) {
-    if (!arr || typeof arr.length === 'undefined')
-      throw new TypeError('Promise.all accepts an array');
-    var args = Array.prototype.slice.call(arr);
-    if (args.length === 0) return resolve([]);
-    var remaining = args.length;
-
-    function res(i, val) {
-      try {
-        if (val && (typeof val === 'object' || typeof val === 'function')) {
-          var then = val.then;
-          if (typeof then === 'function') {
-            then.call(
-              val,
-              function(val) {
-                res(i, val);
-              },
-              reject
-            );
-            return;
-          }
-        }
-        args[i] = val;
-        if (--remaining === 0) {
-          resolve(args);
-        }
-      } catch (ex) {
-        reject(ex);
-      }
-    }
-
-    for (var i = 0; i < args.length; i++) {
-      res(i, args[i]);
-    }
-  });
-};
-
-Promise.resolve = function(value) {
-  if (value && typeof value === 'object' && value.constructor === Promise) {
-    return value;
-  }
-
-  return new Promise(function(resolve) {
-    resolve(value);
-  });
-};
-
-Promise.reject = function(value) {
-  return new Promise(function(resolve, reject) {
-    reject(value);
-  });
-};
-
-Promise.race = function(values) {
-  return new Promise(function(resolve, reject) {
-    for (var i = 0, len = values.length; i < len; i++) {
-      values[i].then(resolve, reject);
-    }
-  });
-};
-
-// Use polyfill for setImmediate for performance gains
-Promise._immediateFn =
-  (typeof setImmediate === 'function' &&
-    function(fn) {
-      setImmediate(fn);
-    }) ||
-  function(fn) {
-    setTimeoutFunc(fn, 0);
-  };
-
-Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
-  if (typeof console !== 'undefined' && console) {
-    console.warn('Possible Unhandled Promise Rejection:', err); // eslint-disable-line no-console
-  }
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (Promise);
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(30).setImmediate))
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.timer = timer;
-function timer(num) {
-  if (this instanceof timer === false) {
-    return new timer(num);
-  }
-  this.count = num || 0;
-  return this;
-}
-
-timer.prototype.start = function () {
-  var self = this;
-  this.pause();
-  this.interval = setInterval(function () {
-    self.count++;
-  }, 1000);
-  return this;
-};
-
-timer.prototype.pause = function () {
-  clearInterval(this.interval);
-  return this;
-};
-
-timer.prototype.value = function () {
-  return this.count;
-};
-
-timer.prototype.clear = function () {
-  this.count = 0;
-  return this;
-};
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.serializeForm = serializeForm;
-/*
-  This is a modified copy of https://github.com/defunctzombie/form-serialize/ v0.7.1
-  Includes a new configuration option:
-    * ignoreTypes - Array, Default: [], Example: [ 'password' ]
-*/
-
-// types which indicate a submit action and are not successful controls
-// these will be ignored
-var k_r_submitter = /^(?:submit|button|image|reset|file)$/i;
-
-// node names which could be successful controls
-var k_r_success_contrls = /^(?:input|select|textarea|keygen)/i;
-
-// Matches bracket notation.
-var brackets = /(\[[^\[\]]*\])/g;
-
-// serializes form fields
-// @param form MUST be an HTMLForm element
-// @param options is an optional argument to configure the serialization. Default output
-// with no options specified is a url encoded string
-//    - hash: [true | false] Configure the output type. If true, the output will
-//    be a js object.
-//    - serializer: [function] Optional serializer function to override the default one.
-//    The function takes 3 arguments (result, key, value) and should return new result
-//    hash and url encoded str serializers are provided with this module
-//    - disabled: [true | false]. If true serialize disabled fields.
-//    - empty: [true | false]. If true serialize empty fields
-function serializeForm(form, options) {
-  if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) != 'object') {
-    options = { hash: !!options };
-  } else if (options.hash === undefined) {
-    options.hash = true;
-  }
-
-  var result = options.hash ? {} : '';
-  var serializer = options.serializer || (options.hash ? hash_serializer : str_serialize);
-
-  var elements = form && form.elements ? form.elements : [];
-
-  // Object store each radio and set if it's empty or not
-  var radio_store = Object.create(null);
-
-  for (var i = 0; i < elements.length; ++i) {
-    var element = elements[i];
-
-    // NEW: Skip ignored field types
-    if (options.ignoreTypes && options.ignoreTypes.indexOf(element.type) > -1) {
-      continue;
-    }
-    // ingore disabled fields
-    if (!options.disabled && element.disabled || !element.name) {
-      continue;
-    }
-    // ignore anyhting that is not considered a success field
-    if (!k_r_success_contrls.test(element.nodeName) || k_r_submitter.test(element.type)) {
-      continue;
-    }
-
-    var key = element.name;
-    var val = element.value;
-
-    // we can't just use element.value for checkboxes cause some browsers lie to us
-    // they say "on" for value when the box isn't checked
-    if ((element.type === 'checkbox' || element.type === 'radio') && !element.checked) {
-      val = undefined;
-    }
-
-    // If we want empty elements
-    if (options.empty) {
-      if (element.type === 'checkbox' && !element.checked) {
-        val = '';
-      }
-
-      // for radio
-      if (element.type === 'radio') {
-        if (!radio_store[element.name] && !element.checked) {
-          radio_store[element.name] = false;
-        } else if (element.checked) {
-          radio_store[element.name] = true;
-        }
-      }
-
-      // if options empty is true, continue only if its radio
-      if (val == undefined && element.type == 'radio') {
-        continue;
-      }
-    } else {
-      // value-less fields are ignored unless options.empty is true
-      if (!val) {
-        continue;
-      }
-    }
-
-    // multi select boxes
-    if (element.type === 'select-multiple') {
-      val = [];
-
-      var selectOptions = element.options;
-      var isSelectedOptions = false;
-      for (var j = 0; j < selectOptions.length; ++j) {
-        var option = selectOptions[j];
-        var allowedEmpty = options.empty && !option.value;
-        var hasValue = option.value || allowedEmpty;
-        if (option.selected && hasValue) {
-          isSelectedOptions = true;
-
-          // If using a hash serializer be sure to add the
-          // correct notation for an array in the multi-select
-          // context. Here the name attribute on the select element
-          // might be missing the trailing bracket pair. Both names
-          // "foo" and "foo[]" should be arrays.
-          if (options.hash && key.slice(key.length - 2) !== '[]') {
-            result = serializer(result, key + '[]', option.value);
-          } else {
-            result = serializer(result, key, option.value);
-          }
-        }
-      }
-
-      if (!isSelectedOptions && options.empty) {
-        result = serializer(result, key, '');
-      }
-      continue;
-    }
-
-    result = serializer(result, key, val);
-  }
-
-  if (options.empty) {
-    for (var key in radio_store) {
-      if (!radio_store[key]) {
-        result = serializer(result, key, '');
-      }
-    }
-  }
-
-  return result;
-}
-
-function parse_keys(string) {
-  var keys = [];
-  var prefix = /^([^\[\]]*)/;
-  var children = new RegExp(brackets);
-  var match = prefix.exec(string);
-
-  if (match[1]) {
-    keys.push(match[1]);
-  }
-
-  while ((match = children.exec(string)) !== null) {
-    keys.push(match[1]);
-  }
-
-  return keys;
-}
-
-function hash_assign(result, keys, value) {
-  if (keys.length === 0) {
-    result = value;
-    return result;
-  }
-
-  var key = keys.shift();
-  var between = key.match(/^\[(.+?)\]$/);
-
-  if (key === '[]') {
-    result = result || [];
-
-    if (Array.isArray(result)) {
-      result.push(hash_assign(null, keys, value));
-    } else {
-      // This might be the result of bad name attributes like "[][foo]",
-      // in this case the original `result` object will already be
-      // assigned to an object literal. Rather than coerce the object to
-      // an array, or cause an exception the attribute "_values" is
-      // assigned as an array.
-      result._values = result._values || [];
-      result._values.push(hash_assign(null, keys, value));
-    }
-
-    return result;
-  }
-
-  // Key is an attribute name and can be assigned directly.
-  if (!between) {
-    result[key] = hash_assign(result[key], keys, value);
-  } else {
-    var string = between[1];
-    // +var converts the variable into a number
-    // better than parseInt because it doesn't truncate away trailing
-    // letters and actually fails if whole thing is not a number
-    var index = +string;
-
-    // If the characters between the brackets is not a number it is an
-    // attribute name and can be assigned directly.
-    if (isNaN(index)) {
-      result = result || {};
-      result[string] = hash_assign(result[string], keys, value);
-    } else {
-      result = result || [];
-      result[index] = hash_assign(result[index], keys, value);
-    }
-  }
-
-  return result;
-}
-
-// Object/hash encoding serializer.
-function hash_serializer(result, key, value) {
-  var matches = key.match(brackets);
-
-  // Has brackets? Use the recursive assignment function to walk the keys,
-  // construct any missing objects in the result tree and make the assignment
-  // at the end of the chain.
-  if (matches) {
-    var keys = parse_keys(key);
-    hash_assign(result, keys, value);
-  } else {
-    // Non bracket notation can make assignments directly.
-    var existing = result[key];
-
-    // If the value has been assigned already (for instance when a radio and
-    // a checkbox have the same name attribute) convert the previous value
-    // into an array before pushing into it.
-    //
-    // NOTE: If this requirement were removed all hash creation and
-    // assignment could go through `hash_assign`.
-    if (existing) {
-      if (!Array.isArray(existing)) {
-        result[key] = [existing];
-      }
-
-      result[key].push(value);
-    } else {
-      result[key] = value;
-    }
-  }
-
-  return result;
-}
-
-// urlform encoding serializer
-function str_serialize(result, key, value) {
-  // encode newlines as \r\n cause the html spec says so
-  value = value.replace(/(\r)?\n/g, '\r\n');
-  value = encodeURIComponent(value);
-
-  // spaces should be '+' rather than '%20'.
-  value = value.replace(/%20/g, '+');
-  return result + (result ? '&' : '') + encodeURIComponent(key) + '=' + value;
-}
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * JavaScript Cookie v2.1.0
- * https://github.com/js-cookie/js-cookie
- *
- * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
- * Released under the MIT license
- */
-(function (factory) {
-	if (true) {
-		!(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
-				__WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else { var api, _OldCookies; }
-}(function () {
-	function extend () {
-		var i = 0;
-		var result = {};
-		for (; i < arguments.length; i++) {
-			var attributes = arguments[ i ];
-			for (var key in attributes) {
-				result[key] = attributes[key];
-			}
-		}
-		return result;
-	}
-
-	function init (converter) {
-		function api (key, value, attributes) {
-			var result;
-
-			// Write
-
-			if (arguments.length > 1) {
-				attributes = extend({
-					path: '/'
-				}, api.defaults, attributes);
-
-				if (typeof attributes.expires === 'number') {
-					var expires = new Date();
-					expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
-					attributes.expires = expires;
-				}
-
-				try {
-					result = JSON.stringify(value);
-					if (/^[\{\[]/.test(result)) {
-						value = result;
-					}
-				} catch (e) {}
-
-				if (!converter.write) {
-					value = encodeURIComponent(String(value))
-						.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
-				} else {
-					value = converter.write(value, key);
-				}
-
-				key = encodeURIComponent(String(key));
-				key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
-				key = key.replace(/[\(\)]/g, escape);
-
-				return (document.cookie = [
-					key, '=', value,
-					attributes.expires && '; expires=' + attributes.expires.toUTCString(), // use expires attribute, max-age is not supported by IE
-					attributes.path    && '; path=' + attributes.path,
-					attributes.domain  && '; domain=' + attributes.domain,
-					attributes.secure ? '; secure' : ''
-				].join(''));
-			}
-
-			// Read
-
-			if (!key) {
-				result = {};
-			}
-
-			// To prevent the for loop in the first place assign an empty array
-			// in case there are no cookies at all. Also prevents odd result when
-			// calling "get()"
-			var cookies = document.cookie ? document.cookie.split('; ') : [];
-			var rdecode = /(%[0-9A-Z]{2})+/g;
-			var i = 0;
-
-			for (; i < cookies.length; i++) {
-				var parts = cookies[i].split('=');
-				var name = parts[0].replace(rdecode, decodeURIComponent);
-				var cookie = parts.slice(1).join('=');
-
-				if (cookie.charAt(0) === '"') {
-					cookie = cookie.slice(1, -1);
-				}
-
-				try {
-					cookie = converter.read ?
-						converter.read(cookie, name) : converter(cookie, name) ||
-						cookie.replace(rdecode, decodeURIComponent);
-
-					if (this.json) {
-						try {
-							cookie = JSON.parse(cookie);
-						} catch (e) {}
-					}
-
-					if (key === name) {
-						result = cookie;
-						break;
-					}
-
-					if (!key) {
-						result[name] = cookie;
-					}
-				} catch (e) {}
-			}
-
-			return result;
-		}
-
-		api.get = api.set = api;
-		api.getJSON = function () {
-			return api.apply({
-				json: true
-			}, [].slice.call(arguments));
-		};
-		api.defaults = {};
-
-		api.remove = function (key, attributes) {
-			api(key, '', extend(attributes, {
-				expires: -1
-			}));
-		};
-
-		api.withConverter = init;
-
-		return api;
-	}
-
-	return init(function () {});
-}));
-
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.cookie = undefined;
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _jsCookie = __webpack_require__(15);
-
-var _jsCookie2 = _interopRequireDefault(_jsCookie);
-
-var _extend = __webpack_require__(1);
-
-var _extend2 = _interopRequireDefault(_extend);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var cookie = exports.cookie = function cookie(str) {
-  if (!arguments.length) return;
-  if (this instanceof cookie === false) {
-    return new cookie(str);
-  }
-
-  this.config = {
-    key: str,
-    options: {
-      expires: 365
-    }
-  };
-  this.data = this.get();
-  return this;
-};
-
-cookie.prototype.get = function (str) {
-  var data = {};
-
-  if (_jsCookie2.default.get(this.config.key)) {
-    data = _jsCookie2.default.getJSON(this.config.key);
-  }
-  if (str && (typeof data === 'undefined' ? 'undefined' : _typeof(data)) === 'object' && typeof data !== null) {
-    return typeof data[str] !== 'undefined' ? data[str] : null;
-  } else {
-    return data;
-  }
-};
-
-cookie.prototype.set = function (str, value, options) {
-  if (!arguments.length || !this.enabled()) return this;
-  if (typeof str === 'string' && arguments.length >= 2) {
-    this.data[str] = value ? value : null;
-  } else if ((typeof str === 'undefined' ? 'undefined' : _typeof(str)) === 'object' && arguments.length === 1) {
-    (0, _extend2.default)(this.data, str);
-  }
-  _jsCookie2.default.set(this.config.key, this.data, (0, _extend2.default)(this.config.options, options || {}));
-  return this;
-};
-
-cookie.prototype.expire = function (daysUntilExpire) {
-  if (daysUntilExpire) {
-    _jsCookie2.default.set(this.config.key, this.data, (0, _extend2.default)(this.config.options, { expires: daysUntilExpire }));
-  } else {
-    _jsCookie2.default.remove(this.config.key);
-    this.data = {};
-  }
-  return this;
-};
-
-cookie.prototype.options = function (obj) {
-  if (!arguments.length) return this.config.options;
-  this.config.options = (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' ? obj : {};
-  return this;
-};
-
-cookie.prototype.enabled = function () {
-  return navigator.cookieEnabled;
-};
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getUniqueId = getUniqueId;
-// via: http://stackoverflow.com/a/2117523/2511985
-
-function getUniqueId() {
-  var str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
-  return str.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0,
-        v = c == 'x' ? r : r & 0x3 | 0x8;
-    return v.toString(16);
-  });
-}
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.getScrollState = getScrollState;
-
-var _extend = __webpack_require__(1);
-
-var _extend2 = _interopRequireDefault(_extend);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function getScrollState(obj) {
-  var config = (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' ? obj : {};
-  var state = (0, _extend2.default)({
-    pixel: 0,
-    pixel_max: 0,
-    ratio: null,
-    ratio_max: null
-  }, config);
-
-  if ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== undefined || (typeof document === 'undefined' ? 'undefined' : _typeof(document)) !== undefined) {
-    state.pixel = getScrollOffset() + getWindowHeight();
-    if (state.pixel > state.pixel_max) {
-      state.pixel_max = state.pixel;
-    }
-    state.ratio = parseFloat(Number(state.pixel / getScrollableArea()).toFixed(2));
-    state.ratio_max = parseFloat(Number(state.pixel_max / getScrollableArea()).toFixed(2));
-  }
-
-  return state;
-}
-
-function getScrollableArea() {
-  var body = document.body;
-  var html = document.documentElement;
-  return Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight) || null;
-}
-
-function getScrollOffset() {
-  return window.pageYOffset !== undefined ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-}
-
-function getWindowHeight() {
-  return window.innerHeight || document.documentElement.clientHeight;
-}
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getDomNodeProfile = getDomNodeProfile;
-
-var _getDomNodePath = __webpack_require__(6);
-
-function getDomNodeProfile(el) {
-  return {
-    action: el.action,
-    class: el.className,
-    href: el.href || null,
-    id: el.id,
-    method: el.method,
-    name: el.name,
-    node_name: el.nodeName,
-    selector: (0, _getDomNodePath.getDomNodePath)(el),
-    text: el.text,
-    title: el.title,
-    type: el.type,
-    x_position: el.offsetLeft || el.clientLeft || null,
-    y_position: el.offsetTop || el.clientTop || null
-  };
-}
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.getDomainName = getDomainName;
-function extractHostname(url) {
-    var hostname;
-    //find & remove protocol (http, ftp, etc.) and get hostname
-
-    if (url.indexOf("://") > -1) {
-        hostname = url.split('/')[2];
-    } else {
-        hostname = url.split('/')[0];
-    }
-
-    //find & remove port number
-    hostname = hostname.split(':')[0];
-    //find & remove "?"
-    hostname = hostname.split('?')[0];
-
-    return hostname;
-}
-
-// To address those who want the "root domain," use this function:
-function getDomainName(url) {
-    var domain = extractHostname(url),
-        splitArr = domain.split('.'),
-        arrLen = splitArr.length;
-
-    //extracting the root domain here
-    //if there is a subdomain
-    if (arrLen > 2) {
-        domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
-        //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
-        if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
-            //this is using a ccTLD
-            domain = splitArr[arrLen - 3] + '.' + domain;
-        }
-    }
-    return domain;
-}
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getDatetimeIndex = getDatetimeIndex;
-function getDatetimeIndex(input) {
-  var date = input || new Date();
-  return {
-    'hour_of_day': date.getHours(),
-    'day_of_week': parseInt(1 + date.getDay()),
-    'day_of_month': date.getDate(),
-    'month': parseInt(1 + date.getMonth()),
-    'year': date.getFullYear()
-  };
-}
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getBrowserProfile = getBrowserProfile;
-
-var _getScreenProfile = __webpack_require__(8);
-
-var _getWindowProfile = __webpack_require__(7);
-
-function getBrowserProfile() {
-  return {
-    'cookies': 'undefined' !== typeof navigator.cookieEnabled ? navigator.cookieEnabled : false,
-    'codeName': navigator.appCodeName,
-    'description': getDocumentDescription(),
-    'language': navigator.language,
-    'name': navigator.appName,
-    'online': navigator.onLine,
-    'platform': navigator.platform,
-    'useragent': navigator.userAgent,
-    'version': navigator.appVersion,
-    'screen': (0, _getScreenProfile.getScreenProfile)(),
-    'window': (0, _getWindowProfile.getWindowProfile)()
-  };
-}
-
-function getDocumentDescription() {
-  var el;
-  if (document && typeof document.querySelector === 'function') {
-    el = document.querySelector('meta[name="description"]');
-  }
-  return el ? el.content : '';
-}
-
-/***/ }),
-/* 23 */
-/***/ (function(module) {
-
-module.exports = {"name":"keen-tracking","version":"2.0.8","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"npm run update_docs && git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js","update_docs":"node ./node_modules/replace-in-file/bin/cli.js --configFile=replace-config.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","gulp":"^3.8.11","gulp-awspublish":"0.0.23","gulp-rename":"^1.2.2","gulp-replace":"^0.5.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.initAutoTrackingCore = initAutoTrackingCore;
-
-var _package = __webpack_require__(23);
-
-var _package2 = _interopRequireDefault(_package);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function initAutoTrackingCore(lib) {
-  return function (obj) {
-    var client = this;
-    var helpers = lib.helpers;
-    var utils = lib.utils;
-
-    var options = utils.extend({
-      ignoreDisabledFormFields: false,
-      ignoreFormFieldTypes: ['password'],
-      recordClicks: true,
-      recordFormSubmits: true,
-      recordPageViews: true,
-      recordScrollState: true,
-      shareUuidAcrossDomains: false,
-      collectIpAddress: true
-    }, obj);
-
-    var now = new Date();
-
-    var cookie = new utils.cookie('keen');
-    var uuid = cookie.get('uuid');
-    if (!uuid) {
-      uuid = helpers.getUniqueId();
-      var domainName = helpers.getDomainName(window.location.hostname);
-      var cookieDomain = domainName && options.shareUuidAcrossDomains ? {
-        domain: '.' + domainName
-      } : {};
-      cookie.set('uuid', uuid, cookieDomain);
-    }
-
-    var scrollState = {};
-    if (options.recordScrollState) {
-      scrollState = helpers.getScrollState();
-      utils.listener('window').on('scroll', function () {
-        scrollState = helpers.getScrollState(scrollState);
-      });
-    }
-
-    var addons = [{
-      name: 'keen:ua_parser',
-      input: {
-        ua_string: 'user_agent'
-      },
-      output: 'tech'
-    }, {
-      name: 'keen:url_parser',
-      input: {
-        url: 'url.full'
-      },
-      output: 'url.info'
-    }, {
-      name: 'keen:url_parser',
-      input: {
-        url: 'referrer.full'
-      },
-      output: 'referrer.info'
-    }, {
-      name: 'keen:date_time_parser',
-      input: {
-        date_time: 'keen.timestamp'
-      },
-      output: 'time.utc'
-    }, {
-      name: 'keen:date_time_parser',
-      input: {
-        date_time: 'local_time_full'
-      },
-      output: 'time.local'
-    }];
-
-    var ip_address;
-    if (options.collectIpAddress) {
-      ip_address = '${keen.ip}';
-      addons.push({
-        name: 'keen:ip_to_geo',
-        input: {
-          ip: 'ip_address'
-        },
-        output: 'geo'
-      });
-    } else {
-      ip_address = undefined;
-    }
-
-    client.extendEvents(function () {
-      var browserProfile = helpers.getBrowserProfile();
-      return {
-        tracked_by: _package2.default.name + '-' + _package2.default.version,
-        local_time_full: new Date().toISOString(),
-        user: {
-          uuid: uuid
-        },
-        page: {
-          title: document ? document.title : null,
-          description: browserProfile.description,
-          time_on_page: getSecondsSinceDate(now)
-        },
-
-        ip_address: ip_address,
-        geo: {/* Enriched */},
-
-        user_agent: '${keen.user_agent}',
-        tech: {
-          profile: browserProfile
-          /* Enriched */
-        },
-
-        url: {
-          full: window ? window.location.href : '',
-          info: {/* Enriched */}
-        },
-
-        referrer: {
-          full: document ? document.referrer : '',
-          info: {/* Enriched */}
-        },
-
-        time: {
-          local: {/* Enriched */},
-          utc: {/* Enriched */}
-        },
-
-        keen: {
-          timestamp: new Date().toISOString(),
-          addons: addons
-        }
-      };
-    });
-
-    if (options.recordClicks === true) {
-      utils.listener('a, a *').on('click', function (e) {
-        var el = e.target;
-        var props = {
-          element: helpers.getDomNodeProfile(el),
-          local_time_full: new Date().toISOString(),
-          page: {
-            scroll_state: scrollState
-          }
-        };
-        return client.recordEvent('clicks', props);
-      });
-    }
-
-    if (options.recordFormSubmits === true) {
-      utils.listener('form').on('submit', function (e) {
-        var el = e.target;
-        var serializerOptions = {
-          disabled: options.ignoreDisabledFormFields,
-          ignoreTypes: options.ignoreFormFieldTypes
-        };
-        var props = {
-          form: {
-            action: el.action,
-            fields: utils.serializeForm(el, serializerOptions),
-            method: el.method
-          },
-          element: helpers.getDomNodeProfile(el),
-          local_time_full: new Date().toISOString(),
-          page: {
-            scroll_state: scrollState
-          }
-        };
-        return client.recordEvent('form_submissions', props);
-      });
-    }
-
-    if (options.recordPageViews === true) {
-      client.recordEvent('pageviews');
-    }
-
-    return client;
-  };
-}
-
-function getSecondsSinceDate(date) {
-  var diff = new Date().getTime() - date.getTime();
-  return Math.round(diff / 1000);
-}
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.deferEvent = deferEvent;
-exports.deferEvents = deferEvents;
-exports.queueCapacity = queueCapacity;
-exports.queueInterval = queueInterval;
-exports.recordDeferredEvents = recordDeferredEvents;
-
-var _index = __webpack_require__(5);
-
-var _index2 = _interopRequireDefault(_index);
-
-var _each = __webpack_require__(0);
-
-var _each2 = _interopRequireDefault(_each);
-
-var _queue = __webpack_require__(11);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function deferEvent(eventCollection, eventBody) {
-
-  if (arguments.length !== 2 || typeof eventCollection !== 'string') {
-    handleValidationError.call(this, 'Incorrect arguments provided to #deferEvent method');
-    return;
-  }
-
-  this.queue.events[eventCollection] = this.queue.events[eventCollection] || [];
-  this.queue.events[eventCollection].push(eventBody);
-  this.queue.capacity++;
-  if (!this.queue.timer) {
-    this.queue.start();
-  }
-  this.emit('deferEvent', eventCollection, eventBody);
-  return this;
-}
-
-function deferEvents(eventsHash) {
-  var self = this;
-
-  if (arguments.length !== 1 || (typeof eventsHash === 'undefined' ? 'undefined' : _typeof(eventsHash)) !== 'object') {
-    handleValidationError.call(this, 'Incorrect arguments provided to #deferEvents method');
-    return;
-  }
-
-  (0, _each2.default)(eventsHash, function (eventList, eventCollection) {
-    self.queue.events[eventCollection] = self.queue.events[eventCollection] || [];
-    self.queue.events[eventCollection] = self.queue.events[eventCollection].concat(eventList);
-    self.queue.capacity = self.queue.capacity + eventList.length;
-    if (!self.queue.timer) {
-      self.queue.start();
-    }
-  });
-  self.emit('deferEvents', eventsHash);
-  return self;
-}
-
-function queueCapacity(num) {
-  if (!arguments.length) return this.queue.config.capacity;
-  this.queue.config.capacity = num ? Number(num) : 0;
-  this.queue.check();
-  return this;
-}
-
-function queueInterval(num) {
-  if (!arguments.length) return this.queue.config.interval;
-  this.queue.config.interval = num ? Number(num) : 0;
-  this.queue.check();
-  return this;
-}
-
-function recordDeferredEvents() {
-  var self = this,
-      clonedQueueConfig,
-      clonedQueueEvents;
-
-  if (self.queue.capacity > 0) {
-    self.queue.pause();
-    clonedQueueConfig = JSON.parse(JSON.stringify(self.queue.config));
-    clonedQueueEvents = JSON.parse(JSON.stringify(self.queue.events));
-    self.queue = (0, _queue.queue)();
-    self.queue.config = clonedQueueConfig;
-    self.queue.on('flush', function () {
-      self.recordDeferredEvents();
-    });
-    self.emit('recordDeferredEvents', clonedQueueEvents);
-    self.recordEvents(clonedQueueEvents, function (err, res) {
-      if (err) {
-        // Retry once
-        self.recordEvents(clonedQueueEvents);
-      } else {
-        clonedQueueEvents = undefined;
-      }
-    });
-  }
-  return self;
-}
-
-function handleValidationError(message) {
-  var err = 'Event(s) not deferred: ' + message;
-  this.emit('error', err);
-}
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports) {
-
-module.exports = {
-  map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
-  encode: function (n) {
-    "use strict";
-    var o = "", i = 0, m = this.map, i1, i2, i3, e1, e2, e3, e4;
-    n = this.utf8.encode(n);
-    while (i < n.length) {
-      i1 = n.charCodeAt(i++); i2 = n.charCodeAt(i++); i3 = n.charCodeAt(i++);
-      e1 = (i1 >> 2); e2 = (((i1 & 3) << 4) | (i2 >> 4)); e3 = (isNaN(i2) ? 64 : ((i2 & 15) << 2) | (i3 >> 6));
-      e4 = (isNaN(i2) || isNaN(i3)) ? 64 : i3 & 63;
-      o = o + m.charAt(e1) + m.charAt(e2) + m.charAt(e3) + m.charAt(e4);
-    } return o;
-  },
-  decode: function (n) {
-    "use strict";
-    var o = "", i = 0, m = this.map, cc = String.fromCharCode, e1, e2, e3, e4, c1, c2, c3;
-    n = n.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-    while (i < n.length) {
-      e1 = m.indexOf(n.charAt(i++)); e2 = m.indexOf(n.charAt(i++));
-      e3 = m.indexOf(n.charAt(i++)); e4 = m.indexOf(n.charAt(i++));
-      c1 = (e1 << 2) | (e2 >> 4); c2 = ((e2 & 15) << 4) | (e3 >> 2);
-      c3 = ((e3 & 3) << 6) | e4;
-      o = o + (cc(c1) + ((e3 != 64) ? cc(c2) : "")) + (((e4 != 64) ? cc(c3) : ""));
-    } return this.utf8.decode(o);
-  },
-  utf8: {
-    encode: function (n) {
-      "use strict";
-      var o = "", i = 0, cc = String.fromCharCode, c;
-      while (i < n.length) {
-        c = n.charCodeAt(i++); o = o + ((c < 128) ? cc(c) : ((c > 127) && (c < 2048)) ?
-        (cc((c >> 6) | 192) + cc((c & 63) | 128)) : (cc((c >> 12) | 224) + cc(((c >> 6) & 63) | 128) + cc((c & 63) | 128)));
-        } return o;
-    },
-    decode: function (n) {
-      "use strict";
-      var o = "", i = 0, cc = String.fromCharCode, c2, c;
-      while (i < n.length) {
-        c = n.charCodeAt(i);
-        o = o + ((c < 128) ? [cc(c), i++][0] : ((c > 191) && (c < 224)) ?
-        [cc(((c & 31) << 6) | ((c2 = n.charCodeAt(i + 1)) & 63)), (i += 2)][0] :
-        [cc(((c & 15) << 12) | (((c2 = n.charCodeAt(i + 1)) & 63) << 6) | ((c3 = n.charCodeAt(i + 2)) & 63)), (i += 3)][0]);
-      } return o;
-    }
-  }
-};
-
-
-/***/ }),
-/* 27 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -2551,7 +1106,1596 @@ module.exports = {
 
 
 /***/ }),
+/* 12 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
+/* harmony import */ var _finally__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
+
+
+
+var globalNS = (function() {
+  // the only reliable means to get the global object is
+  // `Function('return this')()`
+  // However, this causes CSP violations in Chrome apps.
+  if (typeof self !== 'undefined') {
+    return self;
+  }
+  if (typeof window !== 'undefined') {
+    return window;
+  }
+  if (typeof global !== 'undefined') {
+    return global;
+  }
+  throw new Error('unable to locate global object');
+})();
+
+if (!globalNS.Promise) {
+  globalNS.Promise = _index__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"];
+} else if (!globalNS.Promise.prototype['finally']) {
+  globalNS.Promise.prototype['finally'] = _finally__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"];
+}
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var configDefault = exports.configDefault = {
+
+  // defer events - queue
+  // https://github.com/keen/keen-tracking.js/blob/master/docs/defer-events.md
+  queue: {
+    capacity: 5000,
+    interval: 15
+  },
+
+  // connection problems - retry request
+  retry: {
+    limit: 10,
+    initialDelay: 200,
+    retryOnResponseStatuses: [408, 500, 502, 503, 504]
+  }
+};
+
+exports.default = configDefault;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.queue = queue;
+
+var _componentEmitter = __webpack_require__(4);
+
+var _componentEmitter2 = _interopRequireDefault(_componentEmitter);
+
+var _configDefault = __webpack_require__(13);
+
+var _configDefault2 = _interopRequireDefault(_configDefault);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function queue() {
+  var configQueue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  if (this instanceof queue === false) {
+    return new queue(configQueue);
+  }
+  this.capacity = 0;
+  this.config = _extends({}, _configDefault2.default.queue, configQueue);
+  this.events = {
+    // "collection-1": [],
+    // "collection-2": []
+  };
+  this.interval = 0;
+  this.timer = null;
+  return this;
+}
+
+(0, _componentEmitter2.default)(queue.prototype);
+
+queue.prototype.check = function () {
+  if (shouldFlushQueue(this)) {
+    this.flush();
+  }
+  if (this.config.interval === 0 || this.capacity === 0) {
+    this.pause();
+  }
+  return this;
+};
+
+queue.prototype.flush = function () {
+  this.emit('flush');
+  this.interval = 0;
+  return this;
+};
+
+queue.prototype.pause = function () {
+  if (this.timer) {
+    clearInterval(this.timer);
+    this.timer = null;
+  }
+  return this;
+};
+
+queue.prototype.start = function () {
+  var self = this;
+  self.pause();
+  self.timer = setInterval(function () {
+    self.interval++;
+    self.check();
+  }, 1000);
+  return self;
+};
+
+function shouldFlushQueue(props) {
+  if (props.capacity > 0 && props.interval >= props.config.interval) {
+    return true;
+  } else if (props.capacity >= props.config.capacity) {
+    return true;
+  }
+  return false;
+}
+
+/***/ }),
+/* 15 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(setImmediate) {/* harmony import */ var _finally__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+
+
+// Store setTimeout reference so promise-polyfill will be unaffected by
+// other code modifying setTimeout (like sinon.useFakeTimers())
+var setTimeoutFunc = setTimeout;
+
+function noop() {}
+
+// Polyfill for Function.prototype.bind
+function bind(fn, thisArg) {
+  return function() {
+    fn.apply(thisArg, arguments);
+  };
+}
+
+function Promise(fn) {
+  if (!(this instanceof Promise))
+    throw new TypeError('Promises must be constructed via new');
+  if (typeof fn !== 'function') throw new TypeError('not a function');
+  this._state = 0;
+  this._handled = false;
+  this._value = undefined;
+  this._deferreds = [];
+
+  doResolve(fn, this);
+}
+
+function handle(self, deferred) {
+  while (self._state === 3) {
+    self = self._value;
+  }
+  if (self._state === 0) {
+    self._deferreds.push(deferred);
+    return;
+  }
+  self._handled = true;
+  Promise._immediateFn(function() {
+    var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
+    if (cb === null) {
+      (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
+      return;
+    }
+    var ret;
+    try {
+      ret = cb(self._value);
+    } catch (e) {
+      reject(deferred.promise, e);
+      return;
+    }
+    resolve(deferred.promise, ret);
+  });
+}
+
+function resolve(self, newValue) {
+  try {
+    // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+    if (newValue === self)
+      throw new TypeError('A promise cannot be resolved with itself.');
+    if (
+      newValue &&
+      (typeof newValue === 'object' || typeof newValue === 'function')
+    ) {
+      var then = newValue.then;
+      if (newValue instanceof Promise) {
+        self._state = 3;
+        self._value = newValue;
+        finale(self);
+        return;
+      } else if (typeof then === 'function') {
+        doResolve(bind(then, newValue), self);
+        return;
+      }
+    }
+    self._state = 1;
+    self._value = newValue;
+    finale(self);
+  } catch (e) {
+    reject(self, e);
+  }
+}
+
+function reject(self, newValue) {
+  self._state = 2;
+  self._value = newValue;
+  finale(self);
+}
+
+function finale(self) {
+  if (self._state === 2 && self._deferreds.length === 0) {
+    Promise._immediateFn(function() {
+      if (!self._handled) {
+        Promise._unhandledRejectionFn(self._value);
+      }
+    });
+  }
+
+  for (var i = 0, len = self._deferreds.length; i < len; i++) {
+    handle(self, self._deferreds[i]);
+  }
+  self._deferreds = null;
+}
+
+function Handler(onFulfilled, onRejected, promise) {
+  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+  this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+  this.promise = promise;
+}
+
+/**
+ * Take a potentially misbehaving resolver function and make sure
+ * onFulfilled and onRejected are only called once.
+ *
+ * Makes no guarantees about asynchrony.
+ */
+function doResolve(fn, self) {
+  var done = false;
+  try {
+    fn(
+      function(value) {
+        if (done) return;
+        done = true;
+        resolve(self, value);
+      },
+      function(reason) {
+        if (done) return;
+        done = true;
+        reject(self, reason);
+      }
+    );
+  } catch (ex) {
+    if (done) return;
+    done = true;
+    reject(self, ex);
+  }
+}
+
+Promise.prototype['catch'] = function(onRejected) {
+  return this.then(null, onRejected);
+};
+
+Promise.prototype.then = function(onFulfilled, onRejected) {
+  var prom = new this.constructor(noop);
+
+  handle(this, new Handler(onFulfilled, onRejected, prom));
+  return prom;
+};
+
+Promise.prototype['finally'] = _finally__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"];
+
+Promise.all = function(arr) {
+  return new Promise(function(resolve, reject) {
+    if (!arr || typeof arr.length === 'undefined')
+      throw new TypeError('Promise.all accepts an array');
+    var args = Array.prototype.slice.call(arr);
+    if (args.length === 0) return resolve([]);
+    var remaining = args.length;
+
+    function res(i, val) {
+      try {
+        if (val && (typeof val === 'object' || typeof val === 'function')) {
+          var then = val.then;
+          if (typeof then === 'function') {
+            then.call(
+              val,
+              function(val) {
+                res(i, val);
+              },
+              reject
+            );
+            return;
+          }
+        }
+        args[i] = val;
+        if (--remaining === 0) {
+          resolve(args);
+        }
+      } catch (ex) {
+        reject(ex);
+      }
+    }
+
+    for (var i = 0; i < args.length; i++) {
+      res(i, args[i]);
+    }
+  });
+};
+
+Promise.resolve = function(value) {
+  if (value && typeof value === 'object' && value.constructor === Promise) {
+    return value;
+  }
+
+  return new Promise(function(resolve) {
+    resolve(value);
+  });
+};
+
+Promise.reject = function(value) {
+  return new Promise(function(resolve, reject) {
+    reject(value);
+  });
+};
+
+Promise.race = function(values) {
+  return new Promise(function(resolve, reject) {
+    for (var i = 0, len = values.length; i < len; i++) {
+      values[i].then(resolve, reject);
+    }
+  });
+};
+
+// Use polyfill for setImmediate for performance gains
+Promise._immediateFn =
+  (typeof setImmediate === 'function' &&
+    function(fn) {
+      setImmediate(fn);
+    }) ||
+  function(fn) {
+    setTimeoutFunc(fn, 0);
+  };
+
+Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
+  if (typeof console !== 'undefined' && console) {
+    console.warn('Possible Unhandled Promise Rejection:', err); // eslint-disable-line no-console
+  }
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (Promise);
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(33).setImmediate))
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.timer = timer;
+function timer(num) {
+  if (this instanceof timer === false) {
+    return new timer(num);
+  }
+  this.count = num || 0;
+  return this;
+}
+
+timer.prototype.start = function () {
+  var self = this;
+  this.pause();
+  this.interval = setInterval(function () {
+    self.count++;
+  }, 1000);
+  return this;
+};
+
+timer.prototype.pause = function () {
+  clearInterval(this.interval);
+  return this;
+};
+
+timer.prototype.value = function () {
+  return this.count;
+};
+
+timer.prototype.clear = function () {
+  this.count = 0;
+  return this;
+};
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.serializeForm = serializeForm;
+/*
+  This is a modified copy of https://github.com/defunctzombie/form-serialize/ v0.7.1
+  Includes a new configuration option:
+    * ignoreTypes - Array, Default: [], Example: [ 'password' ]
+*/
+
+// types which indicate a submit action and are not successful controls
+// these will be ignored
+var k_r_submitter = /^(?:submit|button|image|reset|file)$/i;
+
+// node names which could be successful controls
+var k_r_success_contrls = /^(?:input|select|textarea|keygen)/i;
+
+// Matches bracket notation.
+var brackets = /(\[[^\[\]]*\])/g;
+
+// serializes form fields
+// @param form MUST be an HTMLForm element
+// @param options is an optional argument to configure the serialization. Default output
+// with no options specified is a url encoded string
+//    - hash: [true | false] Configure the output type. If true, the output will
+//    be a js object.
+//    - serializer: [function] Optional serializer function to override the default one.
+//    The function takes 3 arguments (result, key, value) and should return new result
+//    hash and url encoded str serializers are provided with this module
+//    - disabled: [true | false]. If true serialize disabled fields.
+//    - empty: [true | false]. If true serialize empty fields
+function serializeForm(form, options) {
+  if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) != 'object') {
+    options = { hash: !!options };
+  } else if (options.hash === undefined) {
+    options.hash = true;
+  }
+
+  var result = options.hash ? {} : '';
+  var serializer = options.serializer || (options.hash ? hash_serializer : str_serialize);
+
+  var elements = form && form.elements ? form.elements : [];
+
+  // Object store each radio and set if it's empty or not
+  var radio_store = Object.create(null);
+
+  for (var i = 0; i < elements.length; ++i) {
+    var element = elements[i];
+
+    // NEW: Skip ignored field types
+    if (options.ignoreTypes && options.ignoreTypes.indexOf(element.type) > -1) {
+      continue;
+    }
+    // ingore disabled fields
+    if (!options.disabled && element.disabled || !element.name) {
+      continue;
+    }
+    // ignore anyhting that is not considered a success field
+    if (!k_r_success_contrls.test(element.nodeName) || k_r_submitter.test(element.type)) {
+      continue;
+    }
+
+    var key = element.name;
+    var val = element.value;
+
+    // we can't just use element.value for checkboxes cause some browsers lie to us
+    // they say "on" for value when the box isn't checked
+    if ((element.type === 'checkbox' || element.type === 'radio') && !element.checked) {
+      val = undefined;
+    }
+
+    // If we want empty elements
+    if (options.empty) {
+      if (element.type === 'checkbox' && !element.checked) {
+        val = '';
+      }
+
+      // for radio
+      if (element.type === 'radio') {
+        if (!radio_store[element.name] && !element.checked) {
+          radio_store[element.name] = false;
+        } else if (element.checked) {
+          radio_store[element.name] = true;
+        }
+      }
+
+      // if options empty is true, continue only if its radio
+      if (val == undefined && element.type == 'radio') {
+        continue;
+      }
+    } else {
+      // value-less fields are ignored unless options.empty is true
+      if (!val) {
+        continue;
+      }
+    }
+
+    // multi select boxes
+    if (element.type === 'select-multiple') {
+      val = [];
+
+      var selectOptions = element.options;
+      var isSelectedOptions = false;
+      for (var j = 0; j < selectOptions.length; ++j) {
+        var option = selectOptions[j];
+        var allowedEmpty = options.empty && !option.value;
+        var hasValue = option.value || allowedEmpty;
+        if (option.selected && hasValue) {
+          isSelectedOptions = true;
+
+          // If using a hash serializer be sure to add the
+          // correct notation for an array in the multi-select
+          // context. Here the name attribute on the select element
+          // might be missing the trailing bracket pair. Both names
+          // "foo" and "foo[]" should be arrays.
+          if (options.hash && key.slice(key.length - 2) !== '[]') {
+            result = serializer(result, key + '[]', option.value);
+          } else {
+            result = serializer(result, key, option.value);
+          }
+        }
+      }
+
+      if (!isSelectedOptions && options.empty) {
+        result = serializer(result, key, '');
+      }
+      continue;
+    }
+
+    result = serializer(result, key, val);
+  }
+
+  if (options.empty) {
+    for (var key in radio_store) {
+      if (!radio_store[key]) {
+        result = serializer(result, key, '');
+      }
+    }
+  }
+
+  return result;
+}
+
+function parse_keys(string) {
+  var keys = [];
+  var prefix = /^([^\[\]]*)/;
+  var children = new RegExp(brackets);
+  var match = prefix.exec(string);
+
+  if (match[1]) {
+    keys.push(match[1]);
+  }
+
+  while ((match = children.exec(string)) !== null) {
+    keys.push(match[1]);
+  }
+
+  return keys;
+}
+
+function hash_assign(result, keys, value) {
+  if (keys.length === 0) {
+    result = value;
+    return result;
+  }
+
+  var key = keys.shift();
+  var between = key.match(/^\[(.+?)\]$/);
+
+  if (key === '[]') {
+    result = result || [];
+
+    if (Array.isArray(result)) {
+      result.push(hash_assign(null, keys, value));
+    } else {
+      // This might be the result of bad name attributes like "[][foo]",
+      // in this case the original `result` object will already be
+      // assigned to an object literal. Rather than coerce the object to
+      // an array, or cause an exception the attribute "_values" is
+      // assigned as an array.
+      result._values = result._values || [];
+      result._values.push(hash_assign(null, keys, value));
+    }
+
+    return result;
+  }
+
+  // Key is an attribute name and can be assigned directly.
+  if (!between) {
+    result[key] = hash_assign(result[key], keys, value);
+  } else {
+    var string = between[1];
+    // +var converts the variable into a number
+    // better than parseInt because it doesn't truncate away trailing
+    // letters and actually fails if whole thing is not a number
+    var index = +string;
+
+    // If the characters between the brackets is not a number it is an
+    // attribute name and can be assigned directly.
+    if (isNaN(index)) {
+      result = result || {};
+      result[string] = hash_assign(result[string], keys, value);
+    } else {
+      result = result || [];
+      result[index] = hash_assign(result[index], keys, value);
+    }
+  }
+
+  return result;
+}
+
+// Object/hash encoding serializer.
+function hash_serializer(result, key, value) {
+  var matches = key.match(brackets);
+
+  // Has brackets? Use the recursive assignment function to walk the keys,
+  // construct any missing objects in the result tree and make the assignment
+  // at the end of the chain.
+  if (matches) {
+    var keys = parse_keys(key);
+    hash_assign(result, keys, value);
+  } else {
+    // Non bracket notation can make assignments directly.
+    var existing = result[key];
+
+    // If the value has been assigned already (for instance when a radio and
+    // a checkbox have the same name attribute) convert the previous value
+    // into an array before pushing into it.
+    //
+    // NOTE: If this requirement were removed all hash creation and
+    // assignment could go through `hash_assign`.
+    if (existing) {
+      if (!Array.isArray(existing)) {
+        result[key] = [existing];
+      }
+
+      result[key].push(value);
+    } else {
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+// urlform encoding serializer
+function str_serialize(result, key, value) {
+  // encode newlines as \r\n cause the html spec says so
+  value = value.replace(/(\r)?\n/g, '\r\n');
+  value = encodeURIComponent(value);
+
+  // spaces should be '+' rather than '%20'.
+  value = value.replace(/%20/g, '+');
+  return result + (result ? '&' : '') + encodeURIComponent(key) + '=' + value;
+}
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ * JavaScript Cookie v2.1.0
+ * https://github.com/js-cookie/js-cookie
+ *
+ * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
+ * Released under the MIT license
+ */
+(function (factory) {
+	if (true) {
+		!(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+				__WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else { var api, _OldCookies; }
+}(function () {
+	function extend () {
+		var i = 0;
+		var result = {};
+		for (; i < arguments.length; i++) {
+			var attributes = arguments[ i ];
+			for (var key in attributes) {
+				result[key] = attributes[key];
+			}
+		}
+		return result;
+	}
+
+	function init (converter) {
+		function api (key, value, attributes) {
+			var result;
+
+			// Write
+
+			if (arguments.length > 1) {
+				attributes = extend({
+					path: '/'
+				}, api.defaults, attributes);
+
+				if (typeof attributes.expires === 'number') {
+					var expires = new Date();
+					expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
+					attributes.expires = expires;
+				}
+
+				try {
+					result = JSON.stringify(value);
+					if (/^[\{\[]/.test(result)) {
+						value = result;
+					}
+				} catch (e) {}
+
+				if (!converter.write) {
+					value = encodeURIComponent(String(value))
+						.replace(/%(23|24|26|2B|3A|3C|3E|3D|2F|3F|40|5B|5D|5E|60|7B|7D|7C)/g, decodeURIComponent);
+				} else {
+					value = converter.write(value, key);
+				}
+
+				key = encodeURIComponent(String(key));
+				key = key.replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
+				key = key.replace(/[\(\)]/g, escape);
+
+				return (document.cookie = [
+					key, '=', value,
+					attributes.expires && '; expires=' + attributes.expires.toUTCString(), // use expires attribute, max-age is not supported by IE
+					attributes.path    && '; path=' + attributes.path,
+					attributes.domain  && '; domain=' + attributes.domain,
+					attributes.secure ? '; secure' : ''
+				].join(''));
+			}
+
+			// Read
+
+			if (!key) {
+				result = {};
+			}
+
+			// To prevent the for loop in the first place assign an empty array
+			// in case there are no cookies at all. Also prevents odd result when
+			// calling "get()"
+			var cookies = document.cookie ? document.cookie.split('; ') : [];
+			var rdecode = /(%[0-9A-Z]{2})+/g;
+			var i = 0;
+
+			for (; i < cookies.length; i++) {
+				var parts = cookies[i].split('=');
+				var name = parts[0].replace(rdecode, decodeURIComponent);
+				var cookie = parts.slice(1).join('=');
+
+				if (cookie.charAt(0) === '"') {
+					cookie = cookie.slice(1, -1);
+				}
+
+				try {
+					cookie = converter.read ?
+						converter.read(cookie, name) : converter(cookie, name) ||
+						cookie.replace(rdecode, decodeURIComponent);
+
+					if (this.json) {
+						try {
+							cookie = JSON.parse(cookie);
+						} catch (e) {}
+					}
+
+					if (key === name) {
+						result = cookie;
+						break;
+					}
+
+					if (!key) {
+						result[name] = cookie;
+					}
+				} catch (e) {}
+			}
+
+			return result;
+		}
+
+		api.get = api.set = api;
+		api.getJSON = function () {
+			return api.apply({
+				json: true
+			}, [].slice.call(arguments));
+		};
+		api.defaults = {};
+
+		api.remove = function (key, attributes) {
+			api(key, '', extend(attributes, {
+				expires: -1
+			}));
+		};
+
+		api.withConverter = init;
+
+		return api;
+	}
+
+	return init(function () {});
+}));
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.cookie = undefined;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _jsCookie = __webpack_require__(18);
+
+var _jsCookie2 = _interopRequireDefault(_jsCookie);
+
+var _extend = __webpack_require__(1);
+
+var _extend2 = _interopRequireDefault(_extend);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var cookie = exports.cookie = function cookie(str) {
+  if (!arguments.length) return;
+  if (this instanceof cookie === false) {
+    return new cookie(str);
+  }
+
+  this.config = {
+    key: str,
+    options: {
+      expires: 365
+    }
+  };
+  this.data = this.get();
+  return this;
+};
+
+cookie.prototype.get = function (str) {
+  var data = {};
+
+  if (_jsCookie2.default.get(this.config.key)) {
+    data = _jsCookie2.default.getJSON(this.config.key);
+  }
+  if (str && (typeof data === 'undefined' ? 'undefined' : _typeof(data)) === 'object' && typeof data !== null) {
+    return typeof data[str] !== 'undefined' ? data[str] : null;
+  } else {
+    return data;
+  }
+};
+
+cookie.prototype.set = function (str, value, options) {
+  if (!arguments.length || !this.enabled()) return this;
+  if (typeof str === 'string' && arguments.length >= 2) {
+    this.data[str] = value ? value : null;
+  } else if ((typeof str === 'undefined' ? 'undefined' : _typeof(str)) === 'object' && arguments.length === 1) {
+    (0, _extend2.default)(this.data, str);
+  }
+  _jsCookie2.default.set(this.config.key, this.data, (0, _extend2.default)(this.config.options, options || {}));
+  return this;
+};
+
+cookie.prototype.expire = function (daysUntilExpire) {
+  if (daysUntilExpire) {
+    _jsCookie2.default.set(this.config.key, this.data, (0, _extend2.default)(this.config.options, { expires: daysUntilExpire }));
+  } else {
+    _jsCookie2.default.remove(this.config.key);
+    this.data = {};
+  }
+  return this;
+};
+
+cookie.prototype.options = function (obj) {
+  if (!arguments.length) return this.config.options;
+  this.config.options = (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' ? obj : {};
+  return this;
+};
+
+cookie.prototype.enabled = function () {
+  return navigator.cookieEnabled;
+};
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getUniqueId = getUniqueId;
+function getUniqueId() {
+  // uuidv4
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    // browser
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+      return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+    });
+  } else {
+    // node & older browsers
+    var str = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+    return str.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0,
+          v = c == 'x' ? r : r & 0x3 | 0x8;
+      return v.toString(16);
+    });
+  }
+}
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.getScrollState = getScrollState;
+
+var _extend = __webpack_require__(1);
+
+var _extend2 = _interopRequireDefault(_extend);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function getScrollState(obj) {
+  var config = (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' ? obj : {};
+  var state = (0, _extend2.default)({
+    pixel: 0,
+    pixel_max: 0,
+    ratio: null,
+    ratio_max: null
+  }, config);
+
+  if ((typeof window === 'undefined' ? 'undefined' : _typeof(window)) !== undefined || (typeof document === 'undefined' ? 'undefined' : _typeof(document)) !== undefined) {
+    state.pixel = getScrollOffset() + getWindowHeight();
+    if (state.pixel > state.pixel_max) {
+      state.pixel_max = state.pixel;
+    }
+    state.ratio = parseFloat(Number(state.pixel / getScrollableArea()).toFixed(2));
+    state.ratio_max = parseFloat(Number(state.pixel_max / getScrollableArea()).toFixed(2));
+  }
+
+  return state;
+}
+
+function getScrollableArea() {
+  var body = document.body;
+  var html = document.documentElement;
+  return Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight) || null;
+}
+
+function getScrollOffset() {
+  return window.pageYOffset !== undefined ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
+}
+
+function getWindowHeight() {
+  return window.innerHeight || document.documentElement.clientHeight;
+}
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getDomNodeProfile = getDomNodeProfile;
+
+var _getDomNodePath = __webpack_require__(6);
+
+function getDomNodeProfile(el) {
+  return {
+    action: el.action,
+    class: el.className,
+    href: el.href || null,
+    id: el.id,
+    method: el.method,
+    name: el.name,
+    node_name: el.nodeName,
+    selector: (0, _getDomNodePath.getDomNodePath)(el),
+    text: el.text,
+    title: el.title,
+    type: el.type,
+    x_position: el.offsetLeft || el.clientLeft || null,
+    y_position: el.offsetTop || el.clientTop || null
+  };
+}
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.getDomainName = getDomainName;
+function extractHostname(url) {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("://") > -1) {
+        hostname = url.split('/')[2];
+    } else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
+}
+
+// To address those who want the "root domain," use this function:
+function getDomainName(url) {
+    var domain = extractHostname(url),
+        splitArr = domain.split('.'),
+        arrLen = splitArr.length;
+
+    //extracting the root domain here
+    //if there is a subdomain
+    if (arrLen > 2) {
+        domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+        //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+        if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
+            //this is using a ccTLD
+            domain = splitArr[arrLen - 3] + '.' + domain;
+        }
+    }
+    return domain;
+}
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getDatetimeIndex = getDatetimeIndex;
+function getDatetimeIndex(input) {
+  var date = input || new Date();
+  return {
+    'hour_of_day': date.getHours(),
+    'day_of_week': parseInt(1 + date.getDay()),
+    'day_of_month': date.getDate(),
+    'month': parseInt(1 + date.getMonth()),
+    'year': date.getFullYear()
+  };
+}
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getBrowserProfile = getBrowserProfile;
+
+var _getScreenProfile = __webpack_require__(8);
+
+var _getWindowProfile = __webpack_require__(7);
+
+function getBrowserProfile() {
+  return {
+    'cookies': 'undefined' !== typeof navigator.cookieEnabled ? navigator.cookieEnabled : false,
+    'codeName': navigator.appCodeName,
+    'description': getDocumentDescription(),
+    'language': navigator.language,
+    'name': navigator.appName,
+    'online': navigator.onLine,
+    'platform': navigator.platform,
+    'useragent': navigator.userAgent,
+    'version': navigator.appVersion,
+    'screen': (0, _getScreenProfile.getScreenProfile)(),
+    'window': (0, _getWindowProfile.getWindowProfile)()
+  };
+}
+
+function getDocumentDescription() {
+  var el;
+  if (document && typeof document.querySelector === 'function') {
+    el = document.querySelector('meta[name="description"]');
+  }
+  return el ? el.content : '';
+}
+
+/***/ }),
+/* 26 */
+/***/ (function(module) {
+
+module.exports = {"name":"keen-tracking","version":"2.0.9","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"npm run update_docs && git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js","update_docs":"node ./node_modules/replace-in-file/bin/cli.js --configFile=replace-config.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","gulp":"^3.8.11","gulp-awspublish":"0.0.23","gulp-rename":"^1.2.2","gulp-replace":"^0.5.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.initAutoTrackingCore = initAutoTrackingCore;
+
+var _package = __webpack_require__(26);
+
+var _package2 = _interopRequireDefault(_package);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function initAutoTrackingCore(lib) {
+  return function (obj) {
+    var client = this;
+    var helpers = lib.helpers;
+    var utils = lib.utils;
+
+    var options = utils.extend({
+      ignoreDisabledFormFields: false,
+      ignoreFormFieldTypes: ['password'],
+      recordClicks: true,
+      recordFormSubmits: true,
+      recordPageViews: true,
+      recordScrollState: true,
+      shareUuidAcrossDomains: false,
+      collectIpAddress: true
+    }, obj);
+
+    var now = new Date();
+
+    var cookie = new utils.cookie('keen');
+    var uuid = cookie.get('uuid');
+    if (!uuid) {
+      uuid = helpers.getUniqueId();
+      var domainName = helpers.getDomainName(window.location.hostname);
+      var cookieDomain = domainName && options.shareUuidAcrossDomains ? {
+        domain: '.' + domainName
+      } : {};
+      cookie.set('uuid', uuid, cookieDomain);
+    }
+
+    var scrollState = {};
+    if (options.recordScrollState) {
+      scrollState = helpers.getScrollState();
+      utils.listener('window').on('scroll', function () {
+        scrollState = helpers.getScrollState(scrollState);
+      });
+    }
+
+    var addons = [{
+      name: 'keen:ua_parser',
+      input: {
+        ua_string: 'user_agent'
+      },
+      output: 'tech'
+    }, {
+      name: 'keen:url_parser',
+      input: {
+        url: 'url.full'
+      },
+      output: 'url.info'
+    }, {
+      name: 'keen:url_parser',
+      input: {
+        url: 'referrer.full'
+      },
+      output: 'referrer.info'
+    }, {
+      name: 'keen:date_time_parser',
+      input: {
+        date_time: 'keen.timestamp'
+      },
+      output: 'time.utc'
+    }, {
+      name: 'keen:date_time_parser',
+      input: {
+        date_time: 'local_time_full'
+      },
+      output: 'time.local'
+    }];
+
+    var ip_address;
+    if (options.collectIpAddress) {
+      ip_address = '${keen.ip}';
+      addons.push({
+        name: 'keen:ip_to_geo',
+        input: {
+          ip: 'ip_address'
+        },
+        output: 'geo'
+      });
+    } else {
+      ip_address = undefined;
+    }
+
+    client.extendEvents(function () {
+      var browserProfile = helpers.getBrowserProfile();
+      return {
+        tracked_by: _package2.default.name + '-' + _package2.default.version,
+        local_time_full: new Date().toISOString(),
+        user: {
+          uuid: uuid
+        },
+        page: {
+          title: document ? document.title : null,
+          description: browserProfile.description,
+          time_on_page: getSecondsSinceDate(now)
+        },
+
+        ip_address: ip_address,
+        geo: {/* Enriched */},
+
+        user_agent: '${keen.user_agent}',
+        tech: {
+          profile: browserProfile
+          /* Enriched */
+        },
+
+        url: {
+          full: window ? window.location.href : '',
+          info: {/* Enriched */}
+        },
+
+        referrer: {
+          full: document ? document.referrer : '',
+          info: {/* Enriched */}
+        },
+
+        time: {
+          local: {/* Enriched */},
+          utc: {/* Enriched */}
+        },
+
+        keen: {
+          timestamp: new Date().toISOString(),
+          addons: addons
+        }
+      };
+    });
+
+    if (options.recordClicks === true) {
+      utils.listener('a, a *').on('click', function (e) {
+        var el = e.target;
+        var props = {
+          element: helpers.getDomNodeProfile(el),
+          local_time_full: new Date().toISOString(),
+          page: {
+            scroll_state: scrollState
+          }
+        };
+        return client.recordEvent('clicks', props);
+      });
+    }
+
+    if (options.recordFormSubmits === true) {
+      utils.listener('form').on('submit', function (e) {
+        var el = e.target;
+        var serializerOptions = {
+          disabled: options.ignoreDisabledFormFields,
+          ignoreTypes: options.ignoreFormFieldTypes
+        };
+        var props = {
+          form: {
+            action: el.action,
+            fields: utils.serializeForm(el, serializerOptions),
+            method: el.method
+          },
+          element: helpers.getDomNodeProfile(el),
+          local_time_full: new Date().toISOString(),
+          page: {
+            scroll_state: scrollState
+          }
+        };
+        return client.recordEvent('form_submissions', props);
+      });
+    }
+
+    if (options.recordPageViews === true) {
+      client.recordEvent('pageviews');
+    }
+
+    return client;
+  };
+}
+
+function getSecondsSinceDate(date) {
+  var diff = new Date().getTime() - date.getTime();
+  return Math.round(diff / 1000);
+}
+
+/***/ }),
 /* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.deferEvent = deferEvent;
+exports.deferEvents = deferEvents;
+exports.queueCapacity = queueCapacity;
+exports.queueInterval = queueInterval;
+exports.recordDeferredEvents = recordDeferredEvents;
+
+var _index = __webpack_require__(5);
+
+var _index2 = _interopRequireDefault(_index);
+
+var _each = __webpack_require__(0);
+
+var _each2 = _interopRequireDefault(_each);
+
+var _queue = __webpack_require__(14);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function deferEvent(eventCollection, eventBody) {
+
+  if (arguments.length !== 2 || typeof eventCollection !== 'string') {
+    handleValidationError.call(this, 'Incorrect arguments provided to #deferEvent method');
+    return;
+  }
+
+  this.queue.events[eventCollection] = this.queue.events[eventCollection] || [];
+  this.queue.events[eventCollection].push(eventBody);
+  this.queue.capacity++;
+  if (!this.queue.timer) {
+    this.queue.start();
+  }
+  this.emit('deferEvent', eventCollection, eventBody);
+  return this;
+}
+
+function deferEvents(eventsHash) {
+  var self = this;
+
+  if (arguments.length !== 1 || (typeof eventsHash === 'undefined' ? 'undefined' : _typeof(eventsHash)) !== 'object') {
+    handleValidationError.call(this, 'Incorrect arguments provided to #deferEvents method');
+    return;
+  }
+
+  (0, _each2.default)(eventsHash, function (eventList, eventCollection) {
+    self.queue.events[eventCollection] = self.queue.events[eventCollection] || [];
+    self.queue.events[eventCollection] = self.queue.events[eventCollection].concat(eventList);
+    self.queue.capacity = self.queue.capacity + eventList.length;
+    if (!self.queue.timer) {
+      self.queue.start();
+    }
+  });
+  self.emit('deferEvents', eventsHash);
+  return self;
+}
+
+function queueCapacity(num) {
+  if (!arguments.length) return this.queue.config.capacity;
+  this.queue.config.capacity = num ? Number(num) : 0;
+  this.queue.check();
+  return this;
+}
+
+function queueInterval(num) {
+  if (!arguments.length) return this.queue.config.interval;
+  this.queue.config.interval = num ? Number(num) : 0;
+  this.queue.check();
+  return this;
+}
+
+function recordDeferredEvents() {
+  var self = this;
+
+  if (self.queue.capacity > 0) {
+    self.queue.pause();
+    var clonedQueueConfig = _extends({}, self.queue.config);
+    var clonedQueueEvents = _extends({}, self.queue.events);
+    self.queue = (0, _queue.queue)();
+    self.queue.config = clonedQueueConfig;
+    self.queue.on('flush', function () {
+      self.recordDeferredEvents();
+    });
+    self.emit('recordDeferredEvents', clonedQueueEvents);
+    self.recordEvents(clonedQueueEvents, function (err, res) {
+      if (err) {
+        self.emit('recordDeferredEventsError', err, clonedQueueEvents);
+      }
+    });
+  }
+  return self;
+}
+
+function handleValidationError(message) {
+  var err = 'Event(s) not deferred: ' + message;
+  this.emit('error', err);
+}
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function (url, options) {
+  var retriesLimit = options.retry && options.retry.limit ? options.retry.limit : _configDefault2.default.retry.limit;
+  var retryDelay = options.retry && options.retry.initialDelay ? options.retry.initialDelay : _configDefault2.default.retry.initialDelay;
+  var retryOn = options.retry && options.retry.retryOnResponseStatuses ? options.retry.retryOnResponseStatuses : _configDefault2.default.retry.retryOnResponseStatuses;
+  var retriesCount = 0;
+
+  if (options && options.retryOn) {
+    if (!(options.retryOn instanceof Array)) {
+      throw {
+        name: 'ArgumentError',
+        message: 'retryOn property expects an array'
+      };
+    }
+  }
+
+  return new Promise(function (resolve, reject) {
+    var wrappedFetch = function wrappedFetch(n) {
+      fetch(url, options).then(function (response) {
+        if (retryOn.indexOf(response.status) === -1) {
+          resolve(response);
+        } else {
+          if (n > 0) {
+            retry();
+          } else {
+            reject(response);
+          }
+        }
+      }).catch(function (error) {
+        if (n > 0) {
+          retry();
+        } else {
+          reject(error);
+        }
+      });
+    };
+
+    function retry() {
+      retriesCount = retriesCount + 1;
+      setTimeout(function () {
+        wrappedFetch(retriesLimit - retriesCount);
+      }, 2 ^ retriesCount * retryDelay);
+    }
+
+    wrappedFetch(retriesLimit - retriesCount);
+  });
+};
+
+__webpack_require__(12);
+
+__webpack_require__(11);
+
+var _configDefault = __webpack_require__(13);
+
+var _configDefault2 = _interopRequireDefault(_configDefault);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+;
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports) {
+
+module.exports = {
+  map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+  encode: function (n) {
+    "use strict";
+    var o = "", i = 0, m = this.map, i1, i2, i3, e1, e2, e3, e4;
+    n = this.utf8.encode(n);
+    while (i < n.length) {
+      i1 = n.charCodeAt(i++); i2 = n.charCodeAt(i++); i3 = n.charCodeAt(i++);
+      e1 = (i1 >> 2); e2 = (((i1 & 3) << 4) | (i2 >> 4)); e3 = (isNaN(i2) ? 64 : ((i2 & 15) << 2) | (i3 >> 6));
+      e4 = (isNaN(i2) || isNaN(i3)) ? 64 : i3 & 63;
+      o = o + m.charAt(e1) + m.charAt(e2) + m.charAt(e3) + m.charAt(e4);
+    } return o;
+  },
+  decode: function (n) {
+    "use strict";
+    var o = "", i = 0, m = this.map, cc = String.fromCharCode, e1, e2, e3, e4, c1, c2, c3;
+    n = n.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+    while (i < n.length) {
+      e1 = m.indexOf(n.charAt(i++)); e2 = m.indexOf(n.charAt(i++));
+      e3 = m.indexOf(n.charAt(i++)); e4 = m.indexOf(n.charAt(i++));
+      c1 = (e1 << 2) | (e2 >> 4); c2 = ((e2 & 15) << 4) | (e3 >> 2);
+      c3 = ((e3 & 3) << 6) | e4;
+      o = o + (cc(c1) + ((e3 != 64) ? cc(c2) : "")) + (((e4 != 64) ? cc(c3) : ""));
+    } return this.utf8.decode(o);
+  },
+  utf8: {
+    encode: function (n) {
+      "use strict";
+      var o = "", i = 0, cc = String.fromCharCode, c;
+      while (i < n.length) {
+        c = n.charCodeAt(i++); o = o + ((c < 128) ? cc(c) : ((c > 127) && (c < 2048)) ?
+        (cc((c >> 6) | 192) + cc((c & 63) | 128)) : (cc((c >> 12) | 224) + cc(((c >> 6) & 63) | 128) + cc((c & 63) | 128)));
+        } return o;
+    },
+    decode: function (n) {
+      "use strict";
+      var o = "", i = 0, cc = String.fromCharCode, c2, c;
+      while (i < n.length) {
+        c = n.charCodeAt(i);
+        o = o + ((c < 128) ? [cc(c), i++][0] : ((c > 191) && (c < 224)) ?
+        [cc(((c & 31) << 6) | ((c2 = n.charCodeAt(i + 1)) & 63)), (i += 2)][0] :
+        [cc(((c & 15) << 12) | (((c2 = n.charCodeAt(i + 1)) & 63) << 6) | ((c3 = n.charCodeAt(i + 2)) & 63)), (i += 3)][0]);
+      } return o;
+    }
+  }
+};
+
+
+/***/ }),
+/* 31 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -2741,7 +2885,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 29 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -2931,10 +3075,10 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2), __webpack_require__(28)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2), __webpack_require__(31)))
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -2990,7 +3134,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(29);
+__webpack_require__(32);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -3004,42 +3148,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
 
 /***/ }),
-/* 31 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(12);
-/* harmony import */ var _finally__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
-
-
-
-var globalNS = (function() {
-  // the only reliable means to get the global object is
-  // `Function('return this')()`
-  // However, this causes CSP violations in Chrome apps.
-  if (typeof self !== 'undefined') {
-    return self;
-  }
-  if (typeof window !== 'undefined') {
-    return window;
-  }
-  if (typeof global !== 'undefined') {
-    return global;
-  }
-  throw new Error('unable to locate global object');
-})();
-
-if (!globalNS.Promise) {
-  globalNS.Promise = _index__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"];
-} else if (!globalNS.Promise.prototype['finally']) {
-  globalNS.Promise.prototype['finally'] = _finally__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"];
-}
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
-
-/***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3056,15 +3165,11 @@ exports.recordEvents = recordEvents;
 exports.addEvent = addEvent;
 exports.addEvents = addEvents;
 
-__webpack_require__(31);
+__webpack_require__(12);
 
-__webpack_require__(27);
+__webpack_require__(11);
 
-var _index = __webpack_require__(5);
-
-var _index2 = _interopRequireDefault(_index);
-
-var _base = __webpack_require__(26);
+var _base = __webpack_require__(30);
 
 var _base2 = _interopRequireDefault(_base);
 
@@ -3076,7 +3181,15 @@ var _extend = __webpack_require__(1);
 
 var _extend2 = _interopRequireDefault(_extend);
 
+var _index = __webpack_require__(5);
+
+var _index2 = _interopRequireDefault(_index);
+
 var _extendEvents = __webpack_require__(10);
+
+var _fetchRetry = __webpack_require__(29);
+
+var _fetchRetry2 = _interopRequireDefault(_fetchRetry);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3327,7 +3440,7 @@ function sendFetch(method, url, data) {
 
   var self = this;
 
-  return fetch(url, {
+  return (0, _fetchRetry2.default)(url, {
     method: method,
     body: data ? JSON.stringify(data) : '',
     mode: 'cors',
@@ -3336,7 +3449,11 @@ function sendFetch(method, url, data) {
     headers: {
       'Authorization': self.writeKey(),
       'Content-Type': 'application/json'
-    }
+    },
+    // keepalive: true, not supported for CORS yet
+    retry: self.config.retry
+  }).catch(function (connectionError) {
+    return Promise.reject(connectionError);
   }).then(function (response) {
     if (response.ok) {
       return response.json();
@@ -3569,7 +3686,7 @@ function sendBeacon(url, callback) {
 }
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3852,7 +3969,7 @@ function deferFormSubmit(evt, form, callback) {
 }
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var each = __webpack_require__(0),
@@ -3873,7 +3990,7 @@ function serialize(data){
 
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports) {
 
 module.exports = parseParams;
@@ -3895,15 +4012,15 @@ function parseParams(str){
 
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {(function(env){
   var previousKeen = env.Keen || undefined;
   var each = __webpack_require__(0),
       extend = __webpack_require__(1),
-      parseParams = __webpack_require__(35),
-      serialize = __webpack_require__(34);
+      parseParams = __webpack_require__(37),
+      serialize = __webpack_require__(36);
 
   var Emitter = __webpack_require__(4);
 
@@ -4130,7 +4247,7 @@ function parseParams(str){
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4153,41 +4270,41 @@ var _extend = __webpack_require__(1);
 
 var _extend2 = _interopRequireDefault(_extend);
 
-var _listener = __webpack_require__(33);
+var _listener = __webpack_require__(35);
 
-var _recordEventsBrowser = __webpack_require__(32);
+var _recordEventsBrowser = __webpack_require__(34);
 
-var _deferEvents = __webpack_require__(25);
+var _deferEvents = __webpack_require__(28);
 
 var _extendEvents = __webpack_require__(10);
 
-var _browserAutoTracking = __webpack_require__(24);
+var _browserAutoTracking = __webpack_require__(27);
 
-var _getBrowserProfile = __webpack_require__(22);
+var _getBrowserProfile = __webpack_require__(25);
 
-var _getDatetimeIndex = __webpack_require__(21);
+var _getDatetimeIndex = __webpack_require__(24);
 
-var _getDomainName = __webpack_require__(20);
+var _getDomainName = __webpack_require__(23);
 
 var _getDomNodePath = __webpack_require__(6);
 
-var _getDomNodeProfile = __webpack_require__(19);
+var _getDomNodeProfile = __webpack_require__(22);
 
 var _getScreenProfile = __webpack_require__(8);
 
-var _getScrollState = __webpack_require__(18);
+var _getScrollState = __webpack_require__(21);
 
-var _getUniqueId = __webpack_require__(17);
+var _getUniqueId = __webpack_require__(20);
 
 var _getWindowProfile = __webpack_require__(7);
 
-var _cookie = __webpack_require__(16);
+var _cookie = __webpack_require__(19);
 
 var _deepExtend = __webpack_require__(9);
 
-var _serializeForm = __webpack_require__(14);
+var _serializeForm = __webpack_require__(17);
 
-var _timer = __webpack_require__(13);
+var _timer = __webpack_require__(16);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

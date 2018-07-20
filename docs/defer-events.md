@@ -7,7 +7,16 @@ These methods handle an internal queue of events, which is pushed to the [events
 ```javascript
 import KeenTracking from 'keen-tracking';
 
-const client = new KeenTracking({ /*configure*/ });
+const client = new KeenTracking({
+  // projectId: '',
+  // writeKey: '',
+
+  // customize default values
+  queue: {
+    capacity: 5000, // maximum number of items
+    interval: 15 // seconds
+  }
+});
 
 client.deferEvent('purchase', {
   user_id: '35465434643'
@@ -31,34 +40,15 @@ client.deferEvents([
 ]);
 ```
 
-### Set queue capacity
 
-Determine the maximum number of events to store before flushing the queue by passing a number (total) to `client.queueCapacity()`. Calling this method without an argument returns the current setting. The default capacity is `5000` events.
+### Stop interval
 
-```javascript
-import KeenTracking from 'keen-tracking';
-
-const client = new KeenTracking({ /*configure*/ });
-
-client.queueCapacity(5000);
-client.queueCapacity(); // 5000
-```
-
-### Set queue interval
-
-Determine how often the queue should be flushed by passing a number (seconds) to `client.queueInterval()`. Calling this method without an argument returns the current setting. The default interval is `15` seconds.
+Remove interval listener by calling `client.queue.pause();`
 
 ```javascript
-import KeenTracking from 'keen-tracking';
-
-const client = new KeenTracking({ /*configure*/ });
-
-client.queueInterval(15);
-client.queueInterval(); // 15
+// ...
+client.queue.pause();
 ```
-
-**Important:** Setting `client.queueInterval(0);` will stop the internal `setInterval` loop that monitors the queue. Another method for exiting this process is `client.queue.pause();`.
-
 
 ### Flush the queue
 
