@@ -6,7 +6,14 @@
 **BREAKING:**
 **CHANGE:**
 -->
-# AutoTracking - IP addresses
+# 3.0.0
+**New:**
+* Ability to handle connection problems:
+Keen-tracking.js will automatically retry to record an event if previous request failed.
+More about configuration options here:
+https://github.com/keen/keen-tracking.js#handling-connection-problems
+
+# 2.0.7 AutoTracking - IP addresses
 <a name="2.0.7"></a>
 
 **New:**
@@ -15,7 +22,7 @@
   collectIpAddress: false
 });`
 
-# Fetch & Promises
+# 2.0.2 Fetch & Promises
 <a name="2.0.2"></a>
 
 **New:**
@@ -26,12 +33,13 @@
 * auto-tracking listeners will wait more than 500ms if necessary
 
 <a name="2.0.1"></a>
+# 2.0.1
 
 **FIXED:**
 * Listener for HTML A tags containing downloadable base64 data. (#128 contributed by [hinaloe](https://github.com/hinaloe))
 
 <a name="2.0.0"></a>
-# Move from Gulp to Webpack / UMD
+# 2.0.0 Move from Gulp to Webpack / UMD
 
 **NEW:**
 * JS/dist files are now bundled by Webpack 4.8.3 - UMDs!
