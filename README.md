@@ -48,8 +48,8 @@ Automatically record `pageviews`, `clicks`, and `form_submissions` events with r
 ```html
 <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
 <script>
-Keen.ready(function(){
-  const client = new Keen({
+KeenTracking.ready(function(){
+  const client = new KeenTracking({
     projectId: 'YOUR_PROJECT_ID',
     writeKey: 'YOUR_WRITE_KEY'
   });
@@ -108,6 +108,7 @@ if (!sessionCookie.get('guest_id')) {
   sessionCookie.set('guest_id', helpers.getUniqueId());
 }
 
+// optional
 client.extendEvents(() => {
   return {
     geo: {
@@ -172,9 +173,11 @@ client.extendEvents(() => {
   }
 });
 
+// record the event
 client
   .recordEvent('pageviews', {
-    // more custom data
+    // here you can add even more data
+    // some_key: some_value
   })
   .then((response) => {
     // handle responses
