@@ -372,13 +372,13 @@ const client = new KeenTracking({
 
 ---
 
-### Recorded Event ID *missing*
+### Recorded Event ID
 
 A successful response from our API does not contain the ID of the newly created event. We are using Cassandra Database (NoSQL), so there are no joins. Store all necessary data in each event you record.
 Denormalization and duplication of data is a fact of life with Cassandra.
 Read more: 
-[Cassandra Modeling Guide](https://www.datastax.com/dev/blog/basic-rules-of-cassandra-data-modeling)
-[How not to use Cassandra](https://opencredo.com/how-not-to-use-cassandra-like-an-rdbms-and-what-will-happen-if-you-do/)
+- [Cassandra Modeling Guide](https://www.datastax.com/dev/blog/basic-rules-of-cassandra-data-modeling)
+- [How not to use Cassandra](https://opencredo.com/how-not-to-use-cassandra-like-an-rdbms-and-what-will-happen-if-you-do/)
 ---
 
 ### Contributing
