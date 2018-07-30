@@ -21,13 +21,13 @@ Install the library synchronously and configure a new `client` instance to captu
           style="border: solid 4px #37474F"></iframe>
 
   <script>
-  var client = new Keen({
+  var client = new KeenTracking({
     projectId: 'YOUR_PROJECT_ID',
     writeKey: 'YOUR_WRITE_KEY'
   });
 
   // Optional debug mode
-  Keen.debug = true;
+  KeenTracking.debug = true;
   client.on('recordEvent', Keen.log);
 
   // Track a 'pageview' event and initialize auto-tracking data model

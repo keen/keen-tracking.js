@@ -1,4 +1,4 @@
-import Keen from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
 // Record all mutations to a single event stream
 const EVENT_STREAM_NAME = 'app-mutations';
@@ -10,12 +10,12 @@ const OMITTED_MUTATIONS = [
 ];
 
 // Define a client instance
-const client = new Keen({
+const client = new KeenTracking({
   projectId: 'YOUR_PROJECT_ID',
   writeKey: 'YOUR_WRITE_KEY'
 });
 // Optional debugging
-Keen.debug = true;
+KeenTracking.debug = true;
 client.on('recordEvent', Keen.log);
 
 // Track a 'pageview' event and initialize auto-tracking data model
