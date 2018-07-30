@@ -25,12 +25,12 @@ const OMITTED_MUTATIONS = [
 ];
 
 // Define a client instance
-const client = new Keen({
+const client = new KeenTracking({
   projectId: 'YOUR_PROJECT_ID',
   writeKey: 'YOUR_WRITE_KEY'
 });
 // make debug mode
-Keen.debug = true;
+KeenTracking.debug = true;
 client.on('recordEvent', Keen.log);
 
 // Track a 'pageview' event and initialize auto-tracking data model

@@ -1,4 +1,4 @@
-import Keen from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
 // Record all actions to a single event stream
 const EVENT_STREAM_NAME = 'app-actions';
@@ -10,7 +10,7 @@ const OMITTED_ACTIONS = [
 ];
 
 // Define a client instance
-const client = new Keen({
+const client = new KeenTracking({
   projectId: 'PROJECT_ID',
   writeKey: 'WRITE_KEY'
 });

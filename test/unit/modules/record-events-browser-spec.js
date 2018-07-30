@@ -27,8 +27,11 @@ describe('.recordEvent(s) methods (browser)', () => {
           { 'success': true }
         ]
   });
+  const dummyResponse = { created: true };
+  const dummyErrorResponse = { error: true };
 
   beforeEach(() => {
+    fetch.resetMocks();
     XHRmock.setup();
     mockFn1.mockClear();
     client = new Keen({
@@ -58,14 +61,24 @@ describe('.recordEvent(s) methods (browser)', () => {
     });
 
     describe('via Fetch (default transport method)', () => {
-      it('should send a POST request to the API', (done) => {
-        XHRmock.post(new RegExp(config.collection + '_succeed'), (req, res) => {
-          expect(req._headers['content-type']).toBe('application/json');
-          expect(req._body).toBe(JSON.stringify(config.properties));
-          done();
-          return res.status(400);
+      it('should send a POST request to the API', async () => {
+        fetch.mockResponseOnce(JSON.stringify(dummyResponse));
+        let res = await client.recordEvent(config.collection + '_succeed', config.properties);
+        const fetchUrl = fetch.mock.calls[0][0];
+        const fetchOptions = fetch.mock.calls[0][1];
+        expect(fetchOptions).toMatchObject({
+          method: 'POST',
+          mode: 'cors',
+          redirect: 'follow',
+          referrerPolicy: 'unsafe-url',
+          headers:
+            { Authorization: 'bad71ffe8407322ab70559afef29508799ed64b3f75a1ba9e26',
+              'Content-Type': 'application/json' },
+          retry: undefined
         });
-        client.recordEvent(config.collection + '_succeed', config.properties);
+        expect(fetchOptions.body).toEqual(JSON.stringify(config.properties));
+        expect(fetchUrl).toContain(config.collection + '_succeed');
+        expect(res).toEqual(dummyResponse);
       });
 
       it('should return a Promise', (done) => {
@@ -122,14 +135,22 @@ describe('.recordEvent(s) methods (browser)', () => {
     });
 
     describe('via Fetch (default transport method)', () => {
-      it('should send a POST request to the API', (done) => {
-        XHRmock.post(new RegExp('events'), (req, res) => {
-          expect(req._headers['content-type']).toBe('application/json');
-          expect(req._body).toBe(JSON.stringify(batchData));
-          done();
-          return res.status(400);
+      it('should send a POST request to the API', async () => {
+        fetch.mockResponseOnce(JSON.stringify(dummyResponse));
+        let res = await client.recordEvents(batchData);
+        const fetchOptions = fetch.mock.calls[0][1];
+        expect(fetchOptions).toMatchObject({
+          method: 'POST',
+          mode: 'cors',
+          redirect: 'follow',
+          referrerPolicy: 'unsafe-url',
+          headers:
+            { Authorization: 'bad71ffe8407322ab70559afef29508799ed64b3f75a1ba9e26',
+              'Content-Type': 'application/json' },
+          retry: undefined
         });
-        client.recordEvents(batchData);
+        expect(fetchOptions.body).toEqual(JSON.stringify(batchData));
+        expect(res).toEqual(dummyResponse);
       });
 
       it('should return a Promise', (done) => {

@@ -4,7 +4,7 @@ These helpers are designed to generate useful properties and objects for event d
 
 ### Datetime index
 
-`Keen.helpers.getDatetimeIndex()` returns a set of properties like "hour_of_day" or "day_of_month". This helper accepts an optional `Date` object as an argument, otherwise it will construct and return a datetime index object based on "now".
+`KeenTracking.utils.helpers.getDatetimeIndex()` returns a set of properties like "hour_of_day" or "day_of_month". This helper accepts an optional `Date` object as an argument, otherwise it will construct and return a datetime index object based on "now".
 
 This helper works with a new `Date` object, and therefore the value returned is localized and not UTC. [Read more about this issue here](https://github.com/keen/keen-tracking.js/issues/49).
 

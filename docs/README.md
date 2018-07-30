@@ -1,6 +1,5 @@
 # Documentation
 
-* [Installation](./installation.md)
 * [Automated tracking (browser-only)](./auto-tracking.md) to capture `pageviews`, `clicks`, and `form_submissions`
 * [Record events](./record-events.md) to the API individually or in batches
 * [Extend events](./extend-events.md) to build intricate, useful data models and ease instrumentation
@@ -23,6 +22,10 @@
 * [Video.js player](./examples/video/video-js)
 * [Vimeo video player](./examples/video/vimeo)
 * [Youtube iFrame video player](./examples/video/youtube)
+
+**Ads and Conversion Tracking Pixels:**
+
+* [Google Adwords Integration](./examples/adwords)
 
 ---
 

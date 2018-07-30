@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="demo-config.js"></script>
+  <title>Tracking listener test demo</title>
   <script>
     const file = 'keen-tracking.js';
     let path = '';
@@ -43,7 +43,7 @@
 
   <script>
     Keen.ready(function(){
-    const client = new Keen(demoConfig);
+    const client = new Keen(keenGlobals.demoConfig);
       Keen.debug = true;
 
   		Keen.listenTo({

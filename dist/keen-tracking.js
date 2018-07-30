@@ -2262,7 +2262,7 @@ function getDocumentDescription() {
 /* 26 */
 /***/ (function(module) {
 
-module.exports = {"name":"keen-tracking","version":"3.0.1","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
+module.exports = {"name":"keen-tracking","version":"3.0.2","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
 
 /***/ }),
 /* 27 */
@@ -2583,19 +2583,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 exports.default = function (url, options) {
-  var retriesLimit = options.retry && options.retry.limit ? options.retry.limit : _configDefault2.default.retry.limit;
-  var retryDelay = options.retry && options.retry.initialDelay ? options.retry.initialDelay : _configDefault2.default.retry.initialDelay;
-  var retryOn = options.retry && options.retry.retryOnResponseStatuses ? options.retry.retryOnResponseStatuses : _configDefault2.default.retry.retryOnResponseStatuses;
+  var config = _extends({}, _configDefault2.default, options.retry || {});
+
+  var retriesLimit = config.retry.limit;
+  var retryInitialDelay = config.retry.initialDelay;
+  var retryOn = config.retry.retryOnResponseStatuses;
   var retriesCount = 0;
 
-  if (options && options.retryOn) {
-    if (!(options.retryOn instanceof Array)) {
-      throw {
-        name: 'ArgumentError',
-        message: 'retryOn property expects an array'
-      };
-    }
+  if (retryOn && !(retryOn instanceof Array)) {
+    throw {
+      name: 'ArgumentError',
+      message: 'retryOn property expects an array'
+    };
   }
 
   return new Promise(function (resolve, reject) {
@@ -3207,12 +3209,12 @@ function recordEvent(eventCollection, eventBody, callback, asyncMode) {
   // Requests are asynchronous by default
   isAsync = 'boolean' === typeof asyncMode ? asyncMode : true;
 
-  if (!checkValidation.call(this, cb)) {
+  if (!checkValidation.call(this, callback)) {
     return;
   }
 
   if (!eventCollection || typeof eventCollection !== 'string') {
-    handleValidationError.call(this, 'Collection name must be a string.', cb);
+    handleValidationError.call(this, 'Collection name must be a string.', callback);
     return;
   }
 
@@ -3237,7 +3239,7 @@ function recordEvent(eventCollection, eventBody, callback, asyncMode) {
   this.emit('recordEvent', eventCollection, extendedEventBody);
 
   if (!_index2.default.enabled) {
-    handleValidationError.call(this, 'Keen.enabled is set to false.', cb);
+    handleValidationError.call(this, 'Keen.enabled is set to false.', callback);
     return false;
   }
 
@@ -3251,6 +3253,11 @@ function recordEvent(eventCollection, eventBody, callback, asyncMode) {
     modified: new Date().getTime()
   });
   getRequestUrlOkLength = getRequestUrl.length < getUrlMaxLength();
+
+  if (navigator && navigator.sendBeacon && eventBody && eventBody.element && (eventBody.element.node_name === 'A' || eventBody.element.node_name === 'FORM')) {
+    navigator.sendBeacon(url + '?api_key=' + this.writeKey(), JSON.stringify(extendedEventBody));
+    return this;
+  }
 
   if (isAsync) {
     switch (this.config.requestType) {
@@ -3292,24 +3299,21 @@ function recordEvent(eventCollection, eventBody, callback, asyncMode) {
 function recordEvents(eventsHash, callback) {
   var self = this,
       url,
-      cb,
       extendedEventsHash;
 
   url = this.url('events');
-  cb = callback;
-  callback = null;
 
-  if (!checkValidation.call(this, cb)) {
+  if (!checkValidation.call(this, callback)) {
     return;
   }
 
   if ('object' !== (typeof eventsHash === 'undefined' ? 'undefined' : _typeof(eventsHash)) || eventsHash instanceof Array) {
-    handleValidationError.call(this, 'First argument must be an object', cb);
+    handleValidationError.call(this, 'First argument must be an object', callback);
     return;
   }
 
   if (arguments.length > 2) {
-    handleValidationError.call(this, 'Incorrect arguments provided to #recordEvents method', cb);
+    handleValidationError.call(this, 'Incorrect arguments provided to #recordEvents method', callback);
     return;
   }
 
@@ -3356,17 +3360,15 @@ function recordEvents(eventsHash, callback) {
   this.emit('recordEvents', extendedEventsHash);
 
   if (!_index2.default.enabled) {
-    handleValidationError.call(this, 'Keen.enabled is set to false.', cb);
+    handleValidationError.call(this, 'Keen.enabled is set to false.', callback);
     return false;
   }
 
   if ((!this.config.requestType || this.config.requestType !== 'xhr') && typeof fetch !== 'undefined') {
-    return sendFetch.call(this, 'POST', url, extendedEventsHash, cb);
+    return sendFetch.call(this, 'POST', url, extendedEventsHash, callback);
   } else if (getXhr()) {
-    sendXhr.call(this, 'POST', url, extendedEventsHash, cb);
+    sendXhr.call(this, 'POST', url, extendedEventsHash, callback);
   }
-
-  callback = cb = null;
   return this;
 }
 
@@ -3391,15 +3393,13 @@ function addEvents() {
 // ------------------------------
 
 function checkValidation(callback) {
-  var cb = callback;
-  callback = null;
 
   if (!this.projectId()) {
-    handleValidationError.call(this, 'Keen.Client is missing a projectId property.', cb);
+    handleValidationError.call(this, 'Keen.Client is missing a projectId property.', callback);
     return false;
   }
   if (!this.writeKey()) {
-    handleValidationError.call(this, 'Keen.Client is missing a writeKey property.', cb);
+    handleValidationError.call(this, 'Keen.Client is missing a writeKey property.', callback);
     return false;
   }
   return true;
@@ -3410,7 +3410,6 @@ function handleValidationError(message, cb) {
   this.emit('error', err);
   if (cb) {
     cb.call(this, err, null);
-    cb = null;
   }
 }
 
@@ -3907,7 +3906,11 @@ function deferClickEvent(evt, anchor, callback) {
       }
       evt.returnValue = false;
       if (anchor.href && anchor.href !== '#' && anchor.href !== window.location + '#') {
-        if (typeof cbResponse !== 'undefined' && cbResponse.then) {
+        if (typeof cbResponse !== 'undefined') {
+          if (navigator && navigator.sendBeacon) {
+            window.location = anchor.href;
+            return;
+          }
           // promise
           cbResponse.then(function () {
             window.location = anchor.href;
@@ -3932,7 +3935,6 @@ function deferClickEvent(evt, anchor, callback) {
 
 function deferFormSubmit(evt, form, callback) {
   var timeout = 500;
-
   // Fire listener and catch possible response (return false)
   var cbResponse = callback(evt);
 
@@ -3950,7 +3952,11 @@ function deferFormSubmit(evt, form, callback) {
         evt.preventDefault();
       }
       evt.returnValue = false;
-      if (typeof cbResponse !== 'undefined' && cbResponse.then) {
+      if (typeof cbResponse !== 'undefined') {
+        if (navigator && navigator.sendBeacon) {
+          form.submit();
+          return;
+        }
         // promise
         cbResponse.then(function () {
           form.submit();
@@ -4256,7 +4262,7 @@ function parseParams(str){
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.KeenTracking = exports.Keen = undefined;
+exports.KeenTracking = exports.Keen = exports.keenGlobals = undefined;
 
 var _index = __webpack_require__(5);
 
@@ -4447,6 +4453,11 @@ if (!Array.prototype.indexOf) {
     }
     return -1;
   };
+}
+
+var keenGlobals = exports.keenGlobals = undefined;
+if (typeof webpackKeenGlobals !== 'undefined') {
+  exports.keenGlobals = keenGlobals = webpackKeenGlobals;
 }
 
 var Keen = exports.Keen = _index2.default.extendLibrary(_index2.default); // deprecated, left for backward compatibility

@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
-<head></head>
+<head>
+<title>Tracking test demo</title>
 <meta charset="utf-8">
-<body onunload="console.log('z')">
+</head>
+<body>
   <a href="?x=1">Link1</a>
   <a href="?x=2">Link2</a>
-  <script src="demo-config.js"></script>
   <script src="demo-tests.js"></script>
   <script>
     const file = 'keen-tracking.js';
@@ -19,7 +20,7 @@
   </script>
   <script>
     KeenTracking.ready(function(){
-      demoTests(demoConfig, KeenTracking);
+      demoTests(keenGlobals.demoConfig, KeenTracking);
     });
 	</script>
 </body>
