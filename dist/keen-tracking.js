@@ -2583,19 +2583,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 exports.default = function (url, options) {
-  var retriesLimit = options.retry && options.retry.limit ? options.retry.limit : _configDefault2.default.retry.limit;
-  var retryDelay = options.retry && options.retry.initialDelay ? options.retry.initialDelay : _configDefault2.default.retry.initialDelay;
-  var retryOn = options.retry && options.retry.retryOnResponseStatuses ? options.retry.retryOnResponseStatuses : _configDefault2.default.retry.retryOnResponseStatuses;
+  var config = _extends({}, _configDefault2.default, options);
+
+  var retriesLimit = config.retry.limit;
+  var retryInitialDelay = config.retry.initialDelay;
+  var retryOn = config.retry.retryOnResponseStatuses;
   var retriesCount = 0;
 
-  if (options && options.retryOn) {
-    if (!(options.retryOn instanceof Array)) {
-      throw {
-        name: 'ArgumentError',
-        message: 'retryOn property expects an array'
-      };
-    }
+  if (retryOn && !(retryOn instanceof Array)) {
+    throw {
+      name: 'ArgumentError',
+      message: 'retryOn property expects an array'
+    };
   }
 
   return new Promise(function (resolve, reject) {

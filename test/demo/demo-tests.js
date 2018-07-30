@@ -11,37 +11,28 @@ const demoTests = (demoConfig, Keen) => {
   };
   */
 
-  const client = new Keen(demoConfig);
   Keen.debug = true;
+
+  const client = new Keen(demoConfig);
 
   const x = Math.random();
   console.log(x);
   const eventBody = {
-    x,
-    ip_address: '${keen.ip}',
-    keen: {
-      addons: [
-        {
-          name : 'keen:ip_to_geo',
-          input : { ip : 'ip_address' },
-          output : 'ip_geo_info'
-        }
-      ]
-    }
+    x
   };
 
-  client.deferEvent('x', {
-    user_id: '35465434643'
-  });
-  client.deferEvent('x', {
-    user_id: '35465434643'
-  });
-  client.deferEvent('x', {
-    user_id: '35465434643'
-  });
+  client
+    .recordEvent('recordEvent', eventBody)
+    .then((res) => {
+      console.log('with promise');
+      Keen.log('#recordEvent');
+      Keen.log(res);
+      console.log('ok');
+    })
+    .catch(some => {
+      console.log('failed',some);
+    });
 
-
-return;
   client
     .recordEvent('recordEvent', { z : 1}, function(err, res){
       console.log('with callback');

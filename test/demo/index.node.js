@@ -1,5 +1,6 @@
 // NODE.js tests
 const demoKeen = require('../../');
+const demoConfig = require('../../../demo-config');
 const demoTests = require('./demo-tests');
 
-demoTests(demoKeen.keenGlobals.demoConfig, demoKeen);
+demoTests(demoConfig, demoKeen);

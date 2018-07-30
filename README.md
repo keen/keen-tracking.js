@@ -82,7 +82,8 @@ client
   })
   .then((response) => {
     // handle successful responses
-  }).catch(error => {
+  })
+  .catch(error => {
     // handle errors
   });
 ```
@@ -297,7 +298,7 @@ This can also be used with [automated event tracking](./docs/auto-tracking.md).
 
 ---
 
-### Server Side Tracking (Back-end)
+### Server Side Tracking (Node.js Back-end)
 
 ```javascript
 const KeenTracking = require('keen-tracking');
@@ -307,10 +308,30 @@ const client = new KeenTracking({
   writeKey: 'WRITE_KEY'
 });
 
+// promise
 client
   .recordEvent('purchases', {
     item: 'Avocado',
-    number_of_items: 10
+    number_of_items: 10,
+    user: {
+      name: 'John Promise'
+    }
+  })
+  .then((response) => {
+    // handle successful responses
+  })
+  .catch(error => {
+    // handle errors
+  });
+
+// or callback
+client
+  .recordEvent('purchases', {
+    item: 'Avocado',
+    number_of_items: 10,
+    user: {
+      name: 'John Callback'
+    }
   }, (error, response) => {
     if (error) {
       // handle errors
