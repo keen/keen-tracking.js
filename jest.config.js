@@ -7,6 +7,10 @@ module.exports = {
   bail: true,
   testMatch: [files],
   testEnvironment: process.env.TEST_ENV || 'jsdom',
+  automock: false,
+  setupFiles: [
+    "./test/setupJest.js"
+  ],
   transform: {
       "^.+\\.js$": "babel-jest",
   },

@@ -10,7 +10,8 @@
   },
   "scripts": {
     "start": "NODE_ENV=development webpack-dev-server",
-    "test": "NODE_ENV=test jest && NODE_ENV=test TEST_ENV=node jest",
+    "test": "NODE_ENV=test jest && npm run test:node",
+    "test:node": "NODE_ENV=test TEST_ENV=node jest",
     "test:watch": "NODE_ENV=test jest --watch",
     "test:node:watch": "NODE_ENV=test TEST_ENV=node jest --watch",
     "build": "NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node",
@@ -53,6 +54,7 @@
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^22.4.3",
+    "jest-fetch-mock": "^1.6.5",
     "nock": "^9.2.6",
     "regenerator-runtime": "^0.11.1",
     "replace-in-file": "^3.4.0",

@@ -41,28 +41,7 @@ Need help? Ask for it on our [Slack community channel](https://slack.keen.io) or
 
 ---
 
-### Automated Event Tracking (Browser-only)
-
-Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
-
-```html
-<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
-<script>
-KeenTracking.ready(function(){
-  const client = new KeenTracking({
-    projectId: 'YOUR_PROJECT_ID',
-    writeKey: 'YOUR_WRITE_KEY'
-  });
-  client.initAutoTracking();
-});
-</script>
-```
-
-[Learn how to configure and customize this functionality here](./docs/auto-tracking.md)
-
----
-
-### Record Events using JavaScript bundlers like Webpack, RollUp, Parcel
+### Record an Event
 
 ```javascript
 import KeenTracking from 'keen-tracking';
@@ -87,6 +66,27 @@ client
     // handle errors
   });
 ```
+
+---
+
+### Automated Event Tracking (Browser-only)
+
+Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
+
+```html
+<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
+<script>
+KeenTracking.ready(function(){
+  const client = new KeenTracking({
+    projectId: 'YOUR_PROJECT_ID',
+    writeKey: 'YOUR_WRITE_KEY'
+  });
+  client.initAutoTracking();
+});
+</script>
+```
+
+[Learn how to configure and customize this functionality here](./docs/auto-tracking.md)
 
 ---
 
@@ -298,7 +298,7 @@ This can also be used with [automated event tracking](./docs/auto-tracking.md).
 
 ---
 
-### Server Side Tracking (Node.js Back-end)
+### Server-side Tracking (Node.js Back-end)
 
 ```javascript
 const KeenTracking = require('keen-tracking');
@@ -370,6 +370,15 @@ const client = new KeenTracking({
 });
 ```
 
+---
+
+### Recorded Event ID *missing*
+
+A successful response from our API does not contain the ID of the newly created event. We are using Cassandra Database (NoSQL), so there are no joins. Store all necessary data in each event you record.
+Denormalization and duplication of data is a fact of life with Cassandra.
+Read more: 
+[Cassandra Modeling Guide](https://www.datastax.com/dev/blog/basic-rules-of-cassandra-data-modeling)
+[How not to use Cassandra](https://opencredo.com/how-not-to-use-cassandra-like-an-rdbms-and-what-will-happen-if-you-do/)
 ---
 
 ### Contributing
