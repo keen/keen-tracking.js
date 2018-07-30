@@ -1083,9 +1083,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // ------------------------------
 
 function recordEvent(eventCollection, eventBody, callback) {
-  var url, data, extendedEventBody;
-
-  data = {};
+  var data = {};
+  var extendedEventBody = {};
 
   if (!checkValidation.call(this, callback)) {
     return;
@@ -1108,7 +1107,7 @@ function recordEvent(eventCollection, eventBody, callback) {
   // ------------------------------
   // Run extendEvent(s) transforms
   // ------------------------------
-  extendedEventBody = {};
+
   (0, _extendEvents.getExtendedEventBody)(extendedEventBody, this.extensions.events);
   (0, _extendEvents.getExtendedEventBody)(extendedEventBody, this.extensions.collections[eventCollection]);
   (0, _extendEvents.getExtendedEventBody)(extendedEventBody, [data]);
@@ -1128,9 +1127,8 @@ function recordEvent(eventCollection, eventBody, callback) {
 // ------------------------------
 
 function recordEvents(eventsHash, callback) {
-  var self = this,
-      url,
-      extendedEventsHash;
+  var self = this;
+  var extendedEventsHash = {};
 
   if (!checkValidation.call(this, callback)) {
     return;
@@ -1161,7 +1159,6 @@ function recordEvents(eventsHash, callback) {
   // ------------------------------
   // Run extendEvent(s) transforms
   // ------------------------------
-  extendedEventsHash = {};
   (0, _each2.default)(eventsHash, function (eventList, eventCollection) {
     // Find or create collection on new hash
     extendedEventsHash[eventCollection] = extendedEventsHash[eventCollection] || [];
