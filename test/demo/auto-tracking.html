@@ -3,7 +3,6 @@
 <head>
   <meta name="description" content="Keen IO Javascript SDK Unit Tests">
   <meta charset="utf-8">
-  <script src="demo-config.js"></script>
   <script>
     const file = 'keen-tracking.js';
     let path = '';
@@ -16,7 +15,7 @@
   </script>
   <script>
     Keen.ready(function(){
-      const client = new Keen(demoConfig);
+      const client = new Keen(keenGlobals.demoConfig);
       Keen.debug = true;
       client.extendEvents({ extended: true });
       client.on('recordEvent', Keen.log);
