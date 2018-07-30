@@ -10,7 +10,7 @@ Automatically record pageviews, clicks, and form submissions, with a robust data
 <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
 <script>
 Keen.ready(function(){
-  const client = new Keen({
+  const client = new KeenTracking({
     projectId: 'YOUR_PROJECT_ID',
     writeKey: 'YOUR_WRITE_KEY'
   });
@@ -24,7 +24,7 @@ Keen.ready(function(){
 The following configuration options are available to let you specify which types of events to track (defaults shown):
 
 ```javascript
-const client = new Keen({
+const client = new KeenTracking({
   projectId: 'YOUR_PROJECT_ID',
   writeKey: 'YOUR_WRITE_KEY'
 });
@@ -51,7 +51,7 @@ Scroll state tracking powered by the `getScrollState()` helper and a `window` sc
 Add additional properties to any or all events with [`extendEvent` or `extendEvents` methods](./extend-events.md):
 
 ```javascript
-const client = new Keen({
+const client = new KeenTracking({
   projectId: 'YOUR_PROJECT_ID',
   writeKey: 'YOUR_WRITE_KEY'
 });
@@ -73,7 +73,7 @@ client.extendEvent('pageviews', function(){
   return {
     page: {
       author_id: 'f123109vb1231200312bb',
-      author_name: 'Dustin Larimer',
+      author_name: 'John Doe',
       last_updated: '2017-09-13T12:00:00-07:00'
     }
     /* Custom properties for pageviews event */
