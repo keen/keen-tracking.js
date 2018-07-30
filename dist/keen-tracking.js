@@ -2300,16 +2300,23 @@ function initAutoTrackingCore(lib) {
     }, obj);
 
     var now = new Date();
-
     var cookie = new utils.cookie('keen');
+
+    var domainName = helpers.getDomainName(window.location.hostname);
+    var cookieDomain = domainName && options.shareUuidAcrossDomains ? {
+      domain: '.' + domainName
+    } : {};
+
     var uuid = cookie.get('uuid');
     if (!uuid) {
       uuid = helpers.getUniqueId();
-      var domainName = helpers.getDomainName(window.location.hostname);
-      var cookieDomain = domainName && options.shareUuidAcrossDomains ? {
-        domain: '.' + domainName
-      } : {};
       cookie.set('uuid', uuid, cookieDomain);
+    }
+
+    var initialReferrer = cookie.get('initialReferrer');
+    if (!initialReferrer) {
+      initialReferrer = document && document.referrer || undefined;
+      cookie.set('initialReferrer', initialReferrer, cookieDomain);
     }
 
     var scrollState = {};
@@ -2352,7 +2359,7 @@ function initAutoTrackingCore(lib) {
       output: 'time.local'
     }];
 
-    var ip_address;
+    var ip_address = undefined;
     if (options.collectIpAddress) {
       ip_address = '${keen.ip}';
       addons.push({
@@ -2362,8 +2369,6 @@ function initAutoTrackingCore(lib) {
         },
         output: 'geo'
       });
-    } else {
-      ip_address = undefined;
     }
 
     client.extendEvents(function () {
@@ -2395,6 +2400,7 @@ function initAutoTrackingCore(lib) {
         },
 
         referrer: {
+          initial: initialReferrer,
           full: document ? document.referrer : '',
           info: {/* Enriched */}
         },
