@@ -45,7 +45,7 @@ In your Adwords Campaign, edit your Ad's [Final URL](https://support.google.com/
 Your events should contain page.info.query_string
 with values from the URL of the landing page (Final URL)
 
-![alt text](https://github.com/keen/keen-tracking.js/raw/master/docs/examples/adwords/img/screen1.png "")
+![alt text](https://raw.githubusercontent.com/keen/keen-tracking.js/master/docs/examples/adwords/img/screen1.png)
 
 ## Explorer
 
@@ -55,4 +55,4 @@ Run a query to see how many visitors came from the Ad
 * Event Collection: pageviews
 * Add filter: page.info.query_string.ad_id = 123
 
-![alt text](https://github.com/keen/keen-tracking.js/raw/master/docs/examples/adwords/img/screen2.png "")
+![alt text](https://raw.githubusercontent.com/keen/keen-tracking.js/master/docs/examples/adwords/img/screen2.png)
