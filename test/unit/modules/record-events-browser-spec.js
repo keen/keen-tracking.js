@@ -1,7 +1,7 @@
 import XHRmock from 'xhr-mock';
 // Keen.debug = true;
 
-import Keen from '../../../lib/browser';
+import KeenTracking from '../../../lib/browser';
 import config from '../helpers/client-config';
 
 describe('.recordEvent(s) methods (browser)', () => {
@@ -34,7 +34,7 @@ describe('.recordEvent(s) methods (browser)', () => {
     fetch.resetMocks();
     XHRmock.setup();
     mockFn1.mockClear();
-    client = new Keen({
+    client = new KeenTracking({
       projectId: config.projectId,
       writeKey: config.writeKey,
       host: config.host,
@@ -49,10 +49,10 @@ describe('.recordEvent(s) methods (browser)', () => {
   describe('.recordEvent', () => {
 
     it('should not send events if set to \'false\'', () => {
-      Keen.enabled = false;
+      KeenTracking.enabled = false;
       client.recordEvent('not-going', { test: 'data' }, mockFn1);
       expect(mockFn1).toBeCalledWith(expect.any(String), null);
-      Keen.enabled = true;
+      KeenTracking.enabled = true;
     });
 
     it('should return an error message if event collection is omitted', () => {
@@ -95,7 +95,7 @@ describe('.recordEvent(s) methods (browser)', () => {
 
     describe('*deprecated* via XHR/CORS (if supported)', () => {
       it('should send a POST request to the API using XHR', (done) => {
-        const clientWithXHR = new Keen({
+        const clientWithXHR = new KeenTracking({
           projectId: config.projectId,
           writeKey: config.writeKey,
           host: config.host,
@@ -119,11 +119,11 @@ describe('.recordEvent(s) methods (browser)', () => {
 
   describe('.recordEvents', () => {
 
-    it('should not send events if Keen.enabled is set to \'false\'', () => {
-      Keen.enabled = false;
+    it('should not send events if KeenTracking.enabled is set to \'false\'', () => {
+      KeenTracking.enabled = false;
       client.recordEvents(batchData, mockFn1);
       expect(mockFn1).toBeCalledWith(expect.any(String), null);
-      Keen.enabled = true;
+      KeenTracking.enabled = true;
     });
 
     it('should return an error message if first argument is not an object', () => {
@@ -167,7 +167,7 @@ describe('.recordEvent(s) methods (browser)', () => {
 
     describe('*Deprecated* via XHR/CORS (if supported)', () => {
       it('should send a POST request to the API using XHR', (done) => {
-        const clientWithXHR = new Keen({
+        const clientWithXHR = new KeenTracking({
           projectId: config.projectId,
           writeKey: config.writeKey,
           host: config.host,
