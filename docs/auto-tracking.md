@@ -6,6 +6,14 @@ Automatically record pageviews, clicks, and form submissions, with a robust data
 
 ### Installation
 
+Install this package from NPM *Recommended*
+
+```ssh
+npm install keen-tracking --save
+```
+
+Or load it from public CDN
+
 ```html
 <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
 <script>
@@ -28,16 +36,27 @@ const client = new KeenTracking({
   projectId: 'YOUR_PROJECT_ID',
   writeKey: 'YOUR_WRITE_KEY'
 });
+
 client.initAutoTracking({
+
+  // record on page load
+  recordPageViews: true,
+  // OR
+  // record on leaving the page - this ways you will get the time spent on this page
+  recordPageViewsOnExit: true,
+
+  recordScrollState: true, // see how far people scrolled
+
+  recordClicks: true, // record clicks on A links
+
+  // FORMS
+  recordFormSubmits: true,
   ignoreDisabledFormFields: false,
   ignoreFormFieldTypes: ['password'],
-  recordClicks: true,
-  recordFormSubmits: true,
-  recordPageViews: true,
-  recordScrollState: true,
 
-  // GDPR related option
+  // GDPR related options
   collectIpAddress: true, // default
+  collectUuid: true, // default
 
   // share UUID cookies across subdomains
   shareUuidAcrossDomains: false // default

@@ -21,6 +21,8 @@
       client.extendEvents({ extended: true });
       client.on('recordEvent', Keen.log);
       client.initAutoTracking({
+      //  recordPageViewsOnExit: true,
+      //  collectUuid: false,
         // ignoreDisabledFormFields: false,
         // ignoreFormFieldTypes: ['password'],
         // recordClicks: false,
@@ -38,9 +40,9 @@
   <a href="data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E" download="somefile.html">Download DATA</a>
   <div id="nav">
     <ul class="nav-tabs">
-      <li class="active"><a href="./auto-tracking.html">Link 1</a></li>
-      <li><a href="./auto-tracking.html" class="btn">Link 2</a></li>
-      <li><a href="./auto-tracking.html" target="_blank">Link 3 (new window)</a></li>
+      <li class="active"><a href="./auto-tracking.html?get=1">Link 1</a></li>
+      <li><a href="./auto-tracking.html?get=2" class="btn">Link 2</a></li>
+      <li><a href="./auto-tracking.html?get=3" target="_blank">Link 3 (new window)</a></li>
       <li><a href="#hash">Link 4 (hash)</a></li>
     </ul>
   </div>
