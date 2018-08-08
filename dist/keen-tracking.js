@@ -2262,7 +2262,7 @@ function getDocumentDescription() {
 /* 26 */
 /***/ (function(module) {
 
-module.exports = {"name":"keen-tracking","version":"3.1.0","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
+module.exports = {"name":"keen-tracking","version":"3.1.1","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
 
 /***/ }),
 /* 27 */
@@ -2288,15 +2288,19 @@ function initAutoTrackingCore(lib) {
     var helpers = lib.helpers;
     var utils = lib.utils;
 
+    // client.config.requestType = 'beaconApi'; from next major version
+
     var options = utils.extend({
       ignoreDisabledFormFields: false,
       ignoreFormFieldTypes: ['password'],
       recordClicks: true,
       recordFormSubmits: true,
       recordPageViews: true,
+      recordPageViewsOnExit: false,
       recordScrollState: true,
       shareUuidAcrossDomains: false,
-      collectIpAddress: true
+      collectIpAddress: true,
+      collectUuid: true
     }, obj);
 
     var now = new Date();
@@ -2307,10 +2311,14 @@ function initAutoTrackingCore(lib) {
       domain: '.' + domainName
     } : {};
 
-    var uuid = cookie.get('uuid');
-    if (!uuid) {
-      uuid = helpers.getUniqueId();
-      cookie.set('uuid', uuid, cookieDomain);
+    var uuid = void 0;
+    if (options.collectUuid) {
+      console.log(options.collectUuid, uuid);
+      uuid = cookie.get('uuid');
+      if (!uuid) {
+        uuid = helpers.getUniqueId();
+        cookie.set('uuid', uuid, cookieDomain);
+      }
     }
 
     var initialReferrer = cookie.get('initialReferrer');
@@ -2359,17 +2367,15 @@ function initAutoTrackingCore(lib) {
       output: 'time.local'
     }];
 
-    var ip_address = undefined;
-    if (options.collectIpAddress) {
-      ip_address = '${keen.ip}';
-      addons.push({
-        name: 'keen:ip_to_geo',
-        input: {
-          ip: 'ip_address'
-        },
-        output: 'geo'
-      });
-    }
+    var ip_address = '${keen.ip}';
+    addons.push({
+      name: 'keen:ip_to_geo',
+      input: {
+        ip: 'ip_address',
+        remove_ip_property: !options.collectIpAddress
+      },
+      output: 'geo'
+    });
 
     client.extendEvents(function () {
       var browserProfile = helpers.getBrowserProfile();
@@ -2382,7 +2388,9 @@ function initAutoTrackingCore(lib) {
         page: {
           title: document ? document.title : null,
           description: browserProfile.description,
-          time_on_page: getSecondsSinceDate(now)
+          scroll_state: scrollState,
+          time_on_page: getSecondsSinceDate(now),
+          time_on_page_ms: getMiliSecondsSinceDate(now)
         },
 
         ip_address: ip_address,
@@ -2420,14 +2428,15 @@ function initAutoTrackingCore(lib) {
     if (options.recordClicks === true) {
       utils.listener('a, a *').on('click', function (e) {
         var el = e.target;
-        var props = {
+        var body = {
           element: helpers.getDomNodeProfile(el),
-          local_time_full: new Date().toISOString(),
-          page: {
-            scroll_state: scrollState
-          }
+          local_time_full: new Date().toISOString()
         };
-        return client.recordEvent('clicks', props);
+        return client.recordEvent({
+          collection: 'clicks',
+          body: body,
+          useBeaconApi: true
+        });
       });
     }
 
@@ -2438,24 +2447,37 @@ function initAutoTrackingCore(lib) {
           disabled: options.ignoreDisabledFormFields,
           ignoreTypes: options.ignoreFormFieldTypes
         };
-        var props = {
+        var body = {
           form: {
             action: el.action,
             fields: utils.serializeForm(el, serializerOptions),
             method: el.method
           },
           element: helpers.getDomNodeProfile(el),
-          local_time_full: new Date().toISOString(),
-          page: {
-            scroll_state: scrollState
-          }
+          local_time_full: new Date().toISOString()
         };
-        return client.recordEvent('form_submissions', props);
+        return client.recordEvent({
+          collection: 'form_submissions',
+          body: body,
+          useBeaconApi: true
+        });
       });
     }
 
-    if (options.recordPageViews === true) {
-      client.recordEvent('pageviews');
+    if (options.recordPageViews === true && !options.recordPageViewsOnExit) {
+      client.recordEvent({
+        collection: 'pageviews',
+        useBeaconApi: true
+      });
+    }
+
+    if (options.recordPageViewsOnExit && typeof window !== 'undefined') {
+      window.addEventListener('beforeunload', function () {
+        client.recordEvent({
+          collection: 'pageviews',
+          useBeaconApi: true
+        });
+      });
     }
 
     return client;
@@ -2463,8 +2485,11 @@ function initAutoTrackingCore(lib) {
 }
 
 function getSecondsSinceDate(date) {
-  var diff = new Date().getTime() - date.getTime();
-  return Math.round(diff / 1000);
+  return Math.round(getMiliSecondsSinceDate(date) / 1000);
+}
+
+function getMiliSecondsSinceDate(date) {
+  return new Date().getTime() - date.getTime();
 }
 
 /***/ }),
@@ -3205,12 +3230,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // .recordEvent
 // ------------------------------
 
-function recordEvent(eventCollection, eventBody, callback, asyncMode) {
+function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMode) {
+  var eventCollection = eventCollectionOrConfigObject;
+  var useBeaconApi = false;
+  if ((typeof eventCollectionOrConfigObject === 'undefined' ? 'undefined' : _typeof(eventCollectionOrConfigObject)) === 'object') {
+    // slowly but surely we migrate to one object with all args
+    eventCollection = eventCollectionOrConfigObject.collection;
+    eventBody = eventCollectionOrConfigObject.body;
+    callback = eventCollectionOrConfigObject.callback;
+    asyncMode = eventCollectionOrConfigObject.asyncMode;
+    useBeaconApi = eventCollectionOrConfigObject.useBeaconApi;
+  }
   var url, data, cb, getRequestUrl, getRequestUrlOkLength, extendedEventBody, isAsync;
 
   url = this.url('events', encodeURIComponent(eventCollection));
   data = {};
-  cb = callback;
+  cb = callback || function () {};
 
   // Requests are asynchronous by default
   isAsync = 'boolean' === typeof asyncMode ? asyncMode : true;
@@ -3260,7 +3295,9 @@ function recordEvent(eventCollection, eventBody, callback, asyncMode) {
   });
   getRequestUrlOkLength = getRequestUrl.length < getUrlMaxLength();
 
-  if (navigator && navigator.sendBeacon && eventBody && eventBody.element && (eventBody.element.node_name === 'A' || eventBody.element.node_name === 'FORM')) {
+  if (navigator && navigator.sendBeacon && (useBeaconApi
+  // conditions for A listeners
+  || eventBody && eventBody.element && (eventBody.element.node_name === 'A' || eventBody.element.node_name === 'FORM'))) {
     navigator.sendBeacon(url + '?api_key=' + this.writeKey(), JSON.stringify(extendedEventBody));
     return this;
   }
