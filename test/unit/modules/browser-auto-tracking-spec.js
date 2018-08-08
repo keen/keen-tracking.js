@@ -32,7 +32,9 @@ describe('Auto Tracking', () => {
     page: {
       title: expect.any(String),
       description: expect.any(String),
-      time_on_page: expect.any(Number)
+      time_on_page: expect.any(Number),
+      time_on_page_ms: expect.any(Number),
+      scroll_state: expect.any(Object)
     },
     ip_address: '${keen.ip}',
     geo: { },
@@ -93,7 +95,8 @@ describe('Auto Tracking', () => {
         {
           name: 'keen:ip_to_geo',
           input: {
-            ip: 'ip_address'
+            ip: 'ip_address',
+            remove_ip_property: false
           },
           output : 'geo'
         }
@@ -112,7 +115,9 @@ describe('Auto Tracking', () => {
     page: {
       title: expect.any(String),
       description: expect.any(String),
-      time_on_page: expect.any(Number)
+      time_on_page: expect.any(Number),
+      time_on_page_ms: expect.any(Number),
+      scroll_state: expect.any(Object)
     },
     ip_address: '${keen.ip}',
     geo: { },
@@ -173,7 +178,8 @@ describe('Auto Tracking', () => {
         {
           name: 'keen:ip_to_geo',
           input: {
-            ip: 'ip_address'
+            ip: 'ip_address',
+            remove_ip_property: false
           },
           output : 'geo'
         }
@@ -195,7 +201,9 @@ describe('Auto Tracking', () => {
     page: {
       title: expect.any(String),
       description: expect.any(String),
-      time_on_page: expect.any(Number)
+      time_on_page: expect.any(Number),
+      time_on_page_ms: expect.any(Number),
+      scroll_state: expect.any(Object)
     },
     user_agent: '${keen.user_agent}',
     tech: {
@@ -254,7 +262,8 @@ describe('Auto Tracking', () => {
         {
           name: 'keen:ip_to_geo',
           input: {
-            ip: 'ip_address'
+            ip: 'ip_address',
+            remove_ip_property: false
           },
           output : 'geo'
         }
@@ -325,24 +334,6 @@ describe('Auto Tracking', () => {
     const uuid = cookie.get('uuid');
     expect(uuid).not.toBe(null);
     expect(uuid.length).toBeGreaterThan(0);
-  });
-
-  describe('GDPR', () => {
-    beforeEach(() => {
-      client1 = new Keen({
-        projectId: 'aa',
-        writeKey: 'bb'
-      });
-      client1.on('recordEvent', mockFn1);
-      mockFn1.mockClear();
-      client1.initAutoTracking({
-        collectIpAddress: false
-      });
-    });
-
-    it('should not collect IP addresses', () => {
-      expect(mockFn1.mock.calls[0][1].ip_address).toEqual(undefined);
-    });
   });
 
 });
