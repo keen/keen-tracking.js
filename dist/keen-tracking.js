@@ -2313,7 +2313,6 @@ function initAutoTrackingCore(lib) {
 
     var uuid = void 0;
     if (options.collectUuid) {
-      console.log(options.collectUuid, uuid);
       uuid = cookie.get('uuid');
       if (!uuid) {
         uuid = helpers.getUniqueId();
@@ -3233,7 +3232,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMode) {
   var eventCollection = eventCollectionOrConfigObject;
   var useBeaconApi = false;
-  if ((typeof eventCollectionOrConfigObject === 'undefined' ? 'undefined' : _typeof(eventCollectionOrConfigObject)) === 'object') {
+  if ((typeof eventCollectionOrConfigObject === 'undefined' ? 'undefined' : _typeof(eventCollectionOrConfigObject)) === 'object' && Object.keys(eventCollectionOrConfigObject) > 0) {
     // slowly but surely we migrate to one object with all args
     eventCollection = eventCollectionOrConfigObject.collection;
     eventBody = eventCollectionOrConfigObject.body;
