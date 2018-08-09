@@ -76,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 39);
+/******/ 	return __webpack_require__(__webpack_require__.s = 43);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -178,462 +178,6 @@ module.exports = g;
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-/**
- * Expose `Emitter`.
- */
-
-if (true) {
-  module.exports = Emitter;
-}
-
-/**
- * Initialize a new `Emitter`.
- *
- * @api public
- */
-
-function Emitter(obj) {
-  if (obj) return mixin(obj);
-};
-
-/**
- * Mixin the emitter properties.
- *
- * @param {Object} obj
- * @return {Object}
- * @api private
- */
-
-function mixin(obj) {
-  for (var key in Emitter.prototype) {
-    obj[key] = Emitter.prototype[key];
-  }
-  return obj;
-}
-
-/**
- * Listen on the given `event` with `fn`.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.on =
-Emitter.prototype.addEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])
-    .push(fn);
-  return this;
-};
-
-/**
- * Adds an `event` listener that will be invoked a single
- * time then automatically removed.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.once = function(event, fn){
-  function on() {
-    this.off(event, on);
-    fn.apply(this, arguments);
-  }
-
-  on.fn = fn;
-  this.on(event, on);
-  return this;
-};
-
-/**
- * Remove the given callback for `event` or all
- * registered callbacks.
- *
- * @param {String} event
- * @param {Function} fn
- * @return {Emitter}
- * @api public
- */
-
-Emitter.prototype.off =
-Emitter.prototype.removeListener =
-Emitter.prototype.removeAllListeners =
-Emitter.prototype.removeEventListener = function(event, fn){
-  this._callbacks = this._callbacks || {};
-
-  // all
-  if (0 == arguments.length) {
-    this._callbacks = {};
-    return this;
-  }
-
-  // specific event
-  var callbacks = this._callbacks['$' + event];
-  if (!callbacks) return this;
-
-  // remove all handlers
-  if (1 == arguments.length) {
-    delete this._callbacks['$' + event];
-    return this;
-  }
-
-  // remove specific handler
-  var cb;
-  for (var i = 0; i < callbacks.length; i++) {
-    cb = callbacks[i];
-    if (cb === fn || cb.fn === fn) {
-      callbacks.splice(i, 1);
-      break;
-    }
-  }
-  return this;
-};
-
-/**
- * Emit `event` with the given args.
- *
- * @param {String} event
- * @param {Mixed} ...
- * @return {Emitter}
- */
-
-Emitter.prototype.emit = function(event){
-  this._callbacks = this._callbacks || {};
-  var args = [].slice.call(arguments, 1)
-    , callbacks = this._callbacks['$' + event];
-
-  if (callbacks) {
-    callbacks = callbacks.slice(0);
-    for (var i = 0, len = callbacks.length; i < len; ++i) {
-      callbacks[i].apply(this, args);
-    }
-  }
-
-  return this;
-};
-
-/**
- * Return array of callbacks for `event`.
- *
- * @param {String} event
- * @return {Array}
- * @api public
- */
-
-Emitter.prototype.listeners = function(event){
-  this._callbacks = this._callbacks || {};
-  return this._callbacks['$' + event] || [];
-};
-
-/**
- * Check if this emitter has `event` handlers.
- *
- * @param {String} event
- * @return {Boolean}
- * @api public
- */
-
-Emitter.prototype.hasListeners = function(event){
-  return !! this.listeners(event).length;
-};
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _keenCore = __webpack_require__(38);
-
-var _keenCore2 = _interopRequireDefault(_keenCore);
-
-var _each = __webpack_require__(0);
-
-var _each2 = _interopRequireDefault(_each);
-
-var _extend = __webpack_require__(1);
-
-var _extend2 = _interopRequireDefault(_extend);
-
-var _queue = __webpack_require__(14);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-_keenCore2.default.helpers = _keenCore2.default.helpers || {};
-
-// Install internal queue
-_keenCore2.default.on('client', function (client) {
-  client.extensions = {
-    events: [],
-    collections: {}
-  };
-  client.queue = (0, _queue.queue)(client.config.queue);
-  client.queue.on('flush', function () {
-    client.recordDeferredEvents();
-  });
-});
-
-// Accessors
-_keenCore2.default.prototype.writeKey = function (str) {
-  if (!arguments.length) return this.config.writeKey;
-  this.config.writeKey = str ? String(str) : null;
-  return this;
-};
-
-_keenCore2.default.prototype.referrerPolicy = function (str) {
-  if (!arguments.length) return this.config.referrerPolicy;
-  this.config.referrerPolicy = str ? String(str) : null;
-  return this;
-};
-
-// DEPRECATED
-_keenCore2.default.prototype.setGlobalProperties = function (props) {
-  _keenCore2.default.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
-  if (!props || typeof props !== 'function') {
-    this.emit('error', 'Invalid value for global properties: ' + props);
-    return;
-  }
-  this.config.globalProperties = props;
-  return this;
-};
-
-exports.default = _keenCore2.default;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getDomNodePath = getDomNodePath;
-function getDomNodePath(el) {
-  if (!el.nodeName) return '';
-
-  var stack = [];
-  while (el.parentNode != null) {
-    // console.log(el.nodeName);
-    var sibCount = 0;
-    var sibIndex = 0;
-    for (var i = 0; i < el.parentNode.childNodes.length; i++) {
-      var sib = el.parentNode.childNodes[i];
-      if (sib.nodeName == el.nodeName) {
-        if (sib === el) {
-          sibIndex = sibCount;
-        }
-        sibCount++;
-      }
-    }
-    if (el.hasAttribute('id') && el.id != '') {
-      stack.unshift(el.nodeName.toLowerCase() + '#' + el.id);
-    } else if (sibCount > 1) {
-      stack.unshift(el.nodeName.toLowerCase() + ':eq(' + sibIndex + ')');
-    } else {
-      stack.unshift(el.nodeName.toLowerCase());
-    }
-    el = el.parentNode;
-  }
-
-  return stack.slice(1).join(' > ');
-}
-
-// via: http://stackoverflow.com/a/16742828/2511985
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getWindowProfile = getWindowProfile;
-function getWindowProfile() {
-  var body, html, output;
-
-  if ('undefined' == typeof document) return {};
-
-  body = document.body;
-  html = document.documentElement;
-
-  output = {
-    'height': 'innerHeight' in window ? window.innerHeight : document.documentElement.offsetHeight,
-    'width': 'innerWidth' in window ? window.innerWidth : document.documentElement.offsetWidth,
-    'scrollHeight': Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight) || null
-  };
-
-  if (window.screen) {
-    output.ratio = {
-      'height': window.screen.availHeight ? parseFloat((window.innerHeight / window.screen.availHeight).toFixed(2)) : null,
-      'width': window.screen.availWidth ? parseFloat((window.innerWidth / window.screen.availWidth).toFixed(2)) : null
-    };
-  }
-
-  return output;
-}
-
-/*
-  Notes:
-    document.documentElement.offsetHeight/Width is a workaround for IE8 and below, where window.innerHeight/Width is undefined
-*/
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getScreenProfile = getScreenProfile;
-function getScreenProfile() {
-  var keys, output;
-
-  if ('undefined' == typeof window || !window.screen) return {};
-
-  keys = ['height', 'width', 'colorDepth', 'pixelDepth', 'availHeight', 'availWidth'];
-  output = {};
-
-  for (var i = 0; i < keys.length; i++) {
-    output[keys[i]] = window.screen[keys[i]] ? window.screen[keys[i]] : null;
-  }
-
-  output.orientation = {
-    'angle': window.screen.orientation ? window.screen.orientation['angle'] : 0,
-    'type': window.innerWidth > window.innerHeight ? 'landscape' : 'portrait'
-  };
-
-  return output;
-}
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var deepExtend = exports.deepExtend = function deepExtend(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    // Copy unique items from incoming array
-    if (target instanceof Array && arguments[i] instanceof Array) {
-      for (var j = 0; j < arguments[i].length; j++) {
-        if (target.indexOf(arguments[i][j]) < 0) {
-          target.push(arguments[i][j]);
-        }
-      }
-    }
-    // Blend objects
-    else {
-        for (var prop in arguments[i]) {
-          // Recurse when both contain objects of same name
-          // and incoming is not a null object
-          if (typeof target[prop] !== 'undefined' && _typeof(arguments[i][prop]) === 'object' && arguments[i][prop] !== null) {
-            deepExtend(target[prop], clone(arguments[i][prop]));
-          }
-          // Otherwise just copy it over...
-          else if (arguments[i][prop] !== undefined && typeof arguments[i][prop] !== 'function') {
-              target[prop] = clone(arguments[i][prop]);
-            }
-        }
-      }
-  }
-  return target;
-};
-
-function clone(input) {
-  return JSON.parse(JSON.stringify(input));
-}
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.extendEvent = extendEvent;
-exports.extendEvents = extendEvents;
-exports.getExtendedEventBody = getExtendedEventBody;
-
-var _deepExtend = __webpack_require__(9);
-
-var _each = __webpack_require__(0);
-
-var _each2 = _interopRequireDefault(_each);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function extendEvent(eventCollection, eventModifier) {
-  if (arguments.length !== 2 || typeof eventCollection !== 'string' || 'object' !== (typeof eventModifier === 'undefined' ? 'undefined' : _typeof(eventModifier)) && 'function' !== typeof eventModifier) {
-    handleValidationError.call(this, 'Incorrect arguments provided to #extendEvent method');
-    return;
-  }
-  this.extensions.collections[eventCollection] = this.extensions.collections[eventCollection] || [];
-  this.extensions.collections[eventCollection].push(eventModifier);
-  this.emit('extendEvent', eventCollection, eventModifier);
-  return this;
-}
-
-function extendEvents(eventsModifier) {
-  if (arguments.length !== 1 || 'object' !== (typeof eventsModifier === 'undefined' ? 'undefined' : _typeof(eventsModifier)) && 'function' !== typeof eventsModifier) {
-    handleValidationError.call(this, 'Incorrect arguments provided to #extendEvents method');
-    return;
-  }
-  this.extensions.events.push(eventsModifier);
-  this.emit('extendEvents', eventsModifier);
-  return this;
-}
-
-function handleValidationError(message) {
-  var err = 'Event(s) not extended: ' + message;
-  this.emit('error', err);
-}
-
-function getExtendedEventBody(result, queue) {
-  if (queue && queue.length > 0) {
-    (0, _each2.default)(queue, function (eventModifier, i) {
-      var modifierResult = typeof eventModifier === 'function' ? eventModifier() : eventModifier;
-      (0, _deepExtend.deepExtend)(result, modifierResult);
-    });
-  }
-  return result;
-}
-
-/***/ }),
-/* 11 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -1106,12 +650,12 @@ function getExtendedEventBody(result, queue) {
 
 
 /***/ }),
-/* 12 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
+/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(16);
 /* harmony import */ var _finally__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
 
 
@@ -1141,7 +685,514 @@ if (!globalNS.Promise) {
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+/**
+ * Expose `Emitter`.
+ */
+
+if (true) {
+  module.exports = Emitter;
+}
+
+/**
+ * Initialize a new `Emitter`.
+ *
+ * @api public
+ */
+
+function Emitter(obj) {
+  if (obj) return mixin(obj);
+};
+
+/**
+ * Mixin the emitter properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in Emitter.prototype) {
+    obj[key] = Emitter.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Listen on the given `event` with `fn`.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.on =
+Emitter.prototype.addEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])
+    .push(fn);
+  return this;
+};
+
+/**
+ * Adds an `event` listener that will be invoked a single
+ * time then automatically removed.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.once = function(event, fn){
+  function on() {
+    this.off(event, on);
+    fn.apply(this, arguments);
+  }
+
+  on.fn = fn;
+  this.on(event, on);
+  return this;
+};
+
+/**
+ * Remove the given callback for `event` or all
+ * registered callbacks.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.off =
+Emitter.prototype.removeListener =
+Emitter.prototype.removeAllListeners =
+Emitter.prototype.removeEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+
+  // all
+  if (0 == arguments.length) {
+    this._callbacks = {};
+    return this;
+  }
+
+  // specific event
+  var callbacks = this._callbacks['$' + event];
+  if (!callbacks) return this;
+
+  // remove all handlers
+  if (1 == arguments.length) {
+    delete this._callbacks['$' + event];
+    return this;
+  }
+
+  // remove specific handler
+  var cb;
+  for (var i = 0; i < callbacks.length; i++) {
+    cb = callbacks[i];
+    if (cb === fn || cb.fn === fn) {
+      callbacks.splice(i, 1);
+      break;
+    }
+  }
+  return this;
+};
+
+/**
+ * Emit `event` with the given args.
+ *
+ * @param {String} event
+ * @param {Mixed} ...
+ * @return {Emitter}
+ */
+
+Emitter.prototype.emit = function(event){
+  this._callbacks = this._callbacks || {};
+  var args = [].slice.call(arguments, 1)
+    , callbacks = this._callbacks['$' + event];
+
+  if (callbacks) {
+    callbacks = callbacks.slice(0);
+    for (var i = 0, len = callbacks.length; i < len; ++i) {
+      callbacks[i].apply(this, args);
+    }
+  }
+
+  return this;
+};
+
+/**
+ * Return array of callbacks for `event`.
+ *
+ * @param {String} event
+ * @return {Array}
+ * @api public
+ */
+
+Emitter.prototype.listeners = function(event){
+  this._callbacks = this._callbacks || {};
+  return this._callbacks['$' + event] || [];
+};
+
+/**
+ * Check if this emitter has `event` handlers.
+ *
+ * @param {String} event
+ * @return {Boolean}
+ * @api public
+ */
+
+Emitter.prototype.hasListeners = function(event){
+  return !! this.listeners(event).length;
+};
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _keenCore = __webpack_require__(41);
+
+var _keenCore2 = _interopRequireDefault(_keenCore);
+
+var _each = __webpack_require__(0);
+
+var _each2 = _interopRequireDefault(_each);
+
+var _extend = __webpack_require__(1);
+
+var _extend2 = _interopRequireDefault(_extend);
+
+var _queue = __webpack_require__(15);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_keenCore2.default.helpers = _keenCore2.default.helpers || {};
+
+// Install internal queue
+_keenCore2.default.on('client', function (client) {
+  client.extensions = {
+    events: [],
+    collections: {}
+  };
+  client.queue = (0, _queue.queue)(client.config.queue);
+  client.queue.on('flush', function () {
+    client.recordDeferredEvents();
+  });
+});
+
+// Accessors
+_keenCore2.default.prototype.writeKey = function (str) {
+  if (!arguments.length) return this.config.writeKey;
+  this.config.writeKey = str ? String(str) : null;
+  return this;
+};
+
+_keenCore2.default.prototype.referrerPolicy = function (str) {
+  if (!arguments.length) return this.config.referrerPolicy;
+  this.config.referrerPolicy = str ? String(str) : null;
+  return this;
+};
+
+// DEPRECATED
+_keenCore2.default.prototype.setGlobalProperties = function (props) {
+  _keenCore2.default.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
+  if (!props || typeof props !== 'function') {
+    this.emit('error', 'Invalid value for global properties: ' + props);
+    return;
+  }
+  this.config.globalProperties = props;
+  return this;
+};
+
+exports.default = _keenCore2.default;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getDomNodePath = getDomNodePath;
+function getDomNodePath(el) {
+  if (!el.nodeName) return '';
+
+  var stack = [];
+  while (el.parentNode != null) {
+    // console.log(el.nodeName);
+    var sibCount = 0;
+    var sibIndex = 0;
+    for (var i = 0; i < el.parentNode.childNodes.length; i++) {
+      var sib = el.parentNode.childNodes[i];
+      if (sib.nodeName == el.nodeName) {
+        if (sib === el) {
+          sibIndex = sibCount;
+        }
+        sibCount++;
+      }
+    }
+    if (el.hasAttribute('id') && el.id != '') {
+      stack.unshift(el.nodeName.toLowerCase() + '#' + el.id);
+    } else if (sibCount > 1) {
+      stack.unshift(el.nodeName.toLowerCase() + ':eq(' + sibIndex + ')');
+    } else {
+      stack.unshift(el.nodeName.toLowerCase());
+    }
+    el = el.parentNode;
+  }
+
+  return stack.slice(1).join(' > ');
+}
+
+// via: http://stackoverflow.com/a/16742828/2511985
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getWindowProfile = getWindowProfile;
+function getWindowProfile() {
+  var body, html, output;
+
+  if ('undefined' == typeof document) return {};
+
+  body = document.body;
+  html = document.documentElement;
+
+  output = {
+    'height': 'innerHeight' in window ? window.innerHeight : document.documentElement.offsetHeight,
+    'width': 'innerWidth' in window ? window.innerWidth : document.documentElement.offsetWidth,
+    'scrollHeight': Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight) || null
+  };
+
+  if (window.screen) {
+    output.ratio = {
+      'height': window.screen.availHeight ? parseFloat((window.innerHeight / window.screen.availHeight).toFixed(2)) : null,
+      'width': window.screen.availWidth ? parseFloat((window.innerWidth / window.screen.availWidth).toFixed(2)) : null
+    };
+  }
+
+  return output;
+}
+
+/*
+  Notes:
+    document.documentElement.offsetHeight/Width is a workaround for IE8 and below, where window.innerHeight/Width is undefined
+*/
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getScreenProfile = getScreenProfile;
+function getScreenProfile() {
+  var keys, output;
+
+  if ('undefined' == typeof window || !window.screen) return {};
+
+  keys = ['height', 'width', 'colorDepth', 'pixelDepth', 'availHeight', 'availWidth'];
+  output = {};
+
+  for (var i = 0; i < keys.length; i++) {
+    output[keys[i]] = window.screen[keys[i]] ? window.screen[keys[i]] : null;
+  }
+
+  output.orientation = {
+    'angle': window.screen.orientation ? window.screen.orientation['angle'] : 0,
+    'type': window.innerWidth > window.innerHeight ? 'landscape' : 'portrait'
+  };
+
+  return output;
+}
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var MD5 = exports.MD5 = function MD5(d) {
+  var result = M(V(Y(X(d), 8 * d.length)));return result.toLowerCase();
+};function M(d) {
+  for (var _, m = "0123456789ABCDEF", f = "", r = 0; r < d.length; r++) {
+    _ = d.charCodeAt(r), f += m.charAt(_ >>> 4 & 15) + m.charAt(15 & _);
+  }return f;
+}function X(d) {
+  for (var _ = Array(d.length >> 2), m = 0; m < _.length; m++) {
+    _[m] = 0;
+  }for (m = 0; m < 8 * d.length; m += 8) {
+    _[m >> 5] |= (255 & d.charCodeAt(m / 8)) << m % 32;
+  }return _;
+}function V(d) {
+  for (var _ = "", m = 0; m < 32 * d.length; m += 8) {
+    _ += String.fromCharCode(d[m >> 5] >>> m % 32 & 255);
+  }return _;
+}function Y(d, _) {
+  d[_ >> 5] |= 128 << _ % 32, d[14 + (_ + 64 >>> 9 << 4)] = _;for (var m = 1732584193, f = -271733879, r = -1732584194, i = 271733878, n = 0; n < d.length; n += 16) {
+    var h = m,
+        t = f,
+        g = r,
+        e = i;f = md5_ii(f = md5_ii(f = md5_ii(f = md5_ii(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_ff(f = md5_ff(f = md5_ff(f = md5_ff(f, r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 0], 7, -680876936), f, r, d[n + 1], 12, -389564586), m, f, d[n + 2], 17, 606105819), i, m, d[n + 3], 22, -1044525330), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 4], 7, -176418897), f, r, d[n + 5], 12, 1200080426), m, f, d[n + 6], 17, -1473231341), i, m, d[n + 7], 22, -45705983), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 8], 7, 1770035416), f, r, d[n + 9], 12, -1958414417), m, f, d[n + 10], 17, -42063), i, m, d[n + 11], 22, -1990404162), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 12], 7, 1804603682), f, r, d[n + 13], 12, -40341101), m, f, d[n + 14], 17, -1502002290), i, m, d[n + 15], 22, 1236535329), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 1], 5, -165796510), f, r, d[n + 6], 9, -1069501632), m, f, d[n + 11], 14, 643717713), i, m, d[n + 0], 20, -373897302), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 5], 5, -701558691), f, r, d[n + 10], 9, 38016083), m, f, d[n + 15], 14, -660478335), i, m, d[n + 4], 20, -405537848), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 9], 5, 568446438), f, r, d[n + 14], 9, -1019803690), m, f, d[n + 3], 14, -187363961), i, m, d[n + 8], 20, 1163531501), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 13], 5, -1444681467), f, r, d[n + 2], 9, -51403784), m, f, d[n + 7], 14, 1735328473), i, m, d[n + 12], 20, -1926607734), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 5], 4, -378558), f, r, d[n + 8], 11, -2022574463), m, f, d[n + 11], 16, 1839030562), i, m, d[n + 14], 23, -35309556), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 1], 4, -1530992060), f, r, d[n + 4], 11, 1272893353), m, f, d[n + 7], 16, -155497632), i, m, d[n + 10], 23, -1094730640), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 13], 4, 681279174), f, r, d[n + 0], 11, -358537222), m, f, d[n + 3], 16, -722521979), i, m, d[n + 6], 23, 76029189), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 9], 4, -640364487), f, r, d[n + 12], 11, -421815835), m, f, d[n + 15], 16, 530742520), i, m, d[n + 2], 23, -995338651), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 0], 6, -198630844), f, r, d[n + 7], 10, 1126891415), m, f, d[n + 14], 15, -1416354905), i, m, d[n + 5], 21, -57434055), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 12], 6, 1700485571), f, r, d[n + 3], 10, -1894986606), m, f, d[n + 10], 15, -1051523), i, m, d[n + 1], 21, -2054922799), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 8], 6, 1873313359), f, r, d[n + 15], 10, -30611744), m, f, d[n + 6], 15, -1560198380), i, m, d[n + 13], 21, 1309151649), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 4], 6, -145523070), f, r, d[n + 11], 10, -1120210379), m, f, d[n + 2], 15, 718787259), i, m, d[n + 9], 21, -343485551), m = safe_add(m, h), f = safe_add(f, t), r = safe_add(r, g), i = safe_add(i, e);
+  }return Array(m, f, r, i);
+}function md5_cmn(d, _, m, f, r, i) {
+  return safe_add(bit_rol(safe_add(safe_add(_, d), safe_add(f, i)), r), m);
+}function md5_ff(d, _, m, f, r, i, n) {
+  return md5_cmn(_ & m | ~_ & f, d, _, r, i, n);
+}function md5_gg(d, _, m, f, r, i, n) {
+  return md5_cmn(_ & f | m & ~f, d, _, r, i, n);
+}function md5_hh(d, _, m, f, r, i, n) {
+  return md5_cmn(_ ^ m ^ f, d, _, r, i, n);
+}function md5_ii(d, _, m, f, r, i, n) {
+  return md5_cmn(m ^ (_ | ~f), d, _, r, i, n);
+}function safe_add(d, _) {
+  var m = (65535 & d) + (65535 & _);return (d >> 16) + (_ >> 16) + (m >> 16) << 16 | 65535 & m;
+}function bit_rol(d, _) {
+  return d << _ | d >>> 32 - _;
+}
+
+exports.default = MD5;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var deepExtend = exports.deepExtend = function deepExtend(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    // Copy unique items from incoming array
+    if (target instanceof Array && arguments[i] instanceof Array) {
+      for (var j = 0; j < arguments[i].length; j++) {
+        if (target.indexOf(arguments[i][j]) < 0) {
+          target.push(arguments[i][j]);
+        }
+      }
+    }
+    // Blend objects
+    else {
+        for (var prop in arguments[i]) {
+          // Recurse when both contain objects of same name
+          // and incoming is not a null object
+          if (typeof target[prop] !== 'undefined' && _typeof(arguments[i][prop]) === 'object' && arguments[i][prop] !== null) {
+            deepExtend(target[prop], clone(arguments[i][prop]));
+          }
+          // Otherwise just copy it over...
+          else if (arguments[i][prop] !== undefined && typeof arguments[i][prop] !== 'function') {
+              target[prop] = clone(arguments[i][prop]);
+            }
+        }
+      }
+  }
+  return target;
+};
+
+function clone(input) {
+  return JSON.parse(JSON.stringify(input));
+}
+
+/***/ }),
 /* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.extendEvent = extendEvent;
+exports.extendEvents = extendEvents;
+exports.getExtendedEventBody = getExtendedEventBody;
+
+var _deepExtend = __webpack_require__(12);
+
+var _each = __webpack_require__(0);
+
+var _each2 = _interopRequireDefault(_each);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function extendEvent(eventCollection, eventModifier) {
+  if (arguments.length !== 2 || typeof eventCollection !== 'string' || 'object' !== (typeof eventModifier === 'undefined' ? 'undefined' : _typeof(eventModifier)) && 'function' !== typeof eventModifier) {
+    handleValidationError.call(this, 'Incorrect arguments provided to #extendEvent method');
+    return;
+  }
+  this.extensions.collections[eventCollection] = this.extensions.collections[eventCollection] || [];
+  this.extensions.collections[eventCollection].push(eventModifier);
+  this.emit('extendEvent', eventCollection, eventModifier);
+  return this;
+}
+
+function extendEvents(eventsModifier) {
+  if (arguments.length !== 1 || 'object' !== (typeof eventsModifier === 'undefined' ? 'undefined' : _typeof(eventsModifier)) && 'function' !== typeof eventsModifier) {
+    handleValidationError.call(this, 'Incorrect arguments provided to #extendEvents method');
+    return;
+  }
+  this.extensions.events.push(eventsModifier);
+  this.emit('extendEvents', eventsModifier);
+  return this;
+}
+
+function handleValidationError(message) {
+  var err = 'Event(s) not extended: ' + message;
+  this.emit('error', err);
+}
+
+function getExtendedEventBody(result, queue) {
+  if (queue && queue.length > 0) {
+    (0, _each2.default)(queue, function (eventModifier, i) {
+      var modifierResult = typeof eventModifier === 'function' ? eventModifier() : eventModifier;
+      (0, _deepExtend.deepExtend)(result, modifierResult);
+    });
+  }
+  return result;
+}
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1170,7 +1221,7 @@ var configDefault = exports.configDefault = {
 exports.default = configDefault;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1184,11 +1235,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.queue = queue;
 
-var _componentEmitter = __webpack_require__(4);
+var _componentEmitter = __webpack_require__(6);
 
 var _componentEmitter2 = _interopRequireDefault(_componentEmitter);
 
-var _configDefault = __webpack_require__(13);
+var _configDefault = __webpack_require__(14);
 
 var _configDefault2 = _interopRequireDefault(_configDefault);
 
@@ -1257,7 +1308,7 @@ function shouldFlushQueue(props) {
 }
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1491,10 +1542,10 @@ Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
 
 /* harmony default export */ __webpack_exports__["a"] = (Promise);
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(33).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(36).setImmediate))
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1536,7 +1587,7 @@ timer.prototype.clear = function () {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1802,7 +1853,7 @@ function str_serialize(result, key, value) {
 }
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -1948,7 +1999,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1961,7 +2012,7 @@ exports.cookie = undefined;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _jsCookie = __webpack_require__(18);
+var _jsCookie = __webpack_require__(19);
 
 var _jsCookie2 = _interopRequireDefault(_jsCookie);
 
@@ -2032,7 +2083,7 @@ cookie.prototype.enabled = function () {
 };
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2061,7 +2112,7 @@ function getUniqueId() {
 }
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2117,7 +2168,7 @@ function getWindowHeight() {
 }
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2128,7 +2179,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getDomNodeProfile = getDomNodeProfile;
 
-var _getDomNodePath = __webpack_require__(6);
+var _getDomNodePath = __webpack_require__(8);
 
 function getDomNodeProfile(el) {
   return {
@@ -2149,7 +2200,7 @@ function getDomNodeProfile(el) {
 }
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2197,7 +2248,7 @@ function getDomainName(url) {
 }
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2219,7 +2270,7 @@ function getDatetimeIndex(input) {
 }
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2230,9 +2281,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getBrowserProfile = getBrowserProfile;
 
-var _getScreenProfile = __webpack_require__(8);
+var _getScreenProfile = __webpack_require__(10);
 
-var _getWindowProfile = __webpack_require__(7);
+var _getWindowProfile = __webpack_require__(9);
 
 function getBrowserProfile() {
   return {
@@ -2259,13 +2310,13 @@ function getDocumentDescription() {
 }
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module) {
 
-module.exports = {"name":"keen-tracking","version":"3.1.1","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-jest":"^23.0.1","babel-loader":"^7.1.4","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-preset-env":"^1.7.0","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
+module.exports = {"name":"keen-tracking","version":"3.1.2","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-core":"^6.26.3","babel-jest":"^23.0.1","babel-loader":"^7.1.5","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-polyfill":"^6.26.0","babel-preset-env":"^1.7.0","babel-preset-es2015":"^6.24.1","babel-preset-stage-0":"^6.24.1","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2276,7 +2327,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.initAutoTrackingCore = initAutoTrackingCore;
 
-var _package = __webpack_require__(26);
+var _package = __webpack_require__(27);
 
 var _package2 = _interopRequireDefault(_package);
 
@@ -2427,13 +2478,13 @@ function initAutoTrackingCore(lib) {
     if (options.recordClicks === true) {
       utils.listener('a, a *').on('click', function (e) {
         var el = e.target;
-        var body = {
+        var event = {
           element: helpers.getDomNodeProfile(el),
           local_time_full: new Date().toISOString()
         };
         return client.recordEvent({
           collection: 'clicks',
-          body: body,
+          event: event,
           useBeaconApi: true
         });
       });
@@ -2446,7 +2497,7 @@ function initAutoTrackingCore(lib) {
           disabled: options.ignoreDisabledFormFields,
           ignoreTypes: options.ignoreFormFieldTypes
         };
-        var body = {
+        var event = {
           form: {
             action: el.action,
             fields: utils.serializeForm(el, serializerOptions),
@@ -2457,7 +2508,7 @@ function initAutoTrackingCore(lib) {
         };
         return client.recordEvent({
           collection: 'form_submissions',
-          body: body,
+          event: event,
           useBeaconApi: true
         });
       });
@@ -2492,7 +2543,7 @@ function getMiliSecondsSinceDate(date) {
 }
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2512,7 +2563,7 @@ exports.queueCapacity = queueCapacity;
 exports.queueInterval = queueInterval;
 exports.recordDeferredEvents = recordDeferredEvents;
 
-var _index = __webpack_require__(5);
+var _index = __webpack_require__(7);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -2520,7 +2571,7 @@ var _each = __webpack_require__(0);
 
 var _each2 = _interopRequireDefault(_each);
 
-var _queue = __webpack_require__(14);
+var _queue = __webpack_require__(15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2603,7 +2654,250 @@ function handleValidationError(message) {
 }
 
 /***/ }),
-/* 29 */
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.getFromCache = exports.saveToCache = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+__webpack_require__(5);
+
+__webpack_require__(4);
+
+var _md = __webpack_require__(11);
+
+var _md2 = _interopRequireDefault(_md);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var indexedDBAvailable = 'indexedDB' in self;
+var cachingEnabled = true;
+
+if (!indexedDBAvailable) {
+  // console.log("Your browser doesn't support a stable version of IndexedDB.");
+  cachingEnabled = false; // graceful degradation
+}
+
+var db = void 0;
+var cacheConfig = {
+  dbName: 'keenTrackingIndexedDB',
+  dbCollectionName: 'requests',
+  dbCollectionKey: 'hash',
+  maxAge: 60 * 1000
+};
+
+function initializeIndexedDb() {
+  var requestCacheConfig = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  if (db) {
+    return Promise.resolve();
+  }
+  if (!cachingEnabled) {
+    return Promise.resolve();
+  }
+  cacheConfig = _extends({}, cacheConfig, requestCacheConfig);
+  return new Promise(function (resolve, reject) {
+    var dbConnectionRequest = self.indexedDB.open(cacheConfig.dbName);
+    dbConnectionRequest.onerror = function (event) {
+      cachingEnabled = false;
+      resolve();
+    };
+
+    dbConnectionRequest.onupgradeneeded = function (event) {
+      var db = event.target.result;
+      var objectStore = db.createObjectStore(cacheConfig.dbCollectionName, { keyPath: cacheConfig.dbCollectionKey });
+      objectStore.createIndex(cacheConfig.dbCollectionKey, cacheConfig.dbCollectionKey, { unique: true });
+      objectStore.createIndex('expiryTime', 'expiryTime', { unique: false });
+    };
+
+    dbConnectionRequest.onsuccess = function (event) {
+      db = event.target.result;
+      db.onerror = function (event) {
+        cachingEnabled = false; // graceful degradation
+      };
+      resolve(db);
+    };
+  });
+}
+
+var saveToCache = exports.saveToCache = function saveToCache(hash) {
+  var configOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  return initializeIndexedDb(configOptions.cache).then(function () {
+    var transactionSave = db.transaction(cacheConfig.dbCollectionName, "readwrite").objectStore(cacheConfig.dbCollectionName);
+    var requestSave = transactionSave.add({
+      hash: hash,
+      expiryTime: Date.now() + cacheConfig.maxAge
+    });
+    requestSave.onsuccess = function (event) {};
+    requestSave.onerror = function (event) {
+      cachingEnabled = false;
+    };
+  });
+};
+
+var getFromCache = exports.getFromCache = function getFromCache(hash) {
+  var configOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  return initializeIndexedDb(configOptions.cache).then(function () {
+    return new Promise(function (resolve, reject) {
+      if (!cachingEnabled) {
+        return resolve(null);
+      }
+
+      var transactionCleanUp = db.transaction(cacheConfig.dbCollectionName, "readwrite").objectStore(cacheConfig.dbCollectionName);
+      var indexCleanUp = transactionCleanUp.index('expiryTime');
+      var upperBoundOpenKeyRange = IDBKeyRange.upperBound(Date.now(), true);
+      indexCleanUp.openCursor(upperBoundOpenKeyRange).onsuccess = function (event) {
+        var cursor = event.target.result;
+        if (cursor) {
+          var transactionDelete = db.transaction(cacheConfig.dbCollectionName, "readwrite").objectStore(cacheConfig.dbCollectionName).delete(event.target.result.value[cacheConfig.dbCollectionKey]);
+          cursor.continue();
+        }
+      };
+
+      var transactionIndex = db.transaction(cacheConfig.dbCollectionName, "readwrite").objectStore(cacheConfig.dbCollectionName);
+      var index = transactionIndex.index(cacheConfig.dbCollectionKey);
+      var responseFromCache = index.get(hash);
+      responseFromCache.onsuccess = function (event) {
+        if (!event.target.result || event.target.result.expiryTime < Date.now()) {
+          if (event.target.result && event.target.result.expiryTime < Date.now()) {
+            var transactionDelete = db.transaction(cacheConfig.dbCollectionName, "readwrite").objectStore(cacheConfig.dbCollectionName).delete(event.target.result[cacheConfig.dbCollectionKey]);
+            transactionDelete.onsuccess = function (event) {
+              resolve(getFromCache(hash, configOptions));
+            };
+            transactionDelete.onerror = function (event) {
+              cachingEnabled = false;
+              resolve(getFromCache(hash, configOptions));
+            };
+            return resolve(null);
+          }
+          return resolve(null);
+        } else {
+          return resolve(event.target.result);
+        }
+      };
+      responseFromCache.onerror = function (event) {
+        cachingEnabled = false;
+        resolve(getFromCache(hash, configOptions));
+      };
+    });
+  });
+};
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var isUnique = function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(uniqueConfig, extendedEventBody) {
+    var stringifiedEvent, hash, expiryTime, item, _alreadySentEvent, alreadySentEvent;
+
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            stringifiedEvent = JSON.stringify(extendedEventBody);
+            hash = uniqueConfig.hashingMethod === 'md5' ? (0, _md2.default)(stringifiedEvent) : stringifiedEvent;
+            expiryTime = uniqueConfig.maxAge ? Date.now() + uniqueConfig.maxAge : undefined;
+            item = {
+              hash: hash,
+              expiryTime: expiryTime
+            };
+
+            if (!(uniqueConfig.storage && uniqueConfig.storage === 'indexeddb')) {
+              _context.next = 12;
+              break;
+            }
+
+            _context.next = 7;
+            return (0, _cacheBrowser.getFromCache)(hash, uniqueConfig);
+
+          case 7:
+            _alreadySentEvent = _context.sent;
+
+            if (!_alreadySentEvent) {
+              _context.next = 10;
+              break;
+            }
+
+            return _context.abrupt('return', false);
+
+          case 10:
+            (0, _cacheBrowser.saveToCache)(hash, uniqueConfig);
+            return _context.abrupt('return', true);
+
+          case 12:
+            alreadySentEvent = uniqueIds.find(function (item) {
+              return item.hash === hash;
+            });
+
+            if (!alreadySentEvent) {
+              _context.next = 19;
+              break;
+            }
+
+            if (!(alreadySentEvent.expiryTime && alreadySentEvent.expiryTime < Date.now())) {
+              _context.next = 18;
+              break;
+            }
+
+            uniqueIds = uniqueIds.filter(function (item) {
+              return item.hash !== hash;
+            });
+            _context.next = 19;
+            break;
+
+          case 18:
+            return _context.abrupt('return', false);
+
+          case 19:
+            uniqueIds.push(item);
+            return _context.abrupt('return', true);
+
+          case 21:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+
+  return function isUnique(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var _md = __webpack_require__(11);
+
+var _md2 = _interopRequireDefault(_md);
+
+var _cacheBrowser = __webpack_require__(30);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+var uniqueIds = [];
+
+exports.default = isUnique;
+
+/***/ }),
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2662,11 +2956,11 @@ exports.default = function (url, options) {
   });
 };
 
-__webpack_require__(12);
+__webpack_require__(5);
 
-__webpack_require__(11);
+__webpack_require__(4);
 
-var _configDefault = __webpack_require__(13);
+var _configDefault = __webpack_require__(14);
 
 var _configDefault2 = _interopRequireDefault(_configDefault);
 
@@ -2675,7 +2969,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 ;
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -2727,7 +3021,7 @@ module.exports = {
 
 
 /***/ }),
-/* 31 */
+/* 34 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -2917,7 +3211,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 32 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -3107,10 +3401,10 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2), __webpack_require__(31)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2), __webpack_require__(34)))
 
 /***/ }),
-/* 33 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -3166,7 +3460,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(32);
+__webpack_require__(35);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -3180,7 +3474,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
 
 /***/ }),
-/* 34 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3190,6 +3484,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 exports.recordEvent = recordEvent;
@@ -3197,11 +3493,11 @@ exports.recordEvents = recordEvents;
 exports.addEvent = addEvent;
 exports.addEvents = addEvents;
 
-__webpack_require__(12);
+__webpack_require__(5);
 
-__webpack_require__(11);
+__webpack_require__(4);
 
-var _base = __webpack_require__(30);
+var _base = __webpack_require__(33);
 
 var _base2 = _interopRequireDefault(_base);
 
@@ -3213,34 +3509,43 @@ var _extend = __webpack_require__(1);
 
 var _extend2 = _interopRequireDefault(_extend);
 
-var _index = __webpack_require__(5);
+var _index = __webpack_require__(7);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _extendEvents = __webpack_require__(10);
+var _extendEvents = __webpack_require__(13);
 
-var _fetchRetry = __webpack_require__(29);
+var _fetchRetry = __webpack_require__(32);
 
 var _fetchRetry2 = _interopRequireDefault(_fetchRetry);
+
+var _unique = __webpack_require__(31);
+
+var _unique2 = _interopRequireDefault(_unique);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // ------------------------------
 // .recordEvent
 // ------------------------------
-
+var uniqueIds = [];
 function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMode) {
+  var _this = this;
+
   var eventCollection = eventCollectionOrConfigObject;
   var useBeaconApi = false;
+  var unique = void 0;
 
   if ((typeof eventCollectionOrConfigObject === 'undefined' ? 'undefined' : _typeof(eventCollectionOrConfigObject)) === 'object' && eventCollectionOrConfigObject) {
     // slowly but surely we migrate to one object with all args
     eventCollection = eventCollectionOrConfigObject.collection;
-    eventBody = eventCollectionOrConfigObject.body;
+    eventBody = eventCollectionOrConfigObject.event;
     callback = eventCollectionOrConfigObject.callback;
     asyncMode = eventCollectionOrConfigObject.asyncMode;
     useBeaconApi = eventCollectionOrConfigObject.useBeaconApi;
+    unique = eventCollectionOrConfigObject.unique;
   }
+
   var url, data, cb, getRequestUrl, getRequestUrlOkLength, extendedEventBody, isAsync;
 
   url = this.url('events', encodeURIComponent(eventCollection));
@@ -3276,6 +3581,18 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMo
   (0, _extendEvents.getExtendedEventBody)(extendedEventBody, this.extensions.events);
   (0, _extendEvents.getExtendedEventBody)(extendedEventBody, this.extensions.collections[eventCollection]);
   (0, _extendEvents.getExtendedEventBody)(extendedEventBody, [data]);
+
+  if (unique) {
+    return (0, _unique2.default)(unique, extendedEventBody).then(function (isUniqueResult) {
+      if (!isUniqueResult) {
+        return Promise.resolve({
+          created: false,
+          message: '[NOT_UNIQUE] This event has already been recorded'
+        });
+      }
+      return recordEvent.call(_this, _extends({}, eventCollectionOrConfigObject, { unique: undefined }));
+    });
+  }
 
   this.emit('recordEvent', eventCollection, extendedEventBody);
 
@@ -3728,7 +4045,7 @@ function sendBeacon(url, callback) {
 }
 
 /***/ }),
-/* 35 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3739,7 +4056,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.listenerCore = undefined;
 
-var _componentEmitter = __webpack_require__(4);
+var _componentEmitter = __webpack_require__(6);
 
 var _componentEmitter2 = _interopRequireDefault(_componentEmitter);
 
@@ -4018,7 +4335,7 @@ function deferFormSubmit(evt, form, callback) {
 }
 
 /***/ }),
-/* 36 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var each = __webpack_require__(0),
@@ -4039,7 +4356,7 @@ function serialize(data){
 
 
 /***/ }),
-/* 37 */
+/* 40 */
 /***/ (function(module, exports) {
 
 module.exports = parseParams;
@@ -4061,17 +4378,17 @@ function parseParams(str){
 
 
 /***/ }),
-/* 38 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {(function(env){
   var previousKeen = env.Keen || undefined;
   var each = __webpack_require__(0),
       extend = __webpack_require__(1),
-      parseParams = __webpack_require__(37),
-      serialize = __webpack_require__(36);
+      parseParams = __webpack_require__(40),
+      serialize = __webpack_require__(39);
 
-  var Emitter = __webpack_require__(4);
+  var Emitter = __webpack_require__(6);
 
   function Client(props){
     if (this instanceof Client === false) {
@@ -4296,7 +4613,7 @@ function parseParams(str){
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
 
 /***/ }),
-/* 39 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4307,7 +4624,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.KeenTracking = exports.Keen = exports.keenGlobals = undefined;
 
-var _index = __webpack_require__(5);
+var _index = __webpack_require__(7);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -4319,41 +4636,41 @@ var _extend = __webpack_require__(1);
 
 var _extend2 = _interopRequireDefault(_extend);
 
-var _listener = __webpack_require__(35);
+var _listener = __webpack_require__(38);
 
-var _recordEventsBrowser = __webpack_require__(34);
+var _recordEventsBrowser = __webpack_require__(37);
 
-var _deferEvents = __webpack_require__(28);
+var _deferEvents = __webpack_require__(29);
 
-var _extendEvents = __webpack_require__(10);
+var _extendEvents = __webpack_require__(13);
 
-var _browserAutoTracking = __webpack_require__(27);
+var _browserAutoTracking = __webpack_require__(28);
 
-var _getBrowserProfile = __webpack_require__(25);
+var _getBrowserProfile = __webpack_require__(26);
 
-var _getDatetimeIndex = __webpack_require__(24);
+var _getDatetimeIndex = __webpack_require__(25);
 
-var _getDomainName = __webpack_require__(23);
+var _getDomainName = __webpack_require__(24);
 
-var _getDomNodePath = __webpack_require__(6);
+var _getDomNodePath = __webpack_require__(8);
 
-var _getDomNodeProfile = __webpack_require__(22);
+var _getDomNodeProfile = __webpack_require__(23);
 
-var _getScreenProfile = __webpack_require__(8);
+var _getScreenProfile = __webpack_require__(10);
 
-var _getScrollState = __webpack_require__(21);
+var _getScrollState = __webpack_require__(22);
 
-var _getUniqueId = __webpack_require__(20);
+var _getUniqueId = __webpack_require__(21);
 
-var _getWindowProfile = __webpack_require__(7);
+var _getWindowProfile = __webpack_require__(9);
 
-var _cookie = __webpack_require__(19);
+var _cookie = __webpack_require__(20);
 
-var _deepExtend = __webpack_require__(9);
+var _deepExtend = __webpack_require__(12);
 
-var _serializeForm = __webpack_require__(17);
+var _serializeForm = __webpack_require__(18);
 
-var _timer = __webpack_require__(16);
+var _timer = __webpack_require__(17);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4506,6 +4823,13 @@ if (typeof webpackKeenGlobals !== 'undefined') {
 var Keen = exports.Keen = _index2.default.extendLibrary(_index2.default); // deprecated, left for backward compatibility
 var KeenTracking = exports.KeenTracking = Keen;
 exports.default = Keen;
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(42);
+
 
 /***/ })
 /******/ ]);

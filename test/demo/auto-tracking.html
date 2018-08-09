@@ -16,11 +16,19 @@
   </script>
   <script>
     KeenTracking.ready(function(){
-      const client = new KeenTracking(keenGlobals.demoConfig);
+      const client = new KeenTracking({ ...keenGlobals.demoConfig,
+   requestType: 'fetch'
+      });
       KeenTracking.debug = true;
       client.extendEvents({ extended: true });
       client.on('recordEvent', Keen.log);
+
       client.initAutoTracking({
+        /* */
+        catchError: (x) => {
+          console.log('catch', x);
+        }
+
       //  recordPageViewsOnExit: true,
       //  collectUuid: false,
         // ignoreDisabledFormFields: false,

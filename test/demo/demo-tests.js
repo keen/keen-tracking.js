@@ -18,11 +18,26 @@ const demoTests = (demoConfig, Keen) => {
   const x = Math.random();
   console.log(x);
   const eventBody = {
-    x
+    x: 123456,
+    page: {
+      a: 1,
+      b: {
+        c:1
+      }
+    }
   };
-
+function save(){
   client
-    .recordEvent('recordEvent', eventBody)
+    .recordEvent({
+      collection: 'recordEvent',
+      event: eventBody,
+      unique: true, // check if the event is unique, before sending to API
+      cache: {
+        storage: 'indexeddb', // for persistence. Remove this property
+        hashingMethod: 'md5', // default value: undefined - store as stringified json
+        maxAge: 1000 * 3,
+      }
+    })
     .then((res) => {
       console.log('with promise');
       Keen.log('#recordEvent');
@@ -32,6 +47,22 @@ const demoTests = (demoConfig, Keen) => {
     .catch(some => {
       console.log('failed',some);
     });
+}
+
+save();
+save();
+setTimeout(() => save(), 200);
+
+return;
+setInterval(() => {
+  eventBody.z=Math.random();
+  save();
+}, 2000);
+setTimeout(() => {
+  save();
+}, 5000);
+
+return;
 
   client
     .recordEvent('recordEvent', { z : 1}, function(err, res){
