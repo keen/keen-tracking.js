@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const fileName = 'keen-tracking';
-const entry = ( process.env.TARGET !== 'node' ) ? './lib/browser.js' : './lib/server.js' ;
+const entry = ( process.env.TARGET !== 'node' ) ? [ './lib/browser.js'] : './lib/server.js' ;
 
 let definePluginVars = {};
 if (process.env.NODE_ENV === 'development') {
