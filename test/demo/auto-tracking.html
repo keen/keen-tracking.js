@@ -24,11 +24,16 @@
       client.on('recordEvent', Keen.log);
 
       client.initAutoTracking({
-        /* */
+
+        recordPageViews:true,
+
+        recordPageViewsOnExit:true,
+
+        /*
         catchError: (x) => {
           console.log('catch', x);
         }
-
+*/
       //  recordPageViewsOnExit: true,
       //  collectUuid: false,
         // ignoreDisabledFormFields: false,

@@ -26,32 +26,32 @@ const demoTests = (demoConfig, Keen) => {
       }
     }
   };
-function save(){
+function save(id){
   client
     .recordEvent({
       collection: 'recordEvent',
       event: eventBody,
       unique: true, // check if the event is unique, before sending to API
       cache: {
-        storage: 'indexeddb', // for persistence. Remove this property
+        storage: 'indexeddb', // for persistence. Remove this property to use just RAM
         hashingMethod: 'md5', // default value: undefined - store as stringified json
-        maxAge: 1000 * 3,
+        maxAge: 1000 * 8,
       }
     })
     .then((res) => {
-      console.log('with promise');
-      Keen.log('#recordEvent');
-      Keen.log(res);
+      console.log('with promise', id);
+      Keen.log('#recordEvent', id);
+      Keen.log(res, id);
       console.log('ok');
     })
     .catch(some => {
-      console.log('failed',some);
+      console.log('failed',some, id);
     });
 }
 
-save();
-save();
-setTimeout(() => save(), 200);
+save(1);
+save(2);
+setTimeout(() => save(3), 200);
 
 return;
 setInterval(() => {
