@@ -2339,8 +2339,6 @@ function initAutoTrackingCore(lib) {
     var helpers = lib.helpers;
     var utils = lib.utils;
 
-    // client.config.requestType = 'beaconApi'; from next major version
-
     var options = utils.extend({
       ignoreDisabledFormFields: false,
       ignoreFormFieldTypes: ['password'],
@@ -2351,8 +2349,19 @@ function initAutoTrackingCore(lib) {
       recordScrollState: true,
       shareUuidAcrossDomains: false,
       collectIpAddress: true,
-      collectUuid: true
+      collectUuid: true,
+      catchError: undefined // optional, function(error) - error handler
     }, obj);
+
+    if (client.config.requestType === 'jsonp') {
+      // jsonp is deprecated, let's switch to beaconAPI
+      client.config.requestType = 'beaconAPI';
+    }
+
+    if (client.config.requestType === 'beaconAPI' && options.catchError) {
+      throw 'You cannot use the BeaconAPI and catchError function in the same time, because BeaconAPI ignores errors. For requests with error handling - use requestType: \'fetch\'';
+      return;
+    }
 
     var now = new Date();
     var cookie = new utils.cookie('keen');
@@ -2482,10 +2491,19 @@ function initAutoTrackingCore(lib) {
           element: helpers.getDomNodeProfile(el),
           local_time_full: new Date().toISOString()
         };
+
+        if (options.catchError) {
+          return client.recordEvent({
+            collection: 'clicks',
+            event: event
+          }).catch(function (err) {
+            options.catchError(err);
+          });
+        }
+
         return client.recordEvent({
           collection: 'clicks',
-          event: event,
-          useBeaconApi: true
+          event: event
         });
       });
     }
@@ -2506,26 +2524,42 @@ function initAutoTrackingCore(lib) {
           element: helpers.getDomNodeProfile(el),
           local_time_full: new Date().toISOString()
         };
+
+        if (options.catchError) {
+          return client.recordEvent({
+            collection: 'form_submissions',
+            event: event
+          }).catch(function (err) {
+            options.catchError(err);
+          });
+        }
+
         return client.recordEvent({
           collection: 'form_submissions',
-          event: event,
-          useBeaconApi: true
+          event: event
         });
       });
     }
 
     if (options.recordPageViews === true && !options.recordPageViewsOnExit) {
-      client.recordEvent({
-        collection: 'pageviews',
-        useBeaconApi: true
-      });
+      if (options.catchError) {
+        client.recordEvent({
+          collection: 'pageviews'
+        }).catch(function (err) {
+          options.catchError(err);
+        });
+      } else {
+        client.recordEvent({
+          collection: 'pageviews'
+        });
+      }
     }
 
     if (options.recordPageViewsOnExit && typeof window !== 'undefined') {
       window.addEventListener('beforeunload', function () {
+        client.config.requestType = 'beaconAPI'; // you can run beforeunload only with beaconAPI
         client.recordEvent({
-          collection: 'pageviews',
-          useBeaconApi: true
+          collection: 'pageviews'
         });
       });
     }
@@ -2802,85 +2836,7 @@ var getFromCache = exports.getFromCache = function getFromCache(hash) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var isUnique = function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(uniqueConfig, extendedEventBody) {
-    var stringifiedEvent, hash, expiryTime, item, _alreadySentEvent, alreadySentEvent;
-
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            stringifiedEvent = JSON.stringify(extendedEventBody);
-            hash = uniqueConfig.hashingMethod === 'md5' ? (0, _md2.default)(stringifiedEvent) : stringifiedEvent;
-            expiryTime = uniqueConfig.maxAge ? Date.now() + uniqueConfig.maxAge : undefined;
-            item = {
-              hash: hash,
-              expiryTime: expiryTime
-            };
-
-            if (!(uniqueConfig.storage && uniqueConfig.storage === 'indexeddb')) {
-              _context.next = 12;
-              break;
-            }
-
-            _context.next = 7;
-            return (0, _cacheBrowser.getFromCache)(hash, uniqueConfig);
-
-          case 7:
-            _alreadySentEvent = _context.sent;
-
-            if (!_alreadySentEvent) {
-              _context.next = 10;
-              break;
-            }
-
-            return _context.abrupt('return', false);
-
-          case 10:
-            (0, _cacheBrowser.saveToCache)(hash, uniqueConfig);
-            return _context.abrupt('return', true);
-
-          case 12:
-            alreadySentEvent = uniqueIds.find(function (item) {
-              return item.hash === hash;
-            });
-
-            if (!alreadySentEvent) {
-              _context.next = 19;
-              break;
-            }
-
-            if (!(alreadySentEvent.expiryTime && alreadySentEvent.expiryTime < Date.now())) {
-              _context.next = 18;
-              break;
-            }
-
-            uniqueIds = uniqueIds.filter(function (item) {
-              return item.hash !== hash;
-            });
-            _context.next = 19;
-            break;
-
-          case 18:
-            return _context.abrupt('return', false);
-
-          case 19:
-            uniqueIds.push(item);
-            return _context.abrupt('return', true);
-
-          case 21:
-          case 'end':
-            return _context.stop();
-        }
-      }
-    }, _callee, this);
-  }));
-
-  return function isUnique(_x, _x2) {
-    return _ref.apply(this, arguments);
-  };
-}();
+exports.isUnique = undefined;
 
 var _md = __webpack_require__(11);
 
@@ -2890,9 +2846,50 @@ var _cacheBrowser = __webpack_require__(30);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 var uniqueIds = [];
+
+var isUnique = exports.isUnique = function isUnique(config, extendedEventBody) {
+  var stringifiedEvent = JSON.stringify(extendedEventBody);
+  var hash = config.cache.hashingMethod && config.cache.hashingMethod.toLowerCase() === 'md5' ? (0, _md2.default)(stringifiedEvent) : stringifiedEvent;
+  var expiryTime = config.cache.maxAge ? Date.now() + config.cache.maxAge : undefined;
+  var item = {
+    hash: hash,
+    expiryTime: expiryTime
+  };
+
+  if (expiryTime) {
+    var now = Date.now();
+    uniqueIds = uniqueIds.filter(function (item) {
+      return item.expiryTime > now;
+    });
+  }
+
+  var alreadySentEvent = uniqueIds.find(function (item) {
+    return item.hash === hash;
+  });
+  if (alreadySentEvent) {
+    if (alreadySentEvent.expiryTime && alreadySentEvent.expiryTime < Date.now()) {
+      uniqueIds = uniqueIds.filter(function (item) {
+        return item.hash !== hash;
+      });
+    } else {
+      return Promise.resolve(false);
+    }
+  }
+  uniqueIds.push(item);
+
+  if (config.cache.storage && config.cache.storage.toLowerCase() === 'indexeddb') {
+    return (0, _cacheBrowser.getFromCache)(hash, config).then(function (alreadySentEvent) {
+      if (alreadySentEvent) {
+        return false;
+      }
+      (0, _cacheBrowser.saveToCache)(hash, config);
+      return true;
+    });
+  }
+
+  return Promise.resolve(true);
+};
 
 exports.default = isUnique;
 
@@ -3535,14 +3532,16 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMo
   var eventCollection = eventCollectionOrConfigObject;
   var useBeaconApi = false;
   var unique = void 0;
+  var configObject = void 0;
+  var clientConfig = this.config;
 
   if ((typeof eventCollectionOrConfigObject === 'undefined' ? 'undefined' : _typeof(eventCollectionOrConfigObject)) === 'object' && eventCollectionOrConfigObject) {
     // slowly but surely we migrate to one object with all args
+    configObject = eventCollectionOrConfigObject;
     eventCollection = eventCollectionOrConfigObject.collection;
     eventBody = eventCollectionOrConfigObject.event;
     callback = eventCollectionOrConfigObject.callback;
     asyncMode = eventCollectionOrConfigObject.asyncMode;
-    useBeaconApi = eventCollectionOrConfigObject.useBeaconApi;
     unique = eventCollectionOrConfigObject.unique;
   }
 
@@ -3583,7 +3582,7 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMo
   (0, _extendEvents.getExtendedEventBody)(extendedEventBody, [data]);
 
   if (unique) {
-    return (0, _unique2.default)(unique, extendedEventBody).then(function (isUniqueResult) {
+    return (0, _unique2.default)(configObject, extendedEventBody).then(function (isUniqueResult) {
       if (!isUniqueResult) {
         return Promise.resolve({
           created: false,
@@ -3612,9 +3611,10 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMo
   });
   getRequestUrlOkLength = getRequestUrl.length < getUrlMaxLength();
 
-  if (navigator && navigator.sendBeacon && (useBeaconApi
-  // conditions for A listeners
-  || eventBody && eventBody.element && (eventBody.element.node_name === 'A' || eventBody.element.node_name === 'FORM'))) {
+  if (navigator && navigator.sendBeacon && (clientConfig.requestType === 'beaconAPI' || configObject && configObject.requestType === 'beaconAPI'
+  // so you can send specific recordEvent() using beaconAPI
+  // even if your global client's config prefers Fetch
+  )) {
     navigator.sendBeacon(url + '?api_key=' + this.writeKey(), JSON.stringify(extendedEventBody));
     return this;
   }
@@ -3625,6 +3625,7 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMo
         sendXhr.call(this, 'POST', url, extendedEventBody, cb);
         break;
       case 'beacon':
+        // this is IMAGE beacon, not the Beacon API. deprecated
         if (getRequestUrlOkLength) {
           sendBeacon.call(this, getRequestUrl, cb);
         } else {
@@ -3635,6 +3636,7 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMo
         if (typeof fetch !== 'undefined') {
           return sendFetch.call(this, 'POST', url, extendedEventBody, cb);
         } else if (getRequestUrlOkLength) {
+          // deprecated, will be removed
           sendJSONp.call(this, getRequestUrl, cb);
         } else {
           attemptPostXhr.call(this, url, extendedEventBody, 'JSONp URL length exceeds current browser limit, and XHR is not supported.', cb);
@@ -3812,6 +3814,10 @@ function sendFetch(method, url, data) {
     // keepalive: true, not supported for CORS yet
     retry: self.config.retry
   }).catch(function (connectionError) {
+    if (typeof callback !== 'undefined') {
+      callback.call(self, connectionError, null);
+    }
+    self.emit('error', connectionError);
     return Promise.reject(connectionError);
   }).then(function (response) {
     if (response.ok) {
@@ -3838,6 +3844,7 @@ function sendFetch(method, url, data) {
       if (typeof callback !== 'undefined') {
         callback.call(self, responseJSON, null);
       }
+      self.emit('error', responseJSON);
       return Promise.reject(responseJSON);
     }
   });
