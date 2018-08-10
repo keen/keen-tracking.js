@@ -372,11 +372,40 @@ const client = new KeenTracking({
 
 ---
 
+### Unique events
+
+Save the event only once.
+
+```javascript
+client
+  .recordEvent({
+    collection: 'unique_clicks',
+    event: {
+      some_key: 'some_value',
+      // ...
+    },
+    unique: true, // check if the event is unique, before sending to API
+    cache: {
+      storage: 'indexeddb', // for persistence. Remove this property to use RAM
+      hashingMethod: 'md5', // remove this property to store as a stringified json
+      maxAge: 1000 * 60, // store the information about unique value for 60 seconds
+    }
+  })
+  .then((response) => {
+    console.log('ok', response);
+  })
+  .catch(someError => {
+    console.log('error', someError);
+  });
+```
+
+---
+
 ### Recorded Event ID
 
 A successful response from our API does not contain the ID of the newly created event. We are using Cassandra Database (NoSQL), so there are no joins. Store all necessary data in each event you record.
 Denormalization and duplication of data is a fact of life with Cassandra.
-Read more: 
+Read more:
 - [Cassandra Modeling Guide](https://www.datastax.com/dev/blog/basic-rules-of-cassandra-data-modeling)
 - [How not to use Cassandra](https://opencredo.com/how-not-to-use-cassandra-like-an-rdbms-and-what-will-happen-if-you-do/)
 ---

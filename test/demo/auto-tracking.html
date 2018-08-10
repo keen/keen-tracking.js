@@ -15,9 +15,13 @@
     }("KeenTracking", `${path}${file}`,this);
   </script>
   <script>
+  function myCustomErrorHandler(someError){
+    console.error('Error reported:', someError);
+  }
+
     KeenTracking.ready(function(){
-      const client = new KeenTracking({ ...keenGlobals.demoConfig,
-   requestType: 'fetch'
+      const client = new KeenTracking({ ...keenGlobals.demoConfig, writeKey: 'x',
+   requestType: 'beaconAPI'
       });
       KeenTracking.debug = true;
       client.extendEvents({ extended: true });
@@ -28,6 +32,8 @@
         recordPageViews:true,
 
         recordPageViewsOnExit:true,
+
+      //  catchError: myCustomErrorHandler
 
         /*
         catchError: (x) => {

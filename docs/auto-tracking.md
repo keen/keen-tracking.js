@@ -2,8 +2,6 @@
 
 Automatically record pageviews, clicks, and form submissions, with a robust data model.
 
-**Upgrading from the Web Auto Collector?** The interface and behaviors of this feature are a little different, but the data models produced are backward compatible. One notable change is that `clicks` are only recorded for `<a>` tags now. Previously any click any element was recorded. If you would like to specify listeners for other DOM elements, check out the [DOM listener docs](./listeners.md) or the [`.initAutoTracking()` method source](../lib/browser-auto-tracking.js) for insight into how to set up your own listeners. Any additional events recorded from the `client` instance below will use the same robust data models once auto-tracking is enabled.
-
 ### Installation
 
 Install this package from NPM *Recommended*
@@ -17,7 +15,7 @@ Or load it from public CDN
 ```html
 <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
 <script>
-Keen.ready(function(){
+KeenTracking.ready(function(){
   const client = new KeenTracking({
     projectId: 'YOUR_PROJECT_ID',
     writeKey: 'YOUR_WRITE_KEY'
@@ -59,11 +57,54 @@ client.initAutoTracking({
   collectUuid: true, // default
 
   // share UUID cookies across subdomains
-  shareUuidAcrossDomains: false // default
+  shareUuidAcrossDomains: false, // default
+
+  // catchError: myCustomErrorHandler
+
 });
 ```
 
-Scroll state tracking powered by the `getScrollState()` helper and a `window` scroll listener. This scroll listener can be removed by calling `Keen.utils.listener('window').off('scroll');`.
+### Request types
+
+We make requests using the [BeaconAPI](https://developer.mozilla.org/en-US/docs/Web/API/Beacon_API).
+It's the fastest non-invasive way to track user behaviour.
+Due its nature, BeaconAPI runs requests in the background, with no possibility  
+to handle errors. If you want to handle errors, you need to use the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
+
+```javascript
+const client = new KeenTracking({
+  projectId: 'YOUR_PROJECT_ID',
+  writeKey: 'YOUR_WRITE_KEY',
+  requestType: 'beaconAPI' // default: beaconAPI, possible values: beaconAPI, fetch
+});
+```
+
+### Error Handling
+
+[Handling connection problems](https://github.com/keen/keen-tracking.js#handling-connection-problems)
+
+```javascript
+const client = new KeenTracking({
+  projectId: 'YOUR_PROJECT_ID',
+  writeKey: 'YOUR_WRITE_KEY',
+  requestType: 'fetch'
+});
+
+function myCustomErrorHandler(someError){
+  console.error('Error reported:', someError);
+}
+
+client.initAutoTracking({
+  recordPageViews: true,
+  catchError: myCustomErrorHandler
+});
+```
+
+### Upgrading from the Web Auto Collector
+
+The interface and behaviors of this feature are a little different, but the data models produced are backward compatible. One notable change is that `clicks` are only recorded for `<a>` tags now. Previously any click any element was recorded. If you would like to specify listeners for other DOM elements, check out the [DOM listener docs](./listeners.md) or the [`.initAutoTracking()` method source](../lib/browser-auto-tracking.js) for insight into how to set up your own listeners. Any additional events recorded from the `client` instance below will use the same robust data models once auto-tracking is enabled.
+
+Scroll state tracking powered by the `getScrollState()` helper and a `window` scroll listener. This scroll listener can be removed by calling `KeenTracking.utils.listener('window').off('scroll');`.
 
 ### Customization
 

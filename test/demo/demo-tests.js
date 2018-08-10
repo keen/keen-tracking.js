@@ -29,27 +29,28 @@ const demoTests = (demoConfig, Keen) => {
 function save(id){
   client
     .recordEvent({
-      collection: 'recordEvent',
-      event: eventBody,
+      collection: 'unique_clicks',
+      event: {
+        some_key: 'some_value',
+        // ...
+      },
       unique: true, // check if the event is unique, before sending to API
       cache: {
-        storage: 'indexeddb', // for persistence. Remove this property to use just RAM
-        hashingMethod: 'md5', // default value: undefined - store as stringified json
-        maxAge: 1000 * 8,
+        storage: 'indexeddb', // for persistence. Remove this property to use RAM
+        hashingMethod: 'md5', // remove this property to store as a stringified json
+        maxAge: 1000 * 60, // store the information about unique value for 60 seconds
       }
     })
-    .then((res) => {
-      console.log('with promise', id);
-      Keen.log('#recordEvent', id);
-      Keen.log(res, id);
-      console.log('ok');
+    .then((response) => {
+      console.log('ok', response);
     })
-    .catch(some => {
-      console.log('failed',some, id);
+    .catch(someError => {
+      console.log('error', someError);
     });
 }
 
 save(1);
+
 save(2);
 setTimeout(() => save(3), 200);
 
