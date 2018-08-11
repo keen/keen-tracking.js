@@ -1,5 +1,6 @@
 const demoTests = (demoConfig, Keen) => {
-  // demoConfig.requestType = 'xhr';
+
+ //demoConfig.requestType = 'beaconAPI';
 
   // demoConfig.referrerPolicy: 'origin',
   // https://googlechrome.github.io/samples/fetch-api/fetch-referrer-policy.html
@@ -26,7 +27,24 @@ const demoTests = (demoConfig, Keen) => {
       }
     }
   };
+
+
+  client.recordEvent({
+    collection: 'abc',
+    event: {
+      z: 1
+    },
+    requestType: 'beacon',
+    callback: (err, res) => console.log(err,res)
+  });
+
+
 /*
+.then(res=>{
+  console.log(res);
+}).catch(err => conrole.log(err));
+
+
   client
     .recordEvent('recordEvent', { z : 1}, function(err, res){
       console.log('with callback');
@@ -37,7 +55,36 @@ const demoTests = (demoConfig, Keen) => {
         Keen.log(res);
       }
     });
-  */
+
+
+  client.recordEvents({
+    col1: [{
+      some: 1
+    }],
+    col2: [{
+      some: 1
+    }]
+  }, (err, res) => {
+    console.log(err,res);
+  });
+
+
+*/
+
+  return;
+
+
+client.recordEvents({
+  col1: [{
+    some: 1
+  }],
+  col2: [{
+    some: 1
+  }]
+}).then(res => {
+  console.log(res);
+});
+return;
 function save(id){
   client
     .recordEvent({
