@@ -26,6 +26,18 @@ const demoTests = (demoConfig, Keen) => {
       }
     }
   };
+/*
+  client
+    .recordEvent('recordEvent', { z : 1}, function(err, res){
+      console.log('with callback');
+      if (err) {
+        console.log('err', err);
+      } else {
+        Keen.log('#recordEvent');
+        Keen.log(res);
+      }
+    });
+  */
 function save(id){
   client
     .recordEvent({
@@ -36,9 +48,8 @@ function save(id){
       },
       unique: true, // check if the event is unique, before sending to API
       cache: {
-        storage: 'indexeddb', // for persistence. Remove this property to use RAM
-        hashingMethod: 'md5', // remove this property to store as a stringified json
-        maxAge: 1000 * 60, // store the information about unique value for 60 seconds
+    //    storage: 'indexeddb', // for persistence. Remove this property to use RAM
+    maxAge: 1000 * 3
       }
     })
     .then((response) => {
@@ -48,11 +59,9 @@ function save(id){
       console.log('error', someError);
     });
 }
-
 save(1);
-
 save(2);
-setTimeout(() => save(3), 200);
+setTimeout(() => save(3), 6000);
 
 return;
 setInterval(() => {
