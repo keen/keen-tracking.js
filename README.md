@@ -416,7 +416,7 @@ to handle errors. If you want to handle errors, you need to use the Fetch API.
 const client = new KeenTracking({
   projectId: 'PROJECT_ID',
   writeKey: 'WRITE_KEY',
-  requestType: 'fetch' // fetch, beaconAPI, xhr, img
+  requestType: 'fetch' // fetch, beaconAPI, img
 });
 
 // you can use different requestType for a single request
