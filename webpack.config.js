@@ -3,6 +3,7 @@ const webpack = require('webpack');
 
 const fileName = 'keen-tracking';
 const entry = ( process.env.TARGET !== 'node' ) ? [ './lib/browser.js'] : './lib/server.js' ;
+const alias = ( process.env.TARGET !== 'node' ) ? [] : {'./cache-browser' : './cache-node'};
 
 let definePluginVars = {};
 if (process.env.NODE_ENV === 'development') {
@@ -56,7 +57,8 @@ module.exports = {
     modules: [
       'node_modules',
     ],
-    extensions: ['.js', '.json', '.jsx', '.css', '.scss']
+    extensions: ['.js', '.json', '.jsx', '.css', '.scss'],
+    alias
   },
 
   optimization: {

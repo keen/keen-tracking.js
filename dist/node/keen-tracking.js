@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("component-emitter"), require("keen-core")) : factory(root["component-emitter"], root["keen-core"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(global, function(__WEBPACK_EXTERNAL_MODULE__17__, __WEBPACK_EXTERNAL_MODULE__18__) {
+})(global, function(__WEBPACK_EXTERNAL_MODULE__20__, __WEBPACK_EXTERNAL_MODULE__21__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -76,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 19);
+/******/ 	return __webpack_require__(__webpack_require__.s = 22);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -114,311 +114,6 @@ function each(o, cb, s){
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
-
-module.exports = extend;
-
-function extend(target){
-  for (var i = 1; i < arguments.length; i++) {
-    for (var prop in arguments[i]){
-      target[prop] = arguments[i][prop];
-    }
-  }
-  return target;
-};
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _keenCore = __webpack_require__(18);
-
-var _keenCore2 = _interopRequireDefault(_keenCore);
-
-var _each = __webpack_require__(0);
-
-var _each2 = _interopRequireDefault(_each);
-
-var _extend = __webpack_require__(1);
-
-var _extend2 = _interopRequireDefault(_extend);
-
-var _queue = __webpack_require__(6);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-_keenCore2.default.helpers = _keenCore2.default.helpers || {};
-
-// Install internal queue
-_keenCore2.default.on('client', function (client) {
-  client.extensions = {
-    events: [],
-    collections: {}
-  };
-  client.queue = (0, _queue.queue)(client.config.queue);
-  client.queue.on('flush', function () {
-    client.recordDeferredEvents();
-  });
-});
-
-// Accessors
-_keenCore2.default.prototype.writeKey = function (str) {
-  if (!arguments.length) return this.config.writeKey;
-  this.config.writeKey = str ? String(str) : null;
-  return this;
-};
-
-_keenCore2.default.prototype.referrerPolicy = function (str) {
-  if (!arguments.length) return this.config.referrerPolicy;
-  this.config.referrerPolicy = str ? String(str) : null;
-  return this;
-};
-
-// DEPRECATED
-_keenCore2.default.prototype.setGlobalProperties = function (props) {
-  _keenCore2.default.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
-  if (!props || typeof props !== 'function') {
-    this.emit('error', 'Invalid value for global properties: ' + props);
-    return;
-  }
-  this.config.globalProperties = props;
-  return this;
-};
-
-exports.default = _keenCore2.default;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var deepExtend = exports.deepExtend = function deepExtend(target) {
-  for (var i = 1; i < arguments.length; i++) {
-    // Copy unique items from incoming array
-    if (target instanceof Array && arguments[i] instanceof Array) {
-      for (var j = 0; j < arguments[i].length; j++) {
-        if (target.indexOf(arguments[i][j]) < 0) {
-          target.push(arguments[i][j]);
-        }
-      }
-    }
-    // Blend objects
-    else {
-        for (var prop in arguments[i]) {
-          // Recurse when both contain objects of same name
-          // and incoming is not a null object
-          if (typeof target[prop] !== 'undefined' && _typeof(arguments[i][prop]) === 'object' && arguments[i][prop] !== null) {
-            deepExtend(target[prop], clone(arguments[i][prop]));
-          }
-          // Otherwise just copy it over...
-          else if (arguments[i][prop] !== undefined && typeof arguments[i][prop] !== 'function') {
-              target[prop] = clone(arguments[i][prop]);
-            }
-        }
-      }
-  }
-  return target;
-};
-
-function clone(input) {
-  return JSON.parse(JSON.stringify(input));
-}
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.extendEvent = extendEvent;
-exports.extendEvents = extendEvents;
-exports.getExtendedEventBody = getExtendedEventBody;
-
-var _deepExtend = __webpack_require__(3);
-
-var _each = __webpack_require__(0);
-
-var _each2 = _interopRequireDefault(_each);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function extendEvent(eventCollection, eventModifier) {
-  if (arguments.length !== 2 || typeof eventCollection !== 'string' || 'object' !== (typeof eventModifier === 'undefined' ? 'undefined' : _typeof(eventModifier)) && 'function' !== typeof eventModifier) {
-    handleValidationError.call(this, 'Incorrect arguments provided to #extendEvent method');
-    return;
-  }
-  this.extensions.collections[eventCollection] = this.extensions.collections[eventCollection] || [];
-  this.extensions.collections[eventCollection].push(eventModifier);
-  this.emit('extendEvent', eventCollection, eventModifier);
-  return this;
-}
-
-function extendEvents(eventsModifier) {
-  if (arguments.length !== 1 || 'object' !== (typeof eventsModifier === 'undefined' ? 'undefined' : _typeof(eventsModifier)) && 'function' !== typeof eventsModifier) {
-    handleValidationError.call(this, 'Incorrect arguments provided to #extendEvents method');
-    return;
-  }
-  this.extensions.events.push(eventsModifier);
-  this.emit('extendEvents', eventsModifier);
-  return this;
-}
-
-function handleValidationError(message) {
-  var err = 'Event(s) not extended: ' + message;
-  this.emit('error', err);
-}
-
-function getExtendedEventBody(result, queue) {
-  if (queue && queue.length > 0) {
-    (0, _each2.default)(queue, function (eventModifier, i) {
-      var modifierResult = typeof eventModifier === 'function' ? eventModifier() : eventModifier;
-      (0, _deepExtend.deepExtend)(result, modifierResult);
-    });
-  }
-  return result;
-}
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var configDefault = exports.configDefault = {
-
-  // defer events - queue
-  // https://github.com/keen/keen-tracking.js/blob/master/docs/defer-events.md
-  queue: {
-    capacity: 5000,
-    interval: 15
-  },
-
-  // connection problems - retry request
-  retry: {
-    limit: 10,
-    initialDelay: 200,
-    retryOnResponseStatuses: [408, 500, 502, 503, 504]
-  }
-};
-
-exports.default = configDefault;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-exports.queue = queue;
-
-var _componentEmitter = __webpack_require__(17);
-
-var _componentEmitter2 = _interopRequireDefault(_componentEmitter);
-
-var _configDefault = __webpack_require__(5);
-
-var _configDefault2 = _interopRequireDefault(_configDefault);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function queue() {
-  var configQueue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-  if (this instanceof queue === false) {
-    return new queue(configQueue);
-  }
-  this.capacity = 0;
-  this.config = _extends({}, _configDefault2.default.queue, configQueue);
-  this.events = {
-    // "collection-1": [],
-    // "collection-2": []
-  };
-  this.interval = 0;
-  this.timer = null;
-  return this;
-}
-
-(0, _componentEmitter2.default)(queue.prototype);
-
-queue.prototype.check = function () {
-  if (shouldFlushQueue(this)) {
-    this.flush();
-  }
-  if (this.config.interval === 0 || this.capacity === 0) {
-    this.pause();
-  }
-  return this;
-};
-
-queue.prototype.flush = function () {
-  this.emit('flush');
-  this.interval = 0;
-  return this;
-};
-
-queue.prototype.pause = function () {
-  if (this.timer) {
-    clearInterval(this.timer);
-    this.timer = null;
-  }
-  return this;
-};
-
-queue.prototype.start = function () {
-  var self = this;
-  self.pause();
-  self.timer = setInterval(function () {
-    self.interval++;
-    self.check();
-  }, 1000);
-  return self;
-};
-
-function shouldFlushQueue(props) {
-  if (props.capacity > 0 && props.interval >= props.config.interval) {
-    return true;
-  } else if (props.capacity >= props.config.capacity) {
-    return true;
-  }
-  return false;
-}
-
-/***/ }),
-/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -699,6 +394,327 @@ if (!globalNS.Promise) {
 
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var configDefault = exports.configDefault = {
+
+  // defer events - queue
+  // https://github.com/keen/keen-tracking.js/blob/master/docs/defer-events.md
+  queue: {
+    capacity: 5000,
+    interval: 15
+  },
+
+  // connection problems - retry request
+  retry: {
+    limit: 10,
+    initialDelay: 200,
+    retryOnResponseStatuses: [408, 500, 502, 503, 504]
+  },
+
+  unique: false, // record only unique events?
+  // if so - store unique events hashes to compare
+  cache: {
+    /*
+      storage: 'indexeddb', // uncomment for persistence
+    */
+    dbName: 'keenTracking', // indexedDB name
+    dbCollectionName: 'events',
+    dbCollectionKey: 'hash',
+
+    /*
+      hashingMethod: 'md5', // if undefined - store as stringified JSON
+    */
+    maxAge: 60 * 1000 // store for 1 minute
+  }
+};
+
+exports.default = configDefault;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+module.exports = extend;
+
+function extend(target){
+  for (var i = 1; i < arguments.length; i++) {
+    for (var prop in arguments[i]){
+      target[prop] = arguments[i][prop];
+    }
+  }
+  return target;
+};
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _keenCore = __webpack_require__(21);
+
+var _keenCore2 = _interopRequireDefault(_keenCore);
+
+var _each = __webpack_require__(0);
+
+var _each2 = _interopRequireDefault(_each);
+
+var _extend = __webpack_require__(3);
+
+var _extend2 = _interopRequireDefault(_extend);
+
+var _queue = __webpack_require__(7);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_keenCore2.default.helpers = _keenCore2.default.helpers || {};
+
+// Install internal queue
+_keenCore2.default.on('client', function (client) {
+  client.extensions = {
+    events: [],
+    collections: {}
+  };
+  client.queue = (0, _queue.queue)(client.config.queue);
+  client.queue.on('flush', function () {
+    client.recordDeferredEvents();
+  });
+});
+
+// Accessors
+_keenCore2.default.prototype.writeKey = function (str) {
+  if (!arguments.length) return this.config.writeKey;
+  this.config.writeKey = str ? String(str) : null;
+  return this;
+};
+
+_keenCore2.default.prototype.referrerPolicy = function (str) {
+  if (!arguments.length) return this.config.referrerPolicy;
+  this.config.referrerPolicy = str ? String(str) : null;
+  return this;
+};
+
+// DEPRECATED
+_keenCore2.default.prototype.setGlobalProperties = function (props) {
+  _keenCore2.default.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
+  if (!props || typeof props !== 'function') {
+    this.emit('error', 'Invalid value for global properties: ' + props);
+    return;
+  }
+  this.config.globalProperties = props;
+  return this;
+};
+
+exports.default = _keenCore2.default;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var deepExtend = exports.deepExtend = function deepExtend(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    // Copy unique items from incoming array
+    if (target instanceof Array && arguments[i] instanceof Array) {
+      for (var j = 0; j < arguments[i].length; j++) {
+        if (target.indexOf(arguments[i][j]) < 0) {
+          target.push(arguments[i][j]);
+        }
+      }
+    }
+    // Blend objects
+    else {
+        for (var prop in arguments[i]) {
+          // Recurse when both contain objects of same name
+          // and incoming is not a null object
+          if (typeof target[prop] !== 'undefined' && _typeof(arguments[i][prop]) === 'object' && arguments[i][prop] !== null) {
+            deepExtend(target[prop], clone(arguments[i][prop]));
+          }
+          // Otherwise just copy it over...
+          else if (arguments[i][prop] !== undefined && typeof arguments[i][prop] !== 'function') {
+              target[prop] = clone(arguments[i][prop]);
+            }
+        }
+      }
+  }
+  return target;
+};
+
+function clone(input) {
+  return JSON.parse(JSON.stringify(input));
+}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.extendEvent = extendEvent;
+exports.extendEvents = extendEvents;
+exports.getExtendedEventBody = getExtendedEventBody;
+
+var _deepExtend = __webpack_require__(5);
+
+var _each = __webpack_require__(0);
+
+var _each2 = _interopRequireDefault(_each);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function extendEvent(eventCollection, eventModifier) {
+  if (arguments.length !== 2 || typeof eventCollection !== 'string' || 'object' !== (typeof eventModifier === 'undefined' ? 'undefined' : _typeof(eventModifier)) && 'function' !== typeof eventModifier) {
+    handleValidationError.call(this, 'Incorrect arguments provided to #extendEvent method');
+    return;
+  }
+  this.extensions.collections[eventCollection] = this.extensions.collections[eventCollection] || [];
+  this.extensions.collections[eventCollection].push(eventModifier);
+  this.emit('extendEvent', eventCollection, eventModifier);
+  return this;
+}
+
+function extendEvents(eventsModifier) {
+  if (arguments.length !== 1 || 'object' !== (typeof eventsModifier === 'undefined' ? 'undefined' : _typeof(eventsModifier)) && 'function' !== typeof eventsModifier) {
+    handleValidationError.call(this, 'Incorrect arguments provided to #extendEvents method');
+    return;
+  }
+  this.extensions.events.push(eventsModifier);
+  this.emit('extendEvents', eventsModifier);
+  return this;
+}
+
+function handleValidationError(message) {
+  var err = 'Event(s) not extended: ' + message;
+  this.emit('error', err);
+}
+
+function getExtendedEventBody(result, queue) {
+  if (queue && queue.length > 0) {
+    (0, _each2.default)(queue, function (eventModifier, i) {
+      var modifierResult = typeof eventModifier === 'function' ? eventModifier() : eventModifier;
+      (0, _deepExtend.deepExtend)(result, modifierResult);
+    });
+  }
+  return result;
+}
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.queue = queue;
+
+var _componentEmitter = __webpack_require__(20);
+
+var _componentEmitter2 = _interopRequireDefault(_componentEmitter);
+
+var _configDefault = __webpack_require__(2);
+
+var _configDefault2 = _interopRequireDefault(_configDefault);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function queue() {
+  var configQueue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  if (this instanceof queue === false) {
+    return new queue(configQueue);
+  }
+  this.capacity = 0;
+  this.config = _extends({}, _configDefault2.default.queue, configQueue);
+  this.events = {
+    // "collection-1": [],
+    // "collection-2": []
+  };
+  this.interval = 0;
+  this.timer = null;
+  return this;
+}
+
+(0, _componentEmitter2.default)(queue.prototype);
+
+queue.prototype.check = function () {
+  if (shouldFlushQueue(this)) {
+    this.flush();
+  }
+  if (this.config.interval === 0 || this.capacity === 0) {
+    this.pause();
+  }
+  return this;
+};
+
+queue.prototype.flush = function () {
+  this.emit('flush');
+  this.interval = 0;
+  return this;
+};
+
+queue.prototype.pause = function () {
+  if (this.timer) {
+    clearInterval(this.timer);
+    this.timer = null;
+  }
+  return this;
+};
+
+queue.prototype.start = function () {
+  var self = this;
+  self.pause();
+  self.timer = setInterval(function () {
+    self.interval++;
+    self.check();
+  }, 1000);
+  return self;
+};
+
+function shouldFlushQueue(props) {
+  if (props.capacity > 0 && props.interval >= props.config.interval) {
+    return true;
+  } else if (props.capacity >= props.config.capacity) {
+    return true;
+  }
+  return false;
+}
+
+/***/ }),
 /* 8 */
 /***/ (function(module) {
 
@@ -818,7 +834,7 @@ exports.queueCapacity = queueCapacity;
 exports.queueInterval = queueInterval;
 exports.recordDeferredEvents = recordDeferredEvents;
 
-var _index = __webpack_require__(2);
+var _index = __webpack_require__(4);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -826,7 +842,7 @@ var _each = __webpack_require__(0);
 
 var _each2 = _interopRequireDefault(_each);
 
-var _queue = __webpack_require__(6);
+var _queue = __webpack_require__(7);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -910,18 +926,158 @@ function handleValidationError(message) {
 
 /***/ }),
 /* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+// placeholder for future implementation
+module.exports = {
+  getFromCache: function getFromCache() {},
+  saveToCache: function saveToCache() {}
+};
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var MD5 = exports.MD5 = function MD5(d) {
+  var result = M(V(Y(X(d), 8 * d.length)));return result.toLowerCase();
+};function M(d) {
+  for (var _, m = "0123456789ABCDEF", f = "", r = 0; r < d.length; r++) {
+    _ = d.charCodeAt(r), f += m.charAt(_ >>> 4 & 15) + m.charAt(15 & _);
+  }return f;
+}function X(d) {
+  for (var _ = Array(d.length >> 2), m = 0; m < _.length; m++) {
+    _[m] = 0;
+  }for (m = 0; m < 8 * d.length; m += 8) {
+    _[m >> 5] |= (255 & d.charCodeAt(m / 8)) << m % 32;
+  }return _;
+}function V(d) {
+  for (var _ = "", m = 0; m < 32 * d.length; m += 8) {
+    _ += String.fromCharCode(d[m >> 5] >>> m % 32 & 255);
+  }return _;
+}function Y(d, _) {
+  d[_ >> 5] |= 128 << _ % 32, d[14 + (_ + 64 >>> 9 << 4)] = _;for (var m = 1732584193, f = -271733879, r = -1732584194, i = 271733878, n = 0; n < d.length; n += 16) {
+    var h = m,
+        t = f,
+        g = r,
+        e = i;f = md5_ii(f = md5_ii(f = md5_ii(f = md5_ii(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_hh(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_gg(f = md5_ff(f = md5_ff(f = md5_ff(f = md5_ff(f, r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 0], 7, -680876936), f, r, d[n + 1], 12, -389564586), m, f, d[n + 2], 17, 606105819), i, m, d[n + 3], 22, -1044525330), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 4], 7, -176418897), f, r, d[n + 5], 12, 1200080426), m, f, d[n + 6], 17, -1473231341), i, m, d[n + 7], 22, -45705983), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 8], 7, 1770035416), f, r, d[n + 9], 12, -1958414417), m, f, d[n + 10], 17, -42063), i, m, d[n + 11], 22, -1990404162), r = md5_ff(r, i = md5_ff(i, m = md5_ff(m, f, r, i, d[n + 12], 7, 1804603682), f, r, d[n + 13], 12, -40341101), m, f, d[n + 14], 17, -1502002290), i, m, d[n + 15], 22, 1236535329), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 1], 5, -165796510), f, r, d[n + 6], 9, -1069501632), m, f, d[n + 11], 14, 643717713), i, m, d[n + 0], 20, -373897302), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 5], 5, -701558691), f, r, d[n + 10], 9, 38016083), m, f, d[n + 15], 14, -660478335), i, m, d[n + 4], 20, -405537848), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 9], 5, 568446438), f, r, d[n + 14], 9, -1019803690), m, f, d[n + 3], 14, -187363961), i, m, d[n + 8], 20, 1163531501), r = md5_gg(r, i = md5_gg(i, m = md5_gg(m, f, r, i, d[n + 13], 5, -1444681467), f, r, d[n + 2], 9, -51403784), m, f, d[n + 7], 14, 1735328473), i, m, d[n + 12], 20, -1926607734), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 5], 4, -378558), f, r, d[n + 8], 11, -2022574463), m, f, d[n + 11], 16, 1839030562), i, m, d[n + 14], 23, -35309556), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 1], 4, -1530992060), f, r, d[n + 4], 11, 1272893353), m, f, d[n + 7], 16, -155497632), i, m, d[n + 10], 23, -1094730640), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 13], 4, 681279174), f, r, d[n + 0], 11, -358537222), m, f, d[n + 3], 16, -722521979), i, m, d[n + 6], 23, 76029189), r = md5_hh(r, i = md5_hh(i, m = md5_hh(m, f, r, i, d[n + 9], 4, -640364487), f, r, d[n + 12], 11, -421815835), m, f, d[n + 15], 16, 530742520), i, m, d[n + 2], 23, -995338651), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 0], 6, -198630844), f, r, d[n + 7], 10, 1126891415), m, f, d[n + 14], 15, -1416354905), i, m, d[n + 5], 21, -57434055), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 12], 6, 1700485571), f, r, d[n + 3], 10, -1894986606), m, f, d[n + 10], 15, -1051523), i, m, d[n + 1], 21, -2054922799), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 8], 6, 1873313359), f, r, d[n + 15], 10, -30611744), m, f, d[n + 6], 15, -1560198380), i, m, d[n + 13], 21, 1309151649), r = md5_ii(r, i = md5_ii(i, m = md5_ii(m, f, r, i, d[n + 4], 6, -145523070), f, r, d[n + 11], 10, -1120210379), m, f, d[n + 2], 15, 718787259), i, m, d[n + 9], 21, -343485551), m = safe_add(m, h), f = safe_add(f, t), r = safe_add(r, g), i = safe_add(i, e);
+  }return Array(m, f, r, i);
+}function md5_cmn(d, _, m, f, r, i) {
+  return safe_add(bit_rol(safe_add(safe_add(_, d), safe_add(f, i)), r), m);
+}function md5_ff(d, _, m, f, r, i, n) {
+  return md5_cmn(_ & m | ~_ & f, d, _, r, i, n);
+}function md5_gg(d, _, m, f, r, i, n) {
+  return md5_cmn(_ & f | m & ~f, d, _, r, i, n);
+}function md5_hh(d, _, m, f, r, i, n) {
+  return md5_cmn(_ ^ m ^ f, d, _, r, i, n);
+}function md5_ii(d, _, m, f, r, i, n) {
+  return md5_cmn(m ^ (_ | ~f), d, _, r, i, n);
+}function safe_add(d, _) {
+  var m = (65535 & d) + (65535 & _);return (d >> 16) + (_ >> 16) + (m >> 16) << 16 | 65535 & m;
+}function bit_rol(d, _) {
+  return d << _ | d >>> 32 - _;
+}
+
+exports.default = MD5;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.isUnique = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+__webpack_require__(1);
+
+var _md = __webpack_require__(14);
+
+var _md2 = _interopRequireDefault(_md);
+
+var _cacheBrowser = __webpack_require__(13);
+
+var _configDefault = __webpack_require__(2);
+
+var _configDefault2 = _interopRequireDefault(_configDefault);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var uniqueIds = [];
+
+var isUnique = exports.isUnique = function isUnique(customCacheConfig, extendedEventBody) {
+  var configCache = _extends({}, _configDefault2.default.cache, customCacheConfig.cache);
+  var stringifiedEvent = JSON.stringify(extendedEventBody);
+  var hashingMethod = configCache.hashingMethod;
+
+  var hash = hashingMethod && hashingMethod.toLowerCase() === 'md5' ? (0, _md2.default)(stringifiedEvent) : stringifiedEvent;
+  var expiryTime = configCache.maxAge ? Date.now() + configCache.maxAge : undefined;
+  var item = {
+    hash: hash,
+    expiryTime: expiryTime
+  };
+  if (expiryTime) {
+    var now = Date.now();
+    uniqueIds = uniqueIds.filter(function (item) {
+      return item.expiryTime > now;
+    });
+  }
+
+  var alreadySentEvent = uniqueIds.find(function (item) {
+    return item.hash === hash;
+  });
+  if (alreadySentEvent) {
+    if (alreadySentEvent.expiryTime && alreadySentEvent.expiryTime < Date.now()) {
+      uniqueIds = uniqueIds.filter(function (item) {
+        return item.hash !== hash;
+      });
+    } else {
+      return Promise.resolve(false);
+    }
+  }
+  uniqueIds.push(item);
+  if (configCache.storage && configCache.storage.toLowerCase() === 'indexeddb') {
+    return (0, _cacheBrowser.getFromCache)(hash, configCache).then(function (alreadySentEvent) {
+      if (alreadySentEvent) {
+        return false;
+      }
+      (0, _cacheBrowser.saveToCache)(hash, configCache);
+      return true;
+    });
+  }
+
+  return Promise.resolve(true);
+};
+
+exports.default = isUnique;
+
+/***/ }),
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("https");
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 15 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1022,17 +1178,17 @@ exports.default = function (options) {
   });
 };
 
-__webpack_require__(7);
+__webpack_require__(1);
 
-var _http = __webpack_require__(14);
+var _http = __webpack_require__(17);
 
 var _http2 = _interopRequireDefault(_http);
 
-var _https = __webpack_require__(13);
+var _https = __webpack_require__(16);
 
 var _https2 = _interopRequireDefault(_https);
 
-var _configDefault = __webpack_require__(5);
+var _configDefault = __webpack_require__(2);
 
 var _configDefault2 = _interopRequireDefault(_configDefault);
 
@@ -1041,7 +1197,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 ;
 
 /***/ }),
-/* 16 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1053,12 +1209,16 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 exports.recordEvent = recordEvent;
 exports.recordEvents = recordEvents;
 exports.addEvent = addEvent;
 exports.addEvents = addEvents;
 
-var _index = __webpack_require__(2);
+__webpack_require__(1);
+
+var _index = __webpack_require__(4);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -1066,15 +1226,19 @@ var _each = __webpack_require__(0);
 
 var _each2 = _interopRequireDefault(_each);
 
-var _extend = __webpack_require__(1);
+var _extend = __webpack_require__(3);
 
 var _extend2 = _interopRequireDefault(_extend);
 
-var _extendEvents = __webpack_require__(4);
+var _extendEvents = __webpack_require__(6);
 
-var _nodeRequestRetry = __webpack_require__(15);
+var _nodeRequestRetry = __webpack_require__(18);
 
 var _nodeRequestRetry2 = _interopRequireDefault(_nodeRequestRetry);
+
+var _unique = __webpack_require__(15);
+
+var _unique2 = _interopRequireDefault(_unique);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1082,7 +1246,23 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // .recordEvent
 // ------------------------------
 
-function recordEvent(eventCollection, eventBody, callback) {
+function recordEvent(eventCollectionOrConfigObject, eventBody, callback) {
+  var _this = this;
+
+  var eventCollection = eventCollectionOrConfigObject;
+  var unique = void 0;
+  var configObject = void 0;
+  var clientConfig = this.config;
+
+  if ((typeof eventCollectionOrConfigObject === 'undefined' ? 'undefined' : _typeof(eventCollectionOrConfigObject)) === 'object' && eventCollectionOrConfigObject) {
+    // slowly but surely we migrate to one object with all args
+    configObject = eventCollectionOrConfigObject;
+    eventCollection = eventCollectionOrConfigObject.collection;
+    eventBody = eventCollectionOrConfigObject.event;
+    callback = eventCollectionOrConfigObject.callback;
+    unique = eventCollectionOrConfigObject.unique;
+  }
+
   var data = {};
   var extendedEventBody = {};
 
@@ -1111,6 +1291,18 @@ function recordEvent(eventCollection, eventBody, callback) {
   (0, _extendEvents.getExtendedEventBody)(extendedEventBody, this.extensions.events);
   (0, _extendEvents.getExtendedEventBody)(extendedEventBody, this.extensions.collections[eventCollection]);
   (0, _extendEvents.getExtendedEventBody)(extendedEventBody, [data]);
+
+  if (unique) {
+    return (0, _unique2.default)(configObject, extendedEventBody).then(function (isUniqueResult) {
+      if (!isUniqueResult) {
+        return Promise.resolve({
+          created: false,
+          message: '[NOT_UNIQUE] This event has already been recorded'
+        });
+      }
+      return recordEvent.call(_this, _extends({}, eventCollectionOrConfigObject, { unique: undefined }));
+    });
+  }
 
   this.emit('recordEvent', eventCollection, extendedEventBody);
 
@@ -1251,19 +1443,19 @@ function sendEventData(path, eventData, callback) {
 }
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__17__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__20__;
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE__18__;
+module.exports = __WEBPACK_EXTERNAL_MODULE__21__;
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1274,25 +1466,25 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.KeenTracking = exports.Keen = undefined;
 
-var _index = __webpack_require__(2);
+var _index = __webpack_require__(4);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _extend = __webpack_require__(1);
+var _extend = __webpack_require__(3);
 
 var _extend2 = _interopRequireDefault(_extend);
 
-var _recordEventsServer = __webpack_require__(16);
+var _recordEventsServer = __webpack_require__(19);
 
 var _deferEvents = __webpack_require__(12);
 
-var _extendEvents = __webpack_require__(4);
+var _extendEvents = __webpack_require__(6);
 
 var _getDatetimeIndex = __webpack_require__(11);
 
 var _getUniqueId = __webpack_require__(10);
 
-var _deepExtend = __webpack_require__(3);
+var _deepExtend = __webpack_require__(5);
 
 var _timer = __webpack_require__(9);
 

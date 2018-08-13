@@ -76,13 +76,13 @@ Automatically record `pageviews`, `clicks`, and `form_submissions` events with r
 ```html
 <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
 <script>
-KeenTracking.ready(function(){
-  const client = new KeenTracking({
-    projectId: 'YOUR_PROJECT_ID',
-    writeKey: 'YOUR_WRITE_KEY'
+  KeenTracking.ready(function(){
+    const client = new KeenTracking({
+      projectId: 'YOUR_PROJECT_ID',
+      writeKey: 'YOUR_WRITE_KEY'
+    });
+    client.initAutoTracking();
   });
-  client.initAutoTracking();
-});
 </script>
 ```
 
@@ -298,7 +298,7 @@ This can also be used with [automated event tracking](./docs/auto-tracking.md).
 
 ---
 
-### Server-side Tracking (Node.js Back-end)
+### Server-side Event Tracking (Node.js Back-end)
 
 ```javascript
 const KeenTracking = require('keen-tracking');
@@ -396,6 +396,38 @@ client
   })
   .catch(someError => {
     console.log('error', someError);
+  });
+```
+
+---
+
+### Request types
+
+By default, we make requests using the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
+
+For UI interactions, consider using the
+[BeaconAPI](https://developer.mozilla.org/en-US/docs/Web/API/Beacon_API).
+It's the fastest non-invasive way to track user behaviour.
+Due its nature, BeaconAPI runs requests in the background, with no possibility  
+to handle errors. If you want to handle errors, you need to use the Fetch API.
+
+```javascript
+// specify request types for all requests
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY',
+  requestType: 'fetch' // fetch, beaconAPI, xhr, img
+});
+
+// you can use different requestType for a single request
+client
+  .recordEvent({
+    collection: 'clicks',
+    event: {
+      some_key: 'some_value',
+      // ...
+    },
+    requestType: 'beaconAPI'
   });
 ```
 

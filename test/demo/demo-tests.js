@@ -1,5 +1,6 @@
 const demoTests = (demoConfig, Keen) => {
-  // demoConfig.requestType = 'xhr';
+
+ //demoConfig.requestType = 'beaconAPI';
 
   // demoConfig.referrerPolicy: 'origin',
   // https://googlechrome.github.io/samples/fetch-api/fetch-referrer-policy.html
@@ -26,6 +27,64 @@ const demoTests = (demoConfig, Keen) => {
       }
     }
   };
+
+
+  client.recordEvent({
+    collection: 'abc',
+    event: {
+      z: 1
+    },
+    requestType: 'beacon',
+    callback: (err, res) => console.log(err,res)
+  });
+
+
+/*
+.then(res=>{
+  console.log(res);
+}).catch(err => conrole.log(err));
+
+
+  client
+    .recordEvent('recordEvent', { z : 1}, function(err, res){
+      console.log('with callback');
+      if (err) {
+        console.log('err', err);
+      } else {
+        Keen.log('#recordEvent');
+        Keen.log(res);
+      }
+    });
+
+
+  client.recordEvents({
+    col1: [{
+      some: 1
+    }],
+    col2: [{
+      some: 1
+    }]
+  }, (err, res) => {
+    console.log(err,res);
+  });
+
+
+*/
+
+  return;
+
+
+client.recordEvents({
+  col1: [{
+    some: 1
+  }],
+  col2: [{
+    some: 1
+  }]
+}).then(res => {
+  console.log(res);
+});
+return;
 function save(id){
   client
     .recordEvent({
@@ -36,9 +95,8 @@ function save(id){
       },
       unique: true, // check if the event is unique, before sending to API
       cache: {
-        storage: 'indexeddb', // for persistence. Remove this property to use RAM
-        hashingMethod: 'md5', // remove this property to store as a stringified json
-        maxAge: 1000 * 60, // store the information about unique value for 60 seconds
+    //    storage: 'indexeddb', // for persistence. Remove this property to use RAM
+    maxAge: 1000 * 3
       }
     })
     .then((response) => {
@@ -48,11 +106,9 @@ function save(id){
       console.log('error', someError);
     });
 }
-
 save(1);
-
 save(2);
-setTimeout(() => save(3), 200);
+setTimeout(() => save(3), 6000);
 
 return;
 setInterval(() => {

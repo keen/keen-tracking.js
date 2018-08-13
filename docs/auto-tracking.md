@@ -75,7 +75,7 @@ to handle errors. If you want to handle errors, you need to use the [Fetch API](
 const client = new KeenTracking({
   projectId: 'YOUR_PROJECT_ID',
   writeKey: 'YOUR_WRITE_KEY',
-  requestType: 'beaconAPI' // default: beaconAPI, possible values: beaconAPI, fetch
+  requestType: 'beaconAPI' // beaconAPI, fetch
 });
 ```
 
