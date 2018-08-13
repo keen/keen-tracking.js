@@ -11,7 +11,7 @@ npm install keen-tracking --save
 Or load it from public CDN
 
 ```html
-<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
 ```
 
 [Read about more installation options here](./docs/installation.md)
@@ -74,7 +74,7 @@ client
 Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
 
 ```html
-<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@3"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
 <script>
 KeenTracking.ready(function(){
   const client = new KeenTracking({
