@@ -130,6 +130,86 @@ function extend(target){
 
 /***/ }),
 /* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(16);
+/* harmony import */ var _finally__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(5);
+
+
+
+var globalNS = (function() {
+  // the only reliable means to get the global object is
+  // `Function('return this')()`
+  // However, this causes CSP violations in Chrome apps.
+  if (typeof self !== 'undefined') {
+    return self;
+  }
+  if (typeof window !== 'undefined') {
+    return window;
+  }
+  if (typeof global !== 'undefined') {
+    return global;
+  }
+  throw new Error('unable to locate global object');
+})();
+
+if (!globalNS.Promise) {
+  globalNS.Promise = _index__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"];
+} else if (!globalNS.Promise.prototype['finally']) {
+  globalNS.Promise.prototype['finally'] = _finally__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"];
+}
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(4)))
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var configDefault = exports.configDefault = {
+
+  // defer events - queue
+  // https://github.com/keen/keen-tracking.js/blob/master/docs/defer-events.md
+  queue: {
+    capacity: 5000,
+    interval: 15
+  },
+
+  // connection problems - retry request
+  retry: {
+    limit: 10,
+    initialDelay: 200,
+    retryOnResponseStatuses: [408, 500, 502, 503, 504]
+  },
+
+  unique: false, // record only unique events?
+  // if so - store unique events hashes to compare
+  cache: {
+    /*
+      storage: 'indexeddb', // uncomment for persistence
+    */
+    dbName: 'keenTracking', // indexedDB name
+    dbCollectionName: 'events',
+    dbCollectionKey: 'hash',
+
+    /*
+      hashingMethod: 'md5', // if undefined - store as stringified JSON
+    */
+    maxAge: 60 * 1000 // store for 1 minute
+  }
+};
+
+exports.default = configDefault;
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports) {
 
 var g;
@@ -155,7 +235,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -177,7 +257,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports) {
 
 (function(self) {
@@ -650,42 +730,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(global) {/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(16);
-/* harmony import */ var _finally__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
-
-
-
-var globalNS = (function() {
-  // the only reliable means to get the global object is
-  // `Function('return this')()`
-  // However, this causes CSP violations in Chrome apps.
-  if (typeof self !== 'undefined') {
-    return self;
-  }
-  if (typeof window !== 'undefined') {
-    return window;
-  }
-  if (typeof global !== 'undefined') {
-    return global;
-  }
-  throw new Error('unable to locate global object');
-})();
-
-if (!globalNS.Promise) {
-  globalNS.Promise = _index__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"];
-} else if (!globalNS.Promise.prototype['finally']) {
-  globalNS.Promise.prototype['finally'] = _finally__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"];
-}
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
-
-/***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -854,7 +899,7 @@ Emitter.prototype.hasListeners = function(event){
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -909,19 +954,14 @@ _keenCore2.default.prototype.referrerPolicy = function (str) {
 
 // DEPRECATED
 _keenCore2.default.prototype.setGlobalProperties = function (props) {
-  _keenCore2.default.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
-  if (!props || typeof props !== 'function') {
-    this.emit('error', 'Invalid value for global properties: ' + props);
-    return;
-  }
-  this.config.globalProperties = props;
+  _keenCore2.default.log('This method has been removed. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
   return this;
 };
 
 exports.default = _keenCore2.default;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -964,7 +1004,7 @@ function getDomNodePath(el) {
 // via: http://stackoverflow.com/a/16742828/2511985
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1004,7 +1044,7 @@ function getWindowProfile() {
 */
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1035,7 +1075,7 @@ function getScreenProfile() {
 }
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1086,7 +1126,7 @@ var MD5 = exports.MD5 = function MD5(d) {
 exports.default = MD5;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1131,7 +1171,7 @@ function clone(input) {
 }
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1147,7 +1187,7 @@ exports.extendEvent = extendEvent;
 exports.extendEvents = extendEvents;
 exports.getExtendedEventBody = getExtendedEventBody;
 
-var _deepExtend = __webpack_require__(12);
+var _deepExtend = __webpack_require__(13);
 
 var _each = __webpack_require__(0);
 
@@ -1177,8 +1217,7 @@ function extendEvents(eventsModifier) {
 }
 
 function handleValidationError(message) {
-  var err = 'Event(s) not extended: ' + message;
-  this.emit('error', err);
+  this.emit('error', 'Event(s) not extended: ' + message);
 }
 
 function getExtendedEventBody(result, queue) {
@@ -1190,35 +1229,6 @@ function getExtendedEventBody(result, queue) {
   }
   return result;
 }
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var configDefault = exports.configDefault = {
-
-  // defer events - queue
-  // https://github.com/keen/keen-tracking.js/blob/master/docs/defer-events.md
-  queue: {
-    capacity: 5000,
-    interval: 15
-  },
-
-  // connection problems - retry request
-  retry: {
-    limit: 10,
-    initialDelay: 200,
-    retryOnResponseStatuses: [408, 500, 502, 503, 504]
-  }
-};
-
-exports.default = configDefault;
 
 /***/ }),
 /* 15 */
@@ -1235,11 +1245,11 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.queue = queue;
 
-var _componentEmitter = __webpack_require__(6);
+var _componentEmitter = __webpack_require__(7);
 
 var _componentEmitter2 = _interopRequireDefault(_componentEmitter);
 
-var _configDefault = __webpack_require__(14);
+var _configDefault = __webpack_require__(3);
 
 var _configDefault2 = _interopRequireDefault(_configDefault);
 
@@ -1312,7 +1322,7 @@ function shouldFlushQueue(props) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(setImmediate) {/* harmony import */ var _finally__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(3);
+/* WEBPACK VAR INJECTION */(function(setImmediate) {/* harmony import */ var _finally__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(5);
 
 
 // Store setTimeout reference so promise-polyfill will be unaffected by
@@ -2179,7 +2189,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getDomNodeProfile = getDomNodeProfile;
 
-var _getDomNodePath = __webpack_require__(8);
+var _getDomNodePath = __webpack_require__(9);
 
 function getDomNodeProfile(el) {
   return {
@@ -2281,9 +2291,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getBrowserProfile = getBrowserProfile;
 
-var _getScreenProfile = __webpack_require__(10);
+var _getScreenProfile = __webpack_require__(11);
 
-var _getWindowProfile = __webpack_require__(9);
+var _getWindowProfile = __webpack_require__(10);
 
 function getBrowserProfile() {
   return {
@@ -2313,7 +2323,7 @@ function getDocumentDescription() {
 /* 27 */
 /***/ (function(module) {
 
-module.exports = {"name":"keen-tracking","version":"3.2.0","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-core":"^6.26.3","babel-jest":"^23.0.1","babel-loader":"^7.1.5","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-polyfill":"^6.26.0","babel-preset-env":"^1.7.0","babel-preset-es2015":"^6.24.1","babel-preset-stage-0":"^6.24.1","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
+module.exports = {"name":"keen-tracking","version":"4.0.0","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-core":"^6.26.3","babel-jest":"^23.0.1","babel-loader":"^7.1.5","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-polyfill":"^6.26.0","babel-preset-env":"^1.7.0","babel-preset-es2015":"^6.24.1","babel-preset-stage-0":"^6.24.1","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","url-parse":"^1.4.3","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
 
 /***/ }),
 /* 28 */
@@ -2601,7 +2611,7 @@ exports.queueCapacity = queueCapacity;
 exports.queueInterval = queueInterval;
 exports.recordDeferredEvents = recordDeferredEvents;
 
-var _index = __webpack_require__(7);
+var _index = __webpack_require__(8);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -2687,8 +2697,7 @@ function recordDeferredEvents() {
 }
 
 function handleValidationError(message) {
-  var err = 'Event(s) not deferred: ' + message;
-  this.emit('error', err);
+  this.emit('error', 'Event(s) not deferred: ' + message);
 }
 
 /***/ }),
@@ -2705,15 +2714,23 @@ exports.getFromCache = exports.saveToCache = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-__webpack_require__(5);
+__webpack_require__(2);
 
-__webpack_require__(4);
+__webpack_require__(6);
 
-var _md = __webpack_require__(11);
+var _md = __webpack_require__(12);
 
 var _md2 = _interopRequireDefault(_md);
 
+var _configDefault = __webpack_require__(3);
+
+var _configDefault2 = _interopRequireDefault(_configDefault);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+if (typeof self === 'undefined') {
+  throw 'IndexedDB is available only in Browser ENV';
+}
 
 var indexedDBAvailable = 'indexedDB' in self;
 var cachingEnabled = true;
@@ -2724,12 +2741,7 @@ if (!indexedDBAvailable) {
 }
 
 var db = void 0;
-var cacheConfig = {
-  dbName: 'keenTrackingIndexedDB',
-  dbCollectionName: 'requests',
-  dbCollectionKey: 'hash',
-  maxAge: 60 * 1000
-};
+var cacheConfig = _extends({}, _configDefault2.default.cache);
 
 function initializeIndexedDb() {
   var requestCacheConfig = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -2768,7 +2780,7 @@ function initializeIndexedDb() {
 var saveToCache = exports.saveToCache = function saveToCache(hash) {
   var configOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  return initializeIndexedDb(configOptions.cache).then(function () {
+  return initializeIndexedDb(configOptions).then(function () {
     var transactionSave = db.transaction(cacheConfig.dbCollectionName, "readwrite").objectStore(cacheConfig.dbCollectionName);
     var requestSave = transactionSave.add({
       hash: hash,
@@ -2784,7 +2796,7 @@ var saveToCache = exports.saveToCache = function saveToCache(hash) {
 var getFromCache = exports.getFromCache = function getFromCache(hash) {
   var configOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-  return initializeIndexedDb(configOptions.cache).then(function () {
+  return initializeIndexedDb(configOptions).then(function () {
     return new Promise(function (resolve, reject) {
       if (!cachingEnabled) {
         return resolve(null);
@@ -2842,25 +2854,35 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.isUnique = undefined;
 
-var _md = __webpack_require__(11);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+__webpack_require__(2);
+
+var _md = __webpack_require__(12);
 
 var _md2 = _interopRequireDefault(_md);
 
 var _cacheBrowser = __webpack_require__(30);
 
+var _configDefault = __webpack_require__(3);
+
+var _configDefault2 = _interopRequireDefault(_configDefault);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var uniqueIds = [];
 
-var isUnique = exports.isUnique = function isUnique(config, extendedEventBody) {
+var isUnique = exports.isUnique = function isUnique(customCacheConfig, extendedEventBody) {
+  var configCache = _extends({}, _configDefault2.default.cache, customCacheConfig.cache);
   var stringifiedEvent = JSON.stringify(extendedEventBody);
-  var hash = config.cache.hashingMethod && config.cache.hashingMethod.toLowerCase() === 'md5' ? (0, _md2.default)(stringifiedEvent) : stringifiedEvent;
-  var expiryTime = config.cache.maxAge ? Date.now() + config.cache.maxAge : undefined;
+  var hashingMethod = configCache.hashingMethod;
+
+  var hash = hashingMethod && hashingMethod.toLowerCase() === 'md5' ? (0, _md2.default)(stringifiedEvent) : stringifiedEvent;
+  var expiryTime = configCache.maxAge ? Date.now() + configCache.maxAge : undefined;
   var item = {
     hash: hash,
     expiryTime: expiryTime
   };
-
   if (expiryTime) {
     var now = Date.now();
     uniqueIds = uniqueIds.filter(function (item) {
@@ -2881,13 +2903,12 @@ var isUnique = exports.isUnique = function isUnique(config, extendedEventBody) {
     }
   }
   uniqueIds.push(item);
-
-  if (config.cache.storage && config.cache.storage.toLowerCase() === 'indexeddb') {
-    return (0, _cacheBrowser.getFromCache)(hash, config).then(function (alreadySentEvent) {
+  if (configCache.storage && configCache.storage.toLowerCase() === 'indexeddb') {
+    return (0, _cacheBrowser.getFromCache)(hash, configCache).then(function (alreadySentEvent) {
       if (alreadySentEvent) {
         return false;
       }
-      (0, _cacheBrowser.saveToCache)(hash, config);
+      (0, _cacheBrowser.saveToCache)(hash, configCache);
       return true;
     });
   }
@@ -2957,11 +2978,11 @@ exports.default = function (url, options) {
   });
 };
 
-__webpack_require__(5);
+__webpack_require__(2);
 
-__webpack_require__(4);
+__webpack_require__(6);
 
-var _configDefault = __webpack_require__(14);
+var _configDefault = __webpack_require__(3);
 
 var _configDefault2 = _interopRequireDefault(_configDefault);
 
@@ -3402,7 +3423,7 @@ process.umask = function() { return 0; };
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2), __webpack_require__(34)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(4), __webpack_require__(34)))
 
 /***/ }),
 /* 36 */
@@ -3472,7 +3493,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
                          (typeof global !== "undefined" && global.clearImmediate) ||
                          (this && this.clearImmediate);
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(4)))
 
 /***/ }),
 /* 37 */
@@ -3491,12 +3512,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 exports.recordEvent = recordEvent;
 exports.recordEvents = recordEvents;
-exports.addEvent = addEvent;
-exports.addEvents = addEvents;
 
-__webpack_require__(5);
+__webpack_require__(2);
 
-__webpack_require__(4);
+__webpack_require__(6);
 
 var _base = __webpack_require__(33);
 
@@ -3510,11 +3529,11 @@ var _extend = __webpack_require__(1);
 
 var _extend2 = _interopRequireDefault(_extend);
 
-var _index = __webpack_require__(7);
+var _index = __webpack_require__(8);
 
 var _index2 = _interopRequireDefault(_index);
 
-var _extendEvents = __webpack_require__(13);
+var _extendEvents = __webpack_require__(14);
 
 var _fetchRetry = __webpack_require__(32);
 
@@ -3529,8 +3548,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // ------------------------------
 // .recordEvent
 // ------------------------------
-var uniqueIds = [];
-function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMode) {
+
+function recordEvent(eventCollectionOrConfigObject, eventBody, callback) {
   var _this = this;
 
   var eventCollection = eventCollectionOrConfigObject;
@@ -3545,18 +3564,11 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMo
     eventCollection = eventCollectionOrConfigObject.collection;
     eventBody = eventCollectionOrConfigObject.event;
     callback = eventCollectionOrConfigObject.callback;
-    asyncMode = eventCollectionOrConfigObject.asyncMode;
     unique = eventCollectionOrConfigObject.unique;
   }
 
-  var url, data, cb, getRequestUrl, getRequestUrlOkLength, extendedEventBody, isAsync;
-
-  url = this.url('events', encodeURIComponent(eventCollection));
-  data = {};
-  cb = callback || function () {};
-
-  // Requests are asynchronous by default
-  isAsync = 'boolean' === typeof asyncMode ? asyncMode : true;
+  var url = this.url('events', encodeURIComponent(eventCollection));
+  var data = {};
 
   if (!checkValidation.call(this, callback)) {
     return;
@@ -3567,26 +3579,18 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMo
     return;
   }
 
-  // ------------------------------
-  // DEPRECATED
-  // Apply client.globalProperties
-  // ------------------------------
-  if (this.config.globalProperties) {
-    console.log('config.globalProperties are deprecated');
-    data = this.config.globalProperties(eventCollection);
-  }
   (0, _extend2.default)(data, eventBody);
 
   // ------------------------------
   // Run extendEvent(s) transforms
   // ------------------------------
-  extendedEventBody = {};
-  (0, _extendEvents.getExtendedEventBody)(extendedEventBody, this.extensions.events);
-  (0, _extendEvents.getExtendedEventBody)(extendedEventBody, this.extensions.collections[eventCollection]);
-  (0, _extendEvents.getExtendedEventBody)(extendedEventBody, [data]);
+  var extendedEventsHash = {};
+  (0, _extendEvents.getExtendedEventBody)(extendedEventsHash, this.extensions.events);
+  (0, _extendEvents.getExtendedEventBody)(extendedEventsHash, this.extensions.collections[eventCollection]);
+  (0, _extendEvents.getExtendedEventBody)(extendedEventsHash, [data]);
 
   if (unique) {
-    return (0, _unique2.default)(configObject, extendedEventBody).then(function (isUniqueResult) {
+    return (0, _unique2.default)(configObject, extendedEventsHash).then(function (isUniqueResult) {
       if (!isUniqueResult) {
         return Promise.resolve({
           created: false,
@@ -3597,65 +3601,14 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMo
     });
   }
 
-  this.emit('recordEvent', eventCollection, extendedEventBody);
+  this.emit('recordEvent', eventCollection, extendedEventsHash);
 
   if (!_index2.default.enabled) {
     handleValidationError.call(this, 'Keen.enabled is set to false.', callback);
     return false;
   }
 
-  // ------------------------------
-  // Send event
-  // ------------------------------
-
-  getRequestUrl = this.url('events', encodeURIComponent(eventCollection), {
-    api_key: this.writeKey(),
-    data: encodeURIComponent(_base2.default.encode(JSON.stringify(extendedEventBody))),
-    modified: new Date().getTime()
-  });
-  getRequestUrlOkLength = getRequestUrl.length < getUrlMaxLength();
-
-  if (navigator && navigator.sendBeacon && (clientConfig.requestType === 'beaconAPI' || configObject && configObject.requestType === 'beaconAPI'
-  // so you can send specific recordEvent() using beaconAPI
-  // even if your global client's config prefers Fetch
-  )) {
-    navigator.sendBeacon(url + '?api_key=' + this.writeKey(), JSON.stringify(extendedEventBody));
-    return this;
-  }
-
-  if (isAsync) {
-    switch (this.config.requestType) {
-      case 'xhr':
-        sendXhr.call(this, 'POST', url, extendedEventBody, cb);
-        break;
-      case 'beacon':
-        // this is IMAGE beacon, not the Beacon API. deprecated
-        if (getRequestUrlOkLength) {
-          sendBeacon.call(this, getRequestUrl, cb);
-        } else {
-          attemptPostXhr.call(this, url, extendedEventBody, 'Beacon URL length exceeds current browser limit, and XHR is not supported.', cb);
-        }
-        break;
-      default:
-        if (typeof fetch !== 'undefined') {
-          return sendFetch.call(this, 'POST', url, extendedEventBody, cb);
-        } else if (getRequestUrlOkLength) {
-          // deprecated, will be removed
-          sendJSONp.call(this, getRequestUrl, cb);
-        } else {
-          attemptPostXhr.call(this, url, extendedEventBody, 'JSONp URL length exceeds current browser limit, and XHR is not supported.', cb);
-        }
-        break;
-    }
-  } else {
-    // Send synchronous request
-    if (getRequestUrlOkLength) {
-      sendSynchronousXhr(getRequestUrl);
-    }
-  }
-
-  callback = cb = null;
-  return this;
+  return send.call(this, { url: url, extendedEventsHash: extendedEventsHash, callback: callback, configObject: configObject, eventCollection: eventCollection });
 }
 
 // ------------------------------
@@ -3663,11 +3616,8 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback, asyncMo
 // ------------------------------
 
 function recordEvents(eventsHash, callback) {
-  var self = this,
-      url,
-      extendedEventsHash;
-
-  url = this.url('events');
+  var self = this;
+  var url = this.url('events');
 
   if (!checkValidation.call(this, callback)) {
     return;
@@ -3684,27 +3634,9 @@ function recordEvents(eventsHash, callback) {
   }
 
   // ------------------------------
-  // DEPRECATED
-  // Apply client.globalProperties
-  // ------------------------------
-  if (this.config.globalProperties) {
-    console.log('config.globalProperties are deprecated');
-    // Loop over each set of events
-    (0, _each2.default)(eventsHash, function (events, collection) {
-      // Loop over each individual event
-      (0, _each2.default)(events, function (body, index) {
-        // Start with global properties for this collection
-        var modified = self.config.globalProperties(collection);
-        // Apply provided properties for this event body
-        eventsHash[collection][index] = (0, _extend2.default)(modified, body);
-      });
-    });
-  }
-
-  // ------------------------------
   // Run extendEvent(s) transforms
   // ------------------------------
-  extendedEventsHash = {};
+  var extendedEventsHash = {};
   (0, _each2.default)(eventsHash, function (eventList, eventCollection) {
     // Find or create collection on new hash
     extendedEventsHash[eventCollection] = extendedEventsHash[eventCollection] || [];
@@ -3730,74 +3662,57 @@ function recordEvents(eventsHash, callback) {
     return false;
   }
 
-  if ((!this.config.requestType || this.config.requestType !== 'xhr') && typeof fetch !== 'undefined') {
-    return sendFetch.call(this, 'POST', url, extendedEventsHash, callback);
-  } else if (getXhr()) {
-    sendXhr.call(this, 'POST', url, extendedEventsHash, callback);
-  }
-  return this;
+  return send.call(this, { url: url, extendedEventsHash: extendedEventsHash, callback: callback });
 }
 
-// ----------------------
-// DEPRECATED
-// ----------------------
+function send(_ref) {
+  var url = _ref.url,
+      extendedEventsHash = _ref.extendedEventsHash,
+      callback = _ref.callback,
+      _ref$configObject = _ref.configObject,
+      configObject = _ref$configObject === undefined ? {} : _ref$configObject,
+      eventCollection = _ref.eventCollection;
 
-function addEvent() {
-  console.log('addEvent method is depracated. Check out #recordEvent: https://github.com/keen/keen-tracking.js#record-a-single-event');
-  this.emit('error', 'This method has been deprecated. Check out #recordEvent: https://github.com/keen/keen-tracking.js#record-a-single-event');
-  recordEvent.apply(this, arguments);
-}
+  var clientConfig = this.config;
+  var requestType = configObject.requestType // specific method for one request
+  || this.config.requestType; // global request type of client
 
-function addEvents() {
-  console.log('addEvents method is depracated. Check out #recordEvents: https://github.com/keen/keen-tracking.js#record-multiple-events');
-  this.emit('error', 'This method has been deprecated. Check out #recordEvents: https://github.com/keen/keen-tracking.js#record-multiple-events');
-  recordEvents.apply(this, arguments);
-}
-
-// ------------------------------
-// Validation
-// ------------------------------
-
-function checkValidation(callback) {
-
-  if (!this.projectId()) {
-    handleValidationError.call(this, 'Keen.Client is missing a projectId property.', callback);
-    return false;
-  }
-  if (!this.writeKey()) {
-    handleValidationError.call(this, 'Keen.Client is missing a writeKey property.', callback);
-    return false;
-  }
-  return true;
-}
-
-function handleValidationError(message, cb) {
-  var err = 'Event(s) not recorded: ' + message;
-  this.emit('error', err);
-  if (cb) {
-    cb.call(this, err, null);
-  }
-}
-
-function getUrlMaxLength() {
-  if ('undefined' !== typeof window && navigator) {
-    if (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > 0) {
-      return 1900;
+  if (navigator && navigator.sendBeacon && requestType === 'beaconAPI'
+  // so you can send specific recordEvent() using beaconAPI
+  // even if your global client's config prefers Fetch
+  ) {
+      navigator.sendBeacon(url + '?api_key=' + this.writeKey(), JSON.stringify(extendedEventsHash));
+      if (callback) {
+        // Beacon API is not handling responses nor errors
+        callback();
+      }
+      return this;
     }
-  }
-  return 16000;
-}
 
-// ------------------------------
-// XHR Requests
-// ------------------------------
+  // this is IMAGE beacon, not the Beacon API. deprecated
+  if (requestType === 'beacon' || requestType === 'img') {
+    var getRequestUrl = this.url('events', encodeURIComponent(eventCollection), {
+      api_key: this.writeKey(),
+      data: encodeURIComponent(_base2.default.encode(JSON.stringify(extendedEventsHash))),
+      modified: new Date().getTime()
+    });
+    var getRequestUrlOkLength = getRequestUrl.length < getUrlMaxLength();
 
-function attemptPostXhr(url, data, noXhrError, callback) {
-  if (getXhr()) {
-    sendXhr.call(this, 'POST', url, data, callback);
-  } else {
-    handleValidationError.call(this, noXhrError);
+    if (getRequestUrlOkLength) {
+      sendBeacon.call(this, getRequestUrl, callback);
+    } else {
+      if (callback) {
+        callback('Beacon URL length exceeds current browser limit, and XHR is not supported.', null);
+      }
+    }
+    return this;
   }
+
+  if (typeof fetch !== 'undefined') {
+    return sendFetch.call(this, 'POST', url, extendedEventsHash, callback);
+  }
+
+  return this;
 }
 
 function sendFetch(method, url, data) {
@@ -3879,157 +3794,47 @@ function checkEventsSavedSuccessfuly(response) {
   return false;
 }
 
-function sendXhr(method, url, data, callback) {
-  var self = this;
-  var payload;
-  var xhr = getXhr();
-  var cb = callback;
-  callback = null;
+// Validation
+function checkValidation(callback) {
 
-  xhr.onreadystatechange = function () {
-    var response;
-    if (xhr.readyState == 4) {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          response = JSON.parse(xhr.responseText);
-        } catch (e) {
-          _index2.default.emit('error', 'Could not parse HTTP response: ' + xhr.responseText);
-          if (cb) {
-            cb.call(self, xhr, null);
-          }
-        }
-        if (cb && response) {
-          cb.call(self, null, response);
-        }
-      } else {
-        _index2.default.emit('error', 'HTTP request failed.');
-        if (cb) {
-          cb.call(self, xhr, null);
-        }
-      }
-    }
-  };
-
-  xhr.open(method, url, true);
-  xhr.setRequestHeader('Authorization', self.writeKey());
-  xhr.setRequestHeader('Content-Type', 'application/json');
-
-  if (data) {
-    payload = JSON.stringify(data);
+  if (!this.projectId()) {
+    handleValidationError.call(this, 'Keen.Client is missing a projectId property.', callback);
+    return false;
   }
-
-  if (method.toUpperCase() === 'GET') {
-    xhr.send();
+  if (!this.writeKey()) {
+    handleValidationError.call(this, 'Keen.Client is missing a writeKey property.', callback);
+    return false;
   }
-  if (method.toUpperCase() === 'POST') {
-    xhr.send(payload);
+  return true;
+}
+
+function handleValidationError(message, callback) {
+  var err = 'Event(s) not recorded: ' + message;
+  this.emit('error', err);
+  if (callback) {
+    callback.call(this, err, null);
   }
 }
 
-function sendSynchronousXhr(url) {
-  var xhr = getXhr();
-  if (xhr) {
-    xhr.open('GET', url, false);
-    xhr.send(null);
+function getUrlMaxLength() {
+  if ('undefined' !== typeof window && navigator) {
+    if (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > 0) {
+      return 1900;
+    }
   }
+  return 16000;
 }
 
-function getXhr() {
-  // yay, superagent!
-  var root = 'undefined' == typeof window ? this : window;
-  if (root.XMLHttpRequest && ('file:' != root.location.protocol || !root.ActiveXObject)) {
-    return new XMLHttpRequest();
-  } else {
-    try {
-      return new ActiveXObject('Microsoft.XMLHTTP');
-    } catch (e) {}
-    try {
-      return new ActiveXObject('Msxml2.XMLHTTP.6.0');
-    } catch (e) {}
-    try {
-      return new ActiveXObject('Msxml2.XMLHTTP.3.0');
-    } catch (e) {}
-    try {
-      return new ActiveXObject('Msxml2.XMLHTTP');
-    } catch (e) {}
-  }
-  return false;
-};
+/*
+  DEPRECATED METHODS
+*/
 
-// ------------------------------
-// JSON-P Requests
-// ------------------------------
-
-function sendJSONp(url, callback) {
-  var self = this,
-      cb = callback,
-      timestamp = new Date().getTime(),
-      script = document.createElement('script'),
-      parent = document.getElementsByTagName('head')[0],
-      callbackName = 'keenJSONPCallback',
-      loaded = false;
-
-  callback = null;
-
-  callbackName += timestamp;
-  while (callbackName in window) {
-    callbackName += 'a';
-  }
-  window[callbackName] = function (response) {
-    if (loaded === true) return;
-    loaded = true;
-    if (cb) {
-      cb.call(self, null, response);
-    }
-    cleanup();
-  };
-  script.src = url + '&jsonp=' + callbackName;
-  parent.appendChild(script);
-
-  // for early IE w/ no onerror event
-  script.onreadystatechange = function () {
-    if (loaded === false && this.readyState === 'loaded') {
-      loaded = true;
-      handleError();
-      cleanup();
-    }
-  };
-  // non-ie, etc
-  script.onerror = function () {
-    // on IE9 both onerror and onreadystatechange are called
-    if (loaded === false) {
-      loaded = true;
-      handleError();
-      cleanup();
-    }
-  };
-
-  function handleError() {
-    if (cb) {
-      cb.call(self, 'An error occurred!', null);
-    }
-  }
-
-  function cleanup() {
-    window[callbackName] = undefined;
-    try {
-      delete window[callbackName];
-    } catch (e) {};
-    parent.removeChild(script);
-  }
-}
-
-// ------------------------------
 // Image Beacon Requests
-// ------------------------------
-
+// DEPRECATED
 function sendBeacon(url, callback) {
   var self = this,
-      cb = callback,
       img = document.createElement('img'),
       loaded = false;
-
-  callback = null;
 
   img.onload = function () {
     loaded = true;
@@ -4042,14 +3847,14 @@ function sendBeacon(url, callback) {
       this.onerror();
       return;
     }
-    if (cb) {
-      cb.call(self);
+    if (callback) {
+      callback.call(self);
     }
   };
   img.onerror = function () {
     loaded = true;
-    if (cb) {
-      cb.call(self, 'An error occurred!', null);
+    if (callback) {
+      callback.call(self, 'An error occurred!', null);
     }
   };
   img.src = url + '&c=clv1';
@@ -4067,7 +3872,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.listenerCore = undefined;
 
-var _componentEmitter = __webpack_require__(6);
+var _componentEmitter = __webpack_require__(7);
 
 var _componentEmitter2 = _interopRequireDefault(_componentEmitter);
 
@@ -4399,7 +4204,7 @@ function parseParams(str){
       parseParams = __webpack_require__(40),
       serialize = __webpack_require__(39);
 
-  var Emitter = __webpack_require__(6);
+  var Emitter = __webpack_require__(7);
 
   function Client(props){
     if (this instanceof Client === false) {
@@ -4621,7 +4426,7 @@ function parseParams(str){
 
 }).call(this, typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {});
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(4)))
 
 /***/ }),
 /* 42 */
@@ -4635,7 +4440,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.KeenTracking = exports.Keen = exports.keenGlobals = undefined;
 
-var _index = __webpack_require__(7);
+var _index = __webpack_require__(8);
 
 var _index2 = _interopRequireDefault(_index);
 
@@ -4653,7 +4458,7 @@ var _recordEventsBrowser = __webpack_require__(37);
 
 var _deferEvents = __webpack_require__(29);
 
-var _extendEvents = __webpack_require__(13);
+var _extendEvents = __webpack_require__(14);
 
 var _browserAutoTracking = __webpack_require__(28);
 
@@ -4663,21 +4468,21 @@ var _getDatetimeIndex = __webpack_require__(25);
 
 var _getDomainName = __webpack_require__(24);
 
-var _getDomNodePath = __webpack_require__(8);
+var _getDomNodePath = __webpack_require__(9);
 
 var _getDomNodeProfile = __webpack_require__(23);
 
-var _getScreenProfile = __webpack_require__(10);
+var _getScreenProfile = __webpack_require__(11);
 
 var _getScrollState = __webpack_require__(22);
 
 var _getUniqueId = __webpack_require__(21);
 
-var _getWindowProfile = __webpack_require__(9);
+var _getWindowProfile = __webpack_require__(10);
 
 var _cookie = __webpack_require__(20);
 
-var _deepExtend = __webpack_require__(12);
+var _deepExtend = __webpack_require__(13);
 
 var _serializeForm = __webpack_require__(18);
 
@@ -4690,10 +4495,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // ------------------------
 (0, _extend2.default)(_index2.default.prototype, {
   recordEvent: _recordEventsBrowser.recordEvent,
-  recordEvents: _recordEventsBrowser.recordEvents,
-  addEvent: _recordEventsBrowser.addEvent,
-  addEvents: _recordEventsBrowser.addEvents
+  recordEvents: _recordEventsBrowser.recordEvents
 });
+
 (0, _extend2.default)(_index2.default.prototype, {
   deferEvent: _deferEvents.deferEvent,
   deferEvents: _deferEvents.deferEvents,
@@ -4713,11 +4517,6 @@ var initAutoTracking = (0, _browserAutoTracking.initAutoTrackingCore)(_index2.de
 (0, _extend2.default)(_index2.default.prototype, {
   initAutoTracking: initAutoTracking
 });
-
-// ------------------------
-// Deprecated
-// ------------------------
-_index2.default.prototype.trackExternalLink = trackExternalLink;
 
 // ------------------------
 // Helpers
@@ -4755,76 +4554,6 @@ _index2.default.listenTo = function (listenerHash) {
     return listener(selector).on(eventType, callback);
   });
 };
-
-// ------------------------------
-// DEPRECATED
-// ------------------------------
-function trackExternalLink(jsEvent, eventCollection, payload, timeout, timeoutCallback) {
-  this.emit('error', 'This method has been deprecated. Check out DOM listeners: https://github.com/keen/keen-tracking.js#listeners');
-  var evt = jsEvent,
-      target = evt.currentTarget ? evt.currentTarget : evt.srcElement || evt.target,
-      timer = timeout || 500,
-      triggered = false,
-      targetAttr = '',
-      callback,
-      win;
-  if (target.getAttribute !== void 0) {
-    targetAttr = target.getAttribute('target');
-  } else if (target.target) {
-    targetAttr = target.target;
-  }
-  if ((targetAttr == '_blank' || targetAttr == 'blank') && !evt.metaKey) {
-    win = window.open('about:blank');
-    win.document.location = target.href;
-  }
-  if (target.nodeName === 'A') {
-    callback = function callback() {
-      if (!triggered && !evt.metaKey && targetAttr !== '_blank' && targetAttr !== 'blank') {
-        triggered = true;
-        window.location = target.href;
-      }
-    };
-  } else if (target.nodeName === 'FORM') {
-    callback = function callback() {
-      if (!triggered) {
-        triggered = true;
-        target.submit();
-      }
-    };
-  } else {
-    this.trigger('error', '#trackExternalLink method not attached to an <a> or <form> DOM element');
-  }
-  if (timeoutCallback) {
-    callback = function callback() {
-      if (!triggered) {
-        triggered = true;
-        timeoutCallback();
-      }
-    };
-  }
-  this.recordEvent(eventCollection, payload, callback);
-  setTimeout(callback, timer);
-  if (!evt.metaKey) {
-    return false;
-  }
-}
-
-// IE-specific polyfills, yay!
-// -----------------------------
-if (!Array.prototype.indexOf) {
-  Array.prototype.indexOf = function (elt /*, from*/) {
-    var len = this.length >>> 0;
-
-    var from = Number(arguments[1]) || 0;
-    from = from < 0 ? Math.ceil(from) : Math.floor(from);
-    if (from < 0) from += len;
-
-    for (; from < len; from++) {
-      if (from in this && this[from] === elt) return from;
-    }
-    return -1;
-  };
-}
 
 var keenGlobals = exports.keenGlobals = undefined;
 if (typeof webpackKeenGlobals !== 'undefined') {

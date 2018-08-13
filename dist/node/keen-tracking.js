@@ -510,12 +510,7 @@ _keenCore2.default.prototype.referrerPolicy = function (str) {
 
 // DEPRECATED
 _keenCore2.default.prototype.setGlobalProperties = function (props) {
-  _keenCore2.default.log('This method has been deprecated. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
-  if (!props || typeof props !== 'function') {
-    this.emit('error', 'Invalid value for global properties: ' + props);
-    return;
-  }
-  this.config.globalProperties = props;
+  _keenCore2.default.log('This method has been removed. Check out #extendEvents: https://github.com/keen/keen-tracking.js#extend-events');
   return this;
 };
 
@@ -613,8 +608,7 @@ function extendEvents(eventsModifier) {
 }
 
 function handleValidationError(message) {
-  var err = 'Event(s) not extended: ' + message;
-  this.emit('error', err);
+  this.emit('error', 'Event(s) not extended: ' + message);
 }
 
 function getExtendedEventBody(result, queue) {
@@ -718,7 +712,7 @@ function shouldFlushQueue(props) {
 /* 8 */
 /***/ (function(module) {
 
-module.exports = {"name":"keen-tracking","version":"3.2.0","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-core":"^6.26.3","babel-jest":"^23.0.1","babel-loader":"^7.1.5","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-polyfill":"^6.26.0","babel-preset-env":"^1.7.0","babel-preset-es2015":"^6.24.1","babel-preset-stage-0":"^6.24.1","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
+module.exports = {"name":"keen-tracking","version":"4.0.0","description":"Data Collection SDK for Keen IO","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build && npm run test","version":"git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-core":"^6.26.3","babel-jest":"^23.0.1","babel-loader":"^7.1.5","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-polyfill":"^6.26.0","babel-preset-env":"^1.7.0","babel-preset-es2015":"^6.24.1","babel-preset-stage-0":"^6.24.1","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","url-parse":"^1.4.3","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.1","xhr-mock":"^2.3.2"}};
 
 /***/ }),
 /* 9 */
@@ -920,8 +914,7 @@ function recordDeferredEvents() {
 }
 
 function handleValidationError(message) {
-  var err = 'Event(s) not deferred: ' + message;
-  this.emit('error', err);
+  this.emit('error', 'Event(s) not deferred: ' + message);
 }
 
 /***/ }),
@@ -1213,8 +1206,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 exports.recordEvent = recordEvent;
 exports.recordEvents = recordEvents;
-exports.addEvent = addEvent;
-exports.addEvents = addEvents;
 
 __webpack_require__(1);
 
@@ -1275,13 +1266,6 @@ function recordEvent(eventCollectionOrConfigObject, eventBody, callback) {
     return;
   }
 
-  // ------------------------------
-  // DEPRECATED
-  // Apply client.globalProperties
-  // ------------------------------
-  if (this.config.globalProperties) {
-    data = this.config.globalProperties(eventCollection);
-  }
   (0, _extend2.default)(data, eventBody);
 
   // ------------------------------
@@ -1327,25 +1311,8 @@ function recordEvents(eventsHash, callback) {
   }
 
   if (arguments.length > 2) {
-    handleValidationError.call(this, 'Incorrect arguments provided to #addEvents method', callback);
+    handleValidationError.call(this, 'Incorrect arguments provided to #recordEvents method', callback);
     return;
-  }
-
-  // ------------------------------
-  // DEPRECATED
-  // Apply client.globalProperties
-  // ------------------------------
-  if (this.config.globalProperties) {
-    // Loop over each set of events
-    (0, _each2.default)(eventsHash, function (events, collection) {
-      // Loop over each individual event
-      (0, _each2.default)(events, function (body, index) {
-        // Start with global properties for this collection
-        var modified = self.config.globalProperties(collection);
-        // Apply provided properties for this event body
-        eventsHash[collection][index] = (0, _extend2.default)(modified, body);
-      });
-    });
   }
 
   // ------------------------------
@@ -1377,20 +1344,6 @@ function recordEvents(eventsHash, callback) {
   }
 
   return sendEventData.call(this, undefined, extendedEventsHash, callback);
-}
-
-// ----------------------
-// DEPRECATED
-// ----------------------
-
-function addEvent() {
-  this.emit('error', 'This method has been deprecated. Check out #recordEvent: https://github.com/keen/keen-tracking.js#record-a-single-event');
-  recordEvent.apply(this, arguments);
-}
-
-function addEvents() {
-  this.emit('error', 'This method has been deprecated. Check out #recordEvents: https://github.com/keen/keen-tracking.js#record-multiple-events');
-  recordEvents.apply(this, arguments);
 }
 
 // ------------------------------
@@ -1499,9 +1452,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // ------------------------
 (0, _extend2.default)(_index2.default.prototype, {
   recordEvent: _recordEventsServer.recordEvent,
-  recordEvents: _recordEventsServer.recordEvents,
-  addEvent: _recordEventsServer.addEvent,
-  addEvents: _recordEventsServer.addEvents
+  recordEvents: _recordEventsServer.recordEvents
 });
 (0, _extend2.default)(_index2.default.prototype, {
   deferEvent: _deferEvents.deferEvent,
