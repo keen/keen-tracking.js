@@ -1,4 +1,4 @@
-const demoTests = (demoConfig, Keen) => {
+const demoTests = (env) => {
 
  //demoConfig.requestType = 'beaconAPI';
 
@@ -12,9 +12,11 @@ const demoTests = (demoConfig, Keen) => {
   };
   */
 
-  Keen.debug = true;
+  KeenT = KeenTrackingLite;
 
-  const client = new Keen(demoConfig);
+  KeenT.debug = true;
+
+  const client = new KeenT(KeenT.defaultConfig);
 
   const x = Math.random();
   console.log(x);
@@ -34,7 +36,7 @@ const demoTests = (demoConfig, Keen) => {
     event: {
       z: 1
     },
-    requestType: 'beacon',
+    requestType: 'beaconAPI',
     callback: (err, res) => console.log(err,res)
   });
 
@@ -203,8 +205,8 @@ return;
 }
 
 if (typeof window !== 'undefined') {
-  window.demoTests = demoTests;
+  window.demoTests = demoTests(window);
 }
 if (typeof global !== 'undefined') {
-  module.exports = demoTests;
+  module.exports = demoTests(global);
 }

@@ -2,8 +2,17 @@ const path = require('path');
 const webpack = require('webpack');
 
 const fileName = 'keen-tracking';
-const entry = ( process.env.TARGET !== 'node' ) ? [ './lib/browser.js'] : './lib/server.js' ;
-const alias = ( process.env.TARGET !== 'node' ) ? [] : {'./cache-browser' : './cache-node'};
+let entry = ( process.env.TARGET !== 'node' ) ? [ './lib/browser.js'] : './lib/server.js' ;
+let alias = ( process.env.TARGET !== 'node' ) ? [] : {'./cache-browser' : './cache-node'};
+
+entry = './lib/browser-light-loader.js';
+alias = {
+  'promise-polyfill/src/polyfill': path.resolve(__dirname, 'lib/blank.js'),
+  'whatwg-fetch': path.resolve(__dirname, 'lib/blank.js'),
+};
+//    24 8
+// 40 20 12
+// 80 60 19
 
 let definePluginVars = {};
 if (process.env.NODE_ENV === 'development') {
