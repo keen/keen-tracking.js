@@ -1,5 +1,7 @@
 const demoTests = (env) => {
 
+  let client = new KeenTracking(KeenTracking.defaultConfig);
+
  //demoConfig.requestType = 'beaconAPI';
 
   // demoConfig.referrerPolicy: 'origin',
@@ -12,11 +14,12 @@ const demoTests = (env) => {
   };
   */
 
+/*
   KeenT = KeenTrackingLite;
 
   KeenT.debug = true;
 
-  const client = new KeenT(KeenT.defaultConfig);
+  client = new KeenT(KeenT.defaultConfig);
 
   const x = Math.random();
   console.log(x);
@@ -39,6 +42,7 @@ const demoTests = (env) => {
     requestType: 'beaconAPI',
     callback: (err, res) => console.log(err,res)
   });
+*/
 
 
 /*

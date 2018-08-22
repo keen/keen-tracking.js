@@ -5,7 +5,8 @@ const fileName = 'keen-tracking';
 let entry = ( process.env.TARGET !== 'node' ) ? [ './lib/browser.js'] : './lib/server.js' ;
 let alias = ( process.env.TARGET !== 'node' ) ? [] : {'./cache-browser' : './cache-node'};
 
-entry = './lib/browser-light-loader.js';
+//entry = './lib/browser-light-loader.js';
+
 alias = {
   'promise-polyfill/src/polyfill': path.resolve(__dirname, 'lib/blank.js'),
   'whatwg-fetch': path.resolve(__dirname, 'lib/blank.js'),
