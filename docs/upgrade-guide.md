@@ -7,7 +7,7 @@ There are several new methods and name changes from earlier versions of [keen-js
 
 The following legacy methods are now deprecated:
 
-* `addEvent` and `addEvents` are now [`recordEvent`](./record-events.md) and [`recordEvents`](./record-events.md)
+* `addEvent` and `addEvents` are now `recordEvent`
 * `setGlobalProperties` is now handled by the [`extendEvents`](./extend-events.md) methods
 * `trackExternalLinks` is now handled by the [DOM listeners](./listeners.md) utility (browser-only)
 

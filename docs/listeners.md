@@ -1,22 +1,16 @@
 # DOM Listeners
 
-`listener(client)` helps surface common DOM element events like "click", "scroll", and "submit". There is also a `client.listenTo()` method for quickly setting a series of listeners (below)
+`KeenTracking.utils.listener()` helps surface common DOM element events like "click", "scroll", and "submit". There is also a `KeenTracking.listenTo()` method for quickly setting a series of listeners (below)
+
+**Important:** Form submits and clicks will be delayed by 500ms, unless the event is cancelled within a given listener's callback.
 
 ```javascript
-import KeenTracking, { listener } from 'keen-tracking';
+import KeenTracking from 'keen-tracking';
 
 // Listen to DOM events
 
 // Create a new element listener (assigned)
-
-const client = new KeenTracking({
-  projectId: 'YOUR_PROJECT_ID',
-  writeKey: 'YOUR_WRITE_KEY'
-});
-
-listener(client);
-
-const navLinks = listener('.nav li > a');
+const navLinks = KeenTracking.utils.listener('.nav li > a');
 
 // Listen for a given event
 navLinks.on('click', (e) => {
@@ -134,6 +128,9 @@ const winListener = KeenTracking.utils.listener('window')
 * mouseout
 * mouseover
 * mouseup
+
+
+**Important note about `<a>` and `<form>` elements:** `<a>` tag **clicks** (when navigating away from the current page) and `<form>` **submits** are deferred for 500ms to allow for quick, asynchronous API calls.
 
 **`window` events:**
 

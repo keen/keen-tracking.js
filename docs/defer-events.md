@@ -5,7 +5,7 @@ These methods handle an internal queue of events, which is pushed to the [events
 ### Defer a single event
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { deferEvent } from 'keen-tracking';
 
 const client = new KeenTracking({
   // projectId: '',
@@ -18,28 +18,21 @@ const client = new KeenTracking({
   }
 });
 
-client.deferEvent('purchase', {
-  user_id: '35465434643'
-  /* Data Model */
+deferEvent({
+  client,
+  events: [
+    {
+      collection: 'purchase',
+      event: {
+        some_data: 1234,
+        user_id: 35465434643
+        /* Data Model */
+      }
+    }
+    // add as many events as you want
+  ]
 });
 ```
-
-### Defer multiple events
-
-```javascript
-import KeenTracking from 'keen-tracking';
-
-const client = new KeenTracking({ /*configure*/ });
-
-client.deferEvents([
-  'collection-1': [
-    { user_id: '21325432423' /* Event Data Model */ },
-    { user_id: '55421323121' /* Event Data Model */ }
-  ],
-  'collection-2': [ /* Multiple Events */ ]
-]);
-```
-
 
 ### Stop interval
 
@@ -52,16 +45,8 @@ client.queue.pause();
 
 ### Flush the queue
 
-Flush all events currently queued by calling `client.recordDeferredEvents()`.
+Flush all events currently queued by calling `recordDeferredEvents()`.
 
 ```javascript
-import KeenTracking from 'keen-tracking';
-
-const client = new KeenTracking({ /*configure*/ });
-
-client.deferEvent('purchase', {
-  /* Data Model */
-});
-
-client.recordDeferredEvents();
+recordDeferredEvents(client);
 ```
