@@ -1,25 +1,25 @@
 # Timers
 
-`KeenTracking.utils.timer()` creates an object that tracks time, and can be paused, restarted, or initialized with a known value (seconds). It seems simple, but these little do-dads are excellent for recording the duration of sessions or specific interactions.
+`timer()` creates an object that tracks time, and can be paused, restarted, or initialized with a known value (seconds). It seems simple, but these little do-dads are excellent for recording the duration of sessions or specific interactions.
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { timer } from 'keen-tracking';
 
-const userActivity = KeenTracking.utils.timer();
+const userActivityTimer = timer();
 
 // Start the timer
-userActivity.start();
+userActivityTimer.start();
 
 // Pause the timer
-userActivity.pause();
+userActivityTimer.pause();
 
 // Return the value of the timer (seconds)
-userActivity.value(); // 10
+userActivityTimer.value(); // 10
 
 // Clear the current value of the timer
-userActivity.clear();
+userActivityTimer.clear();
 
 // Start from a given number
-const historicalActivity = KeenTracking.utils.timer(3132).start();
-historicalActivity.pause();
+const historicalActivityTimer = timer(3132).start();
+historicalActivityTimer.pause();
 ```

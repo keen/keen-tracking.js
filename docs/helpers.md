@@ -4,14 +4,14 @@ These helpers are designed to generate useful properties and objects for event d
 
 ### Datetime index
 
-`KeenTracking.utils.helpers.getDatetimeIndex()` returns a set of properties like "hour_of_day" or "day_of_month". This helper accepts an optional `Date` object as an argument, otherwise it will construct and return a datetime index object based on "now".
+`getDatetimeIndex()` returns a set of properties like "hour_of_day" or "day_of_month". This helper accepts an optional `Date` object as an argument, otherwise it will construct and return a datetime index object based on "now".
 
 This helper works with a new `Date` object, and therefore the value returned is localized and not UTC. [Read more about this issue here](https://github.com/keen/keen-tracking.js/issues/49).
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { getDatetimeIndex } from 'keen-tracking';
 
-const datetimeIndex = KeenTracking.helpers.getDatetimeIndex();
+const datetimeIndex = getDatetimeIndex();
 /*
 // Monday, June 29th, 2015
 {
@@ -26,10 +26,10 @@ const datetimeIndex = KeenTracking.helpers.getDatetimeIndex();
 
 #### UTC datetime index
 
-Create and pass a UTC `Date` object into `KeenTracking.helpers.getDatetimeIndex()` to include a UTC datetime index with your event data model.
+Create and pass a UTC `Date` object into `getDatetimeIndex()` to include a UTC datetime index with your event data model.
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { getDatetimeIndex } from 'keen-tracking';
 
 const now = new Date();
 const utc = new Date(
@@ -41,7 +41,7 @@ const utc = new Date(
   now.getUTCSeconds(),
   now.getUTCMilliseconds()
 );
-const utcDatetimeIndex = KeenTracking.helpers.getDatetimeIndex(utc);
+const utcDatetimeIndex = getDatetimeIndex(utc);
 /*
 // Monday, June 29th, 2015
 {
@@ -60,33 +60,33 @@ const utcDatetimeIndex = KeenTracking.helpers.getDatetimeIndex(utc);
 `KeenTracking.helpers.getUniqueId()` returns a UUID. This is useful in conjunction with `KeenTracking.utils.cookie()` for identifying and tracking unauthenticated site visitors.
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { getUniqueId } from 'keen-tracking';
 
-const uniqueId = KeenTracking.helpers.getUniqueId();
+const uniqueId = getUniqueId();
 // '150caf6b-ef9f-48cd-ae32-43e2f5bb0fe8'
 ```
 
 ### DOM node path
 
-`KeenTracking.helpers.getDomNodePath(el)` returns the xPath for a given DOM element.
+`getDomNodePath(el)` returns the xPath for a given DOM element.
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { getDomNodePath } from 'keen-tracking';
 
 const btn = document.getElementById('signup-button');
-const domNodePath = KeenTracking.helpers.getDomNodePath(btn);
+const domNodePath = getDomNodePath(btn);
 // 'body > div#nav > ul > li:eq(1) > a#signup-button'
 ```
 
 ### DOM node profile
 
-`KeenTracking.helpers.getDomNodeProfile(el)` returns an object of properties profiling a given DOM node.
+`getDomNodeProfile(el)` returns an object of properties profiling a given DOM node.
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { getDomNodeProfile } from 'keen-tracking';
 
 const btn = document.getElementById('signup-button');
-const domNodeProfile = KeenTracking.helpers.getDomNodeProfile(btn);
+const domNodeProfile = getDomNodeProfile(btn);
 /*
 {
   "class":"",
@@ -106,12 +106,12 @@ const domNodeProfile = KeenTracking.helpers.getDomNodeProfile(btn);
 
 ### Screen profile
 
-`KeenTracking.helpers.getScreenProfile()` returns a set of properties describing the current device screen, like "height", "availHeight", and "orientation".
+`getScreenProfile()` returns a set of properties describing the current device screen, like "height", "availHeight", and "orientation".
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { getScreenProfile } from 'keen-tracking';
 
-const screenProfile = KeenTracking.helpers.getScreenProfile();
+const screenProfile = getScreenProfile();
 /*
 {
   height: 900,
@@ -130,12 +130,12 @@ const screenProfile = KeenTracking.helpers.getScreenProfile();
 
 ### Window profile
 
-`KeenTracking.helpers.getWindowProfile()` returns a set of properties describing the current window, like "height", "scrollHeight", and "ratio" to screen dimensions.
+`getWindowProfile()` returns a set of properties describing the current window, like "height", "scrollHeight", and "ratio" to screen dimensions.
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { getWindowProfile } from 'keen-tracking';
 
-const windowProfile = KeenTracking.helpers.getWindowProfile();
+const windowProfile = getWindowProfile();
 /*
 {
   height: 436,
@@ -151,12 +151,12 @@ const windowProfile = KeenTracking.helpers.getWindowProfile();
 
 ### Browser profile
 
-`KeenTracking.helpers.getBrowserProfile()` returns a set of properties describing the current browser, like "useragent", "online" status, and "language", plus [screen](#screen-profile) and [window](#window-profile) profiles.
+`getBrowserProfile()` returns a set of properties describing the current browser, like "useragent", "online" status, and "language", plus [screen](#screen-profile) and [window](#window-profile) profiles.
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { getBrowserProfile } from 'keen-tracking';
 
-const browserProfile = KeenTracking.helpers.getBrowserProfile();
+const browserProfile = getBrowserProfile();
 /*
 {
   cookies: true,
@@ -198,12 +198,12 @@ const browserProfile = KeenTracking.helpers.getBrowserProfile();
 
 ### Scroll State
 
-`KeenTracking.helpers.getScrollState()` returns an object of properties profiling the current scroll state. This lets you measure how much of a page a user has viewed before taking a recorded action.
+`getScrollState()` returns an object of properties profiling the current scroll state. This lets you measure how much of a page a user has viewed before taking a recorded action.
 
 ```javascript
-import KeenTracking from 'keen-tracking';
+import KeenTracking, { getScrollState } from 'keen-tracking';
 
-const scrollState = KeenTracking.helpers.getScrollState();
+const scrollState = getScrollState();
 /*
 {
   pixel: 900,
@@ -217,9 +217,11 @@ const scrollState = KeenTracking.helpers.getScrollState();
 This object can then be passed into the helper again to receive a new object with updated `pixel_max` and `ratio_max` values. Use this in conjunction with a `window` scroll listener to include the latest scroll state when recording an event:
 
 ```javascript
-let scrollState = helpers.getScrollState();
-utils.listener('window').on('scroll', function() {
-  scrollState = helpers.getScrollState(scrollState);
+import KeenTracking, { getScrollState, listener } from 'keen-tracking';
+
+let scrollState = getScrollState();
+listener('window').on('scroll', function() {
+  scrollState = getScrollState(scrollState);
   console.log('Latest state', scrollState);
 });
 /*
@@ -231,7 +233,7 @@ utils.listener('window').on('scroll', function() {
 }
 */
 
-utils.listener('a, a *').on('click', function() {
+listener('a, a *').on('click', function() {
   client.recordEvent('clicks', { scrollState });
 });
 ```
