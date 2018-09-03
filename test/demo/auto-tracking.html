@@ -20,11 +20,12 @@
   }
 
     KeenTracking.ready(function(){
-      const client = new KeenTracking({ ...keenGlobals.demoConfig, writeKey: 'x',
+      const client = new KeenTracking({ ...keenGlobals.demoConfig,
+        //writeKey: 'x',
    requestType: 'beaconAPI'
       });
       KeenTracking.debug = true;
-      client.extendEvents({ extended: true });
+      client.extendEvents({ extended: true, local_time_full: { x: 1 } });
       client.on('recordEvent', Keen.log);
 
       client.initAutoTracking({
