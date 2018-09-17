@@ -1,6 +1,6 @@
 # keen-tracking.js
 
-A JavaScript tracking library from [Keen.io](https://keen.io). 
+A JavaScript tracking library for [Keen.io](https://keen.io). 
 Track events, user actions, clicks, pageviews, conversions and more!
 
 ### Installation
