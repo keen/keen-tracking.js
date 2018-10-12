@@ -1,6 +1,6 @@
 # keen-tracking.js
 
-A JavaScript tracking library for [Keen.io](https://keen.io). 
+A JavaScript tracking library for [Keen](https://keen.io).
 Track events, user actions, clicks, pageviews, conversions and more!
 
 ### Installation
@@ -17,8 +17,6 @@ Or load it from public CDN
 <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
 ```
 
-[Read about more installation options here](./docs/installation.md)
-
 ### Project ID & API Keys
 
 [Login to Keen IO to create a project](https://keen.io/login?s=gh_js) and grab the **Project ID** and **Write Key** from your project's **Access** page.
@@ -27,18 +25,12 @@ Or load it from public CDN
 
 The following examples demonstrate how to implement rock-solid web analytics, capturing **pageviews**, **clicks**, and **form submissions** with robust data models.
 
-Not interested in web analytics? Use these examples as a primer for getting up and running quickly. These examples also make use of several [helpers](./docs/#helpers) and [utilities](./docs/#utilities) that were designed to address common requirements and help produce insightful, valuable data models.
-
 [Full documentation is available here](./docs/README.md)
-
-Need help? Ask for it on our [Slack community channel](https://slack.keen.io) or send us a [message](https://keen.io/support/).
 
 **Using React? Check out these setup guides:**
 
 * [React Flux Logger](./docs/examples/react-flux): How to instrument a Flux ReduceStore
 * [React Redux Middleware](./docs/examples/react-redux-middleware): How to instrument a Redux Store
-
-**Looking for compute capabilities?** Check out [keen-analysis.js](https://github.com/keen/keen-analysis.js).
 
 **Upgrading from an earlier version of keen-js?** [Read this](./docs/upgrade-guide.md).
 
@@ -72,7 +64,7 @@ client
 
 ---
 
-### Automated Event Tracking (Browser-only)
+### Automated Event Tracking
 
 Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
 
@@ -93,7 +85,7 @@ Automatically record `pageviews`, `clicks`, and `form_submissions` events with r
 
 ---
 
-### Pageview Tracking (Front-end)
+### Pageview Tracking
 
 First, let's create a new `client` instance with your Project ID and Write Key, and use the `.extendEvents()` method to define a solid baseline data model that will be applied to every single event that is recorded. Consistent data models and property names make life much easier later on, when analyzing and managing several event streams. This setup also includes our [data enrichment add-ons](https://keen.io/docs/streams/data-enrichment-overview/), which will populate additional information when an event is received on our end.
 
@@ -118,7 +110,7 @@ client.extendEvents(() => {
     geo: {
       ip_address: '${keen.ip}',
       info: {
-        /* Enriched data from API will be saved here */
+        /* Enriched data from the API will be saved here */
         /* https://keen.io/docs/api/?javascript#ip-to-geo-parser */
       }
     },
@@ -192,8 +184,6 @@ client
 
 Every event that is recorded will inherit this baseline data model. Additional properties defined in `client.recordEvent()` will be applied before the event is finally recorded.
 
-Want to get up and running faster? This can also be achieved in the browser with [automated event tracking](./docs/auto-tracking.md).
-
 **What else can this SDK do?**
 
 * [Automated tracking (browser-only)](./docs/auto-tracking.md)
@@ -219,7 +209,7 @@ Want to get up and running faster? This can also be achieved in the browser with
 
 ---
 
-### Click and Form Submit Tracking (Front-end)
+### Click and Form Submit Tracking
 
 Clicks and form submissions can be captured with `.listenTo()`. This function intercepts events for designated elements and creates a brief 500ms delay, allowing an HTTP request to execute before the page begins to unload.
 
@@ -267,7 +257,7 @@ Want to get up and running faster? This can also be achieved in the browser with
 
 ---
 
-### Block Bots and Improve Device Recognition (Browser/Front-end)
+### Block Bots and Improve Device Recognition
 
 Install [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js) to identify basic device types and block noisy bots and crawlers.
 
@@ -301,7 +291,7 @@ This can also be used with [automated event tracking](./docs/auto-tracking.md).
 
 ---
 
-### Server-side Event Tracking (Node.js Back-end)
+### Server-side Event Tracking
 
 ```javascript
 const KeenTracking = require('keen-tracking');
