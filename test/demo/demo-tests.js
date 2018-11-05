@@ -28,16 +28,16 @@ const demoTests = (demoConfig, Keen) => {
     }
   };
 
+  client.extendEvents({aaaa: 123});
 
   client.recordEvent({
     collection: 'abc',
     event: {
       z: 1
     },
-    requestType: 'beacon',
+    // requestType: 'beacon',
     callback: (err, res) => console.log(err,res)
   });
-
 
 /*
 .then(res=>{
