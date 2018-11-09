@@ -18,8 +18,7 @@
     "build:node": "TARGET=node NODE_ENV=production webpack -p",
     "profile": "webpack --profile --json > stats.json",
     "analyze": "webpack-bundle-analyzer stats.json /dist",
-    "preversion": "npm run build && npm run test",
-    "version": "git add .",
+    "version": "npm run build && npm run test && git add .",
     "postversion": "git push && git push --tags",
     "demo": "node ./test/demo/index.node.js"
   },
