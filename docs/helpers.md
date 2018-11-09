@@ -82,16 +82,27 @@ const domNodePath = KeenTracking.helpers.getDomNodePath(btn);
 
 `KeenTracking.helpers.getDomNodeProfile(el)` returns an object of properties profiling a given DOM node.
 
+```HTML
+<a
+  href="http://localhost:9000/demo/auto-tracking.html#hash"
+  id="signup-button"
+  class="nav-link-button"
+  data-event-key="clicks-on-demo-link"
+  >Signup</a>
+```
+
 ```javascript
 import KeenTracking from 'keen-tracking';
 
 const btn = document.getElementById('signup-button');
 const domNodeProfile = KeenTracking.helpers.getDomNodeProfile(btn);
+
 /*
 {
-  "class":"",
-  "href":"http://localhost:9000/demo/auto-tracking.html#hash",
   "id":"signup-button",
+  "class":"nav-link-button",
+  "event_key": "clicks-on-demo-link",  // for filters and group_by
+  "href":"http://localhost:9000/demo/auto-tracking.html#hash",
   "name":"",
   "node_name":"A",
   "selector":"body > div#nav > ul > li:eq(3) > a#signup-button",
