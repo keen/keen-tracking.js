@@ -2214,8 +2214,8 @@ var getElementProps = function getElementProps(el, prop) {
   if (el[prop]) {
     return el[prop];
   }
-  if (el.hasAttributes() && el.attributes[prop] && el.attributes[prop].value) {
-    return el.attributes[prop].value;
+  if (el.hasAttribute && el.hasAttribute(prop)) {
+    return el.getAttribute(prop);
   }
   if (el.parentNode) {
     return getElementProps(el.parentNode, prop);
