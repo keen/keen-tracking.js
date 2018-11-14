@@ -259,10 +259,7 @@ Click events (`clicks`) will record specific attributes from the clicked element
 ```javascript
 // event object
 {
-    "clicks" : { ... },
-    "geo" : { ... },
-    "time" : { ... },
-    ...
+    // ...
 
     // specific to the clicks event type
     "element": {
@@ -287,15 +284,15 @@ In the above list of collected properties for a click event, some properties are
 
 For example, a click on the word `clicked!` below:
 ```html
-  <a href='foo.html' data-event-key="click-me-cta">
+  <a href='foo.html' data-event-key='click-me-cta'>
     <span id='contrived-example'>I want to be <strong class='enhance'>clicked!</strong></span>
   </a>
 ```
 
-Would generate an event including a mixture of immediate attrbutes and attributes found by traversing up the dom tree:
+Would generate an event including a mixture of immediate attributes and attributes found by traversing up the DOM tree:
 ```js
 {
-  ...
+  // ...
   "id" : "contrived-example",
   "class" : "enhance",
   "text" : "clicked!",
@@ -454,7 +451,7 @@ By default, we make requests using the [Fetch API](https://developer.mozilla.org
 For UI interactions, consider using the
 [BeaconAPI](https://developer.mozilla.org/en-US/docs/Web/API/Beacon_API).
 It's the fastest non-invasive way to track user behaviour.
-Due its nature, BeaconAPI runs requests in the background, with no possibility
+Due to its nature, BeaconAPI runs requests in the background, with no possibility
 to handle errors. If you want to handle errors, you need to use the Fetch API.
 
 ```javascript
