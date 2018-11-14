@@ -255,6 +255,57 @@ KeenTracking.listenTo({
 });
 ```
 
+Click events (`clicks`) will record specific attributes from the clicked element or its ancestor elements and pass them via the `element` property in the event object data:
+```javascript
+// event object
+{
+    "clicks" : { ... },
+    "geo" : { ... },
+    "time" : { ... },
+    ...
+
+    // specific to the clicks event type
+    "element": {
+      "action" : undefined,                 // [DIRECT]
+      "class": "cta",                       // [DIRECT]
+      "href": "https://keen.io/plans/",     // [INHERITED]
+      "id": "main-cta",                     // [INHERITED]
+      "event_key": "learn-more-cta",        // [INHERITED] from the `data-event-key` attribute
+      "method": "learn-more-link",          // [DIRECT]
+      "node_name": "A",                     // [DIRECT]
+      "selector": "body > div:eq(0) > div:eq(1) > div:eq(0) > a", // [DIRECT]
+      "text": "Learn More",                 // [INHERITED]
+      "title": "Learn More",                // [INHERITED]
+      "type": undefined,                    // [DIRECT]
+      "x_position": 191,                    // [DIRECT]
+      "y_position": 970                     // [DIRECT]
+  }
+}
+```
+
+In the above list of collected properties for a click event, some properties are gathered from the nearest ancestor elements if they can't be found on the immediate source element of the event.  These properties are shown with `[INHERITED]` above.
+
+For example, a click on the word `clicked!` below:
+```html
+  <a href='foo.html' data-event-key="click-me-cta">
+    <span id='contrived-example'>I want to be <strong class='enhance'>clicked!</strong></span>
+  </a>
+```
+
+Would generate an event including a mixture of immediate attrbutes and attributes found by traversing up the dom tree:
+```js
+{
+  ...
+  "id" : "contrived-example",
+  "class" : "enhance",
+  "text" : "clicked!",
+  "href" : "foo.html",
+  "node_name" : "STRONG",
+  "event_key" : "click-me-cta",
+}
+```
+**Note:** The `event_key` value (`data-event-key` attribute) is a more explicit keen-specific identifier that gives you an option outside of `href`, `id`, and `class` values to group or identify and query clicks in a meaningful way without potential ID/class collisions or dual-use naming schemes.
+
 Want to get up and running faster? This can also be achieved in the browser with [automated event tracking](./docs/auto-tracking.md).
 
 ---
@@ -403,7 +454,7 @@ By default, we make requests using the [Fetch API](https://developer.mozilla.org
 For UI interactions, consider using the
 [BeaconAPI](https://developer.mozilla.org/en-US/docs/Web/API/Beacon_API).
 It's the fastest non-invasive way to track user behaviour.
-Due its nature, BeaconAPI runs requests in the background, with no possibility  
+Due its nature, BeaconAPI runs requests in the background, with no possibility
 to handle errors. If you want to handle errors, you need to use the Fetch API.
 
 ```javascript
