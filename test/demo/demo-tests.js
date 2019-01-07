@@ -1,21 +1,13 @@
 const demoTests = (demoConfig, Keen) => {
 
- //demoConfig.requestType = 'beaconAPI';
+demoConfig.requestType = 'beaconAPI';
 
-  // demoConfig.referrerPolicy: 'origin',
-  // https://googlechrome.github.io/samples/fetch-api/fetch-referrer-policy.html
-  // const client = new Keen(demoConfig);
-  /*
-  demoConfig.retry = {
-    limit: 3,
-    initialDelay: 1000
-  };
-  */
 
   Keen.debug = true;
 
   const client = new Keen(demoConfig);
 
+/*
   const x = Math.random();
   console.log(x);
   const eventBody = {
@@ -30,73 +22,31 @@ const demoTests = (demoConfig, Keen) => {
 
   client.extendEvents({aaaa: 123});
 
-  client.recordEvent({
-    collection: 'abc',
+  client.recordEvent('aaa', {
+    // collection: 'abc',
     event: {
       z: 1
     },
     // requestType: 'beacon',
-    callback: (err, res) => console.log(err,res)
-  });
-
-/*
-.then(res=>{
-  console.log(res);
-}).catch(err => conrole.log(err));
-
-
-  client
-    .recordEvent('recordEvent', { z : 1}, function(err, res){
-      console.log('with callback');
-      if (err) {
-        console.log('err', err);
-      } else {
-        Keen.log('#recordEvent');
-        Keen.log(res);
-      }
-    });
-
-
-  client.recordEvents({
-    col1: [{
-      some: 1
-    }],
-    col2: [{
-      some: 1
-    }]
-  }, (err, res) => {
-    console.log(err,res);
+    // callback: (err, res) => console.log(err,res)
   });
 
 
-*/
 
   return;
-
-
-client.recordEvents({
-  col1: [{
-    some: 1
-  }],
-  col2: [{
-    some: 1
-  }]
-}).then(res => {
-  console.log(res);
-});
-return;
+*/
 function save(id){
   client
     .recordEvent({
       collection: 'unique_clicks',
       event: {
-        some_key: 'some_value',
+        some_key: 'some_value'
         // ...
       },
       unique: true, // check if the event is unique, before sending to API
       cache: {
-    //    storage: 'indexeddb', // for persistence. Remove this property to use RAM
-    maxAge: 1000 * 3
+        storage: 'indexeddb', // for persistence. Remove this property to use RAM
+        maxAge: 1000 * 30
       }
     })
     .then((response) => {
@@ -122,18 +72,6 @@ setTimeout(() => {
 return;
 
   client
-    .recordEvent('recordEvent', { z : 1}, function(err, res){
-      console.log('with callback');
-      if (err) {
-        console.log('err', err);
-      } else {
-        Keen.log('#recordEvent');
-        Keen.log(res);
-      }
-    });
-return;
-
-  client
     .recordEvent('recordEvent', eventBody)
     .then((res) => {
       console.log('with promise');
@@ -144,19 +82,6 @@ return;
     .catch(some => {
       console.log('failed',some);
     });
-
-return;
-    client
-      .recordEvent('recordEvent', eventBody)
-      .then((res) => {
-        console.log('with promise');
-        Keen.log('#recordEvent');
-        Keen.log(res);
-        console.log('ok');
-      })
-      .catch(some => {
-        console.log('failed',some);
-      });
 
   return;
 
