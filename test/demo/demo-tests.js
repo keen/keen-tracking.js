@@ -7,6 +7,7 @@ demoConfig.requestType = 'beaconAPI';
 
   const client = new Keen(demoConfig);
 
+/*
   const x = Math.random();
   console.log(x);
   const eventBody = {
@@ -33,19 +34,19 @@ demoConfig.requestType = 'beaconAPI';
 
 
   return;
-
+*/
 function save(id){
   client
     .recordEvent({
       collection: 'unique_clicks',
       event: {
-        some_key: 'some_value',
+        some_key: 'some_value'
         // ...
       },
       unique: true, // check if the event is unique, before sending to API
       cache: {
-    //    storage: 'indexeddb', // for persistence. Remove this property to use RAM
-    maxAge: 1000 * 3
+        storage: 'indexeddb', // for persistence. Remove this property to use RAM
+        maxAge: 1000 * 30
       }
     })
     .then((response) => {
