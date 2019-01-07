@@ -693,8 +693,7 @@ module.exports = g;
           headers: parseHeaders(xhr.getAllResponseHeaders() || '')
         }
         options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL')
-        var body = 'response' in xhr ? xhr.response : xhr.responseText;
-
+        var body = 'response' in xhr ? xhr.response : xhr.responseText
         resolve(new Response(body, options))
       }
 
@@ -2749,10 +2748,11 @@ var _configDefault2 = _interopRequireDefault(_configDefault);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 if (typeof self === 'undefined') {
-  throw 'IndexedDB is available only in Browser ENV';
+  console.log('IndexedDB is available only in Browser ENV');
 }
 
-var indexedDBAvailable = 'indexedDB' in self;
+var indexedDBAvailable = typeof self !== 'undefined' && 'indexedDB' in self;
+
 var cachingEnabled = true;
 
 if (!indexedDBAvailable) {
