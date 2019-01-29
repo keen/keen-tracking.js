@@ -1,11 +1,18 @@
 const demoTests = (demoConfig, Keen) => {
 
-demoConfig.requestType = 'beaconAPI';
+  //demoConfig.requestType = 'beaconAPI';
 
-
-  Keen.debug = true;
-
+  // Keen.debug = true;
   const client = new Keen(demoConfig);
+
+  client.recordEvent({
+    collection: 'abc',
+    event: {
+      z: 1
+    }
+  });
+
+  return;
 
 /*
   const x = Math.random();
