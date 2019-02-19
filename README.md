@@ -66,7 +66,7 @@ client
 
 ### Automated Event Tracking
 
-Automatically record `pageviews`, `clicks`, and `form_submissions` events with robust data models:
+Automatically record `pageviews`, `clicks`, `form_submissions` and `element_views` events with robust data models:
 
 ```html
 <script>
@@ -305,6 +305,48 @@ Would generate an event including a mixture of immediate attributes and attribut
 
 Want to get up and running faster? This can also be achieved in the browser with [automated event tracking](./docs/auto-tracking.md).
 
+---
+
+### Tracking visible HTML element views
+
+Tracking visible element can be captured using Intersection Observer. In this example selector of HTML elements is defined to `.track-element-view` but this can be easily changed. Using `threshold`, can be set part of item visibility needed to record an event. Not all browsers supports this feature.
+
+```javascript
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY'
+});
+const helpers = KeenTracking.helpers;
+
+if(typeof IntersectionObserver !== 'undefined'){
+  const elementViewsOptions = {
+    threshold: 1.0,
+  }
+  const elementViewsCallback = (events, observer) => {
+    events.forEach(el => {
+      if(el.isIntersecting){
+        return client
+          .recordEvent({
+            collection: 'element_views',
+            event: {
+              element: helpers.getDomNodeProfile(el.target),
+              local_time_full: new Date().toISOString()
+           }
+          });
+      }
+    });
+  }
+  const observer = new IntersectionObserver(elementViewsCallback, elementViewsOptions);
+  const target = document.querySelectorAll('.track-element-view');
+  target.forEach(el => {
+    observer.observe(el);
+  });
+}
+```
+
+Want to get up and running faster? This can also be achieved in the browser with [automated event tracking](./docs/auto-tracking.md).
 ---
 
 ### Block Bots and Improve Device Recognition
