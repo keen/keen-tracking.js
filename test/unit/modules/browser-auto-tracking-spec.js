@@ -345,6 +345,14 @@ describe('Auto Tracking', () => {
     });
   });
 
+  it('should capture "element_views"', () => {
+    client.initAutoTracking({
+      recordElementViews: true
+    });
+
+    expect(callbackFunction).toBeCalledWith('element_views', expect.objectContaining({}));
+  });
+
   it('should create cookie with UUID', () => {
     const cookie = KeenTracking.utils.cookie('keen');
     const uuid = cookie.get('uuid');

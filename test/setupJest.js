@@ -1,4 +1,7 @@
 global.fetch = require('jest-fetch-mock');
+global.IntersectionObserver = (callback) => {
+  return callback;
+}
 global.navigator = {
   sendBeacon: jest.mock()
 };
