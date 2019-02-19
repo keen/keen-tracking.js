@@ -350,7 +350,14 @@ describe('Auto Tracking', () => {
       recordElementViews: true
     });
 
-    expect(callbackFunction).toBeCalledWith('element_views', expect.objectContaining({}));
+    const fNode = document.createElement('FORM');
+    fNode.id = 'test-auto-tracker-submits';
+
+    client.observers.IntersectionObserver.simulate([
+      { target: fNode, isIntersecting: true }
+    ]);
+
+    expect(mockFn1).toBeCalledWith('element_views', expect.objectContaining({}));
   });
 
   it('should create cookie with UUID', () => {
