@@ -307,9 +307,10 @@ Want to get up and running faster? This can also be achieved in the browser with
 
 ---
 
-### Tracking visible HTML element views
+### Track views of the HTML elements
 
-Tracking visible element can be captured using Intersection Observer. In this example selector of HTML elements is defined to `.track-element-view` but this can be easily changed. Using `threshold`, can be set part of item visibility needed to record an event. Not all browsers supports this feature.
+Use [Intersection Observer](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) to track elements that have been seen by a user. In an example the CSS selector of the HTML elements is defined as `.track-element-view`. Use `threshold` to control the sensitivity of the Observer.
+Note: This feature works only on the [browsers that support Intersection Observer](https://caniuse.com/#search=IntersectionObserver).
 
 ```javascript
 import KeenTracking from 'keen-tracking';
@@ -345,8 +346,6 @@ if(typeof IntersectionObserver !== 'undefined'){
   });
 }
 ```
-
-Want to get up and running faster? This can also be achieved in the browser with [automated event tracking](./docs/auto-tracking.md).
 ---
 
 ### Block Bots and Improve Device Recognition

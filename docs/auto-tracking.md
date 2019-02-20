@@ -146,9 +146,10 @@ client.extendEvent('pageviews', function(){
 client.initAutoTracking();
 ```
 
-### Tracking visible HTML element views
+### Track views of the HTML elements
 
-Every HTML element with class `.track-element-view` will be tracked if item appeared fully on the screen. It will collect specific attributes from the visible element and pass them via the `element` property in the event object data. This feature only work on browsers that supports Intersection Observer.
+All HTML elements with a class `.track-element-view` will be observed by the browser. If any of them appears on the screen, an event will be recorded. The event will contain specific attributes from the visible element and nest them in the `element` property.
+Note: This feature works only on the [browsers that support Intersection Observer](https://caniuse.com/#search=IntersectionObserver).
 
 ```javascript
 {
