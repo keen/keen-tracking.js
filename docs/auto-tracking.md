@@ -1,6 +1,6 @@
 # Automated Event Tracking (browser-only)
 
-Automatically record pageviews, clicks, and form submissions, with a robust data model.
+Automatically record pageviews, clicks, form submissions and element_views, with a robust data model.
 
 ### Installation
 
@@ -60,6 +60,9 @@ client.initAutoTracking({
   shareUuidAcrossDomains: false, // default
 
   // catchError: myCustomErrorHandler
+
+  //Track HTML elements views
+  recordElementViews: true // see if an element was seen
 
 });
 ```
@@ -142,6 +145,31 @@ client.extendEvent('pageviews', function(){
 
 client.initAutoTracking();
 ```
+
+### Track views of the HTML elements
+
+All HTML elements with a class `.track-element-view` will be observed by the browser. If any of them appears on the screen, an event will be recorded. The event will contain specific attributes from the visible element and nest them in the `element` property.
+Note: This feature works only on the [browsers that support Intersection Observer](https://caniuse.com/#search=IntersectionObserver).
+
+```javascript
+{
+
+  "element": {
+      "title": "Track element view",
+      "text": null,
+      "class": "track-element-view",
+      "event_key": null,
+      "node_name": "DIV",
+      "href": null,
+      "x_position": 8,
+      "y_position": 830,
+      "selector": "body > div:eq(1)",
+      "id": null
+    }
+
+}
+```
+
 
 **Want to record custom events?** Any additional events recorded from the `client` instance below will use the same robust data models once auto-tracking is enabled.
 
