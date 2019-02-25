@@ -2398,34 +2398,36 @@ function initAutoTrackingCore(lib) {
         }
       }
 
-		let now = new Date();
-    let allTimeOnSiteS = 0, allTimeOnSiteMS = 0;
-    if(typeof document !== 'undefined') {
-      let hidden, visibilityChange;
-      if (typeof document.hidden !== "undefined") {
-        hidden = "hidden";
-        visibilityChange = "visibilitychange";
-      } else if (typeof document.msHidden !== "undefined") {
-        hidden = "msHidden";
-        visibilityChange = "msvisibilitychange";
-      } else if (typeof document.webkitHidden !== "undefined") {
-        hidden = "webkitHidden";
-        visibilityChange = "webkitvisibilitychange";
-      }
+			let now = new Date();
+	    let allTimeOnSiteS = 0;
+	    let allTimeOnSiteMS = 0;
+	    if(typeof document !== 'undefined') {
+	      let hidden;
+	      let visibilityChange;
+	      if (typeof document.hidden !== "undefined") {
+	        hidden = "hidden";
+	        visibilityChange = "visibilitychange";
+	      } else if (typeof document.msHidden !== "undefined") {
+	        hidden = "msHidden";
+	        visibilityChange = "msvisibilitychange";
+	      } else if (typeof document.webkitHidden !== "undefined") {
+	        hidden = "webkitHidden";
+	        visibilityChange = "webkitvisibilitychange";
+	      }
 
-      const handleVisibilityChange = () => {
-        if(document[hidden]) {
-          allTimeOnSiteS += getSecondsSinceDate(now);
-          allTimeOnSiteMS += getMiliSecondsSinceDate(now);
-        } else {
-          now = new Date();
-        }
-      }
-      if(typeof document.addEventListener !== "undefined" ||
-         hidden !== undefined){
-        document.addEventListener(visibilityChange, handleVisibilityChange, false);
-      }
-    }
+	      const handleVisibilityChange = () => {
+	        if(document[hidden]) {
+	          allTimeOnSiteS += getSecondsSinceDate(now);
+	          allTimeOnSiteMS += getMiliSecondsSinceDate(now);
+	          return;
+	        }
+	        now = new Date();
+	      }
+	      if(typeof document.addEventListener !== "undefined" ||
+	         hidden !== undefined){
+	        document.addEventListener(visibilityChange, handleVisibilityChange, false);
+	      }
+	    }
 
     var cookie = new utils.cookie('keen');
 
