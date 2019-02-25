@@ -2398,7 +2398,35 @@ function initAutoTrackingCore(lib) {
         }
       }
 
-    var now = new Date();
+		let now = new Date();
+    let allTimeOnSiteS = 0, allTimeOnSiteMS = 0;
+    if(typeof document !== 'undefined') {
+      let hidden, visibilityChange;
+      if (typeof document.hidden !== "undefined") {
+        hidden = "hidden";
+        visibilityChange = "visibilitychange";
+      } else if (typeof document.msHidden !== "undefined") {
+        hidden = "msHidden";
+        visibilityChange = "msvisibilitychange";
+      } else if (typeof document.webkitHidden !== "undefined") {
+        hidden = "webkitHidden";
+        visibilityChange = "webkitvisibilitychange";
+      }
+
+      const handleVisibilityChange = () => {
+        if(document[hidden]) {
+          allTimeOnSiteS += getSecondsSinceDate(now);
+          allTimeOnSiteMS += getMiliSecondsSinceDate(now);
+        } else {
+          now = new Date();
+        }
+      }
+      if(typeof document.addEventListener !== "undefined" ||
+         hidden !== undefined){
+        document.addEventListener(visibilityChange, handleVisibilityChange, false);
+      }
+    }
+
     var cookie = new utils.cookie('keen');
 
     var domainName = helpers.getDomainName(window.location.hostname);
@@ -2483,8 +2511,8 @@ function initAutoTrackingCore(lib) {
           title: document ? document.title : null,
           description: browserProfile.description,
           scroll_state: scrollState,
-          time_on_page: getSecondsSinceDate(now),
-          time_on_page_ms: getMiliSecondsSinceDate(now)
+					time_on_page: allTimeOnSiteS > 0 ? allTimeOnSiteS : getSecondsSinceDate(now),
+          time_on_page_ms: allTimeOnSiteMS > 0 ? allTimeOnSiteMS : getMiliSecondsSinceDate(now)
         },
 
         ip_address: ip_address,
