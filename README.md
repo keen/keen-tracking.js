@@ -213,8 +213,7 @@ Every event that is recorded will inherit this baseline data model. Additional p
 
 ### Click and Form Submit Tracking
 
-Clicks and form submissions can be captured with `.listenTo()`. This function intercepts events for designated elements and creates a brief 500ms delay, allowing an HTTP request to execute before the page begins to unload.
-
+Clicks and form submissions can be captured with `.listenTo()`.
 This example further extends the `client` instance defined previously, and activates a simple timer when the page the loaded. Once a `click` or `submit` event is captured, the timer's value will be recorded as `visitor.time_on_page`.
 
 ```javascript
@@ -265,7 +264,7 @@ Click events (`clicks`) will record specific attributes from the clicked element
     "element": {
       "action" : undefined,                 // [DIRECT]
       "class": "cta",                       // [DIRECT]
-      "href": "https://keen.io/plans/",     // [INHERITED]
+      "href": "https://keen.io/",     // [INHERITED]
       "id": "main-cta",                     // [INHERITED]
       "event_key": "learn-more-cta",        // [INHERITED] from the `data-event-key` attribute
       "method": "learn-more-link",          // [DIRECT]
@@ -332,8 +331,7 @@ if(typeof IntersectionObserver !== 'undefined'){
           .recordEvent({
             collection: 'element_views',
             event: {
-              element: helpers.getDomNodeProfile(el.target),
-              local_time_full: new Date().toISOString()
+              element: helpers.getDomNodeProfile(el.target)
            }
           });
       }
