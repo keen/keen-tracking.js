@@ -14,7 +14,7 @@ npm install keen-tracking --save
 Or load it from public CDN
 
 ```html
-<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@5"></script>
 ```
 
 ### Project ID & API Keys
@@ -456,7 +456,8 @@ const client = new KeenTracking({
 
 ### Unique events
 
-Save the event only once.
+If you want to prevent your app from saving duplicated events, you can achieve that by using our client-side validator.
+It checks if in a timeframe defined by `maxAge` an event with exactly the same properties was already recorded.
 
 ```javascript
 client
@@ -466,7 +467,7 @@ client
       some_key: 'some_value',
       // ...
     },
-    unique: true, // check if the event is unique, before sending to API
+    unique: true, // check if an event is unique before sending to API
     cache: {
       storage: 'indexeddb', // for persistence. Remove this property to use RAM
       hashingMethod: 'md5', // remove this property to store as a stringified json
@@ -490,7 +491,7 @@ By default, we make requests using the [Fetch API](https://developer.mozilla.org
 For UI interactions, consider using the
 [BeaconAPI](https://developer.mozilla.org/en-US/docs/Web/API/Beacon_API).
 It's the fastest non-invasive way to track user behaviour.
-Due to its nature, BeaconAPI runs requests in the background, with no possibility
+Due to its nature, BeaconAPI runs requests in the background, without ability
 to handle errors. If you want to handle errors, you need to use the Fetch API.
 
 ```javascript
@@ -500,8 +501,10 @@ const client = new KeenTracking({
   writeKey: 'WRITE_KEY',
   requestType: 'fetch' // fetch, beaconAPI, img
 });
+```
 
-// you can use different requestType for a single request
+#### Different requestType just for single request
+```javascript
 client
   .recordEvent({
     collection: 'clicks',
