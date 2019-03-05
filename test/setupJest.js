@@ -9,5 +9,11 @@ global.IntersectionObserver.prototype.simulate = function(elements){
 global.navigator = {
   sendBeacon: jest.mock()
 };
+global.localStorage = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn()
+};
 jest.mock('promise-polyfill', () => {});
 jest.mock('promise-polyfill/src/polyfill', () => {});
