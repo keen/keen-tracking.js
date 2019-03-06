@@ -329,7 +329,7 @@ if(typeof IntersectionObserver !== 'undefined'){
       if(el.isIntersecting){
         return client
           .recordEvent({
-            collection: 'element_views',
+            event_collection: 'element_views',
             event: {
               element: helpers.getDomNodeProfile(el.target)
            }
@@ -461,7 +461,7 @@ Save the event only once.
 ```javascript
 client
   .recordEvent({
-    collection: 'unique_clicks',
+    event_collection: 'unique_clicks',
     event: {
       some_key: 'some_value',
       // ...
@@ -504,7 +504,7 @@ const client = new KeenTracking({
 // you can use different requestType for a single request
 client
   .recordEvent({
-    collection: 'clicks',
+    event_collection: 'clicks',
     event: {
       some_key: 'some_value',
       // ...
