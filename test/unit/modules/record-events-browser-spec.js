@@ -58,14 +58,14 @@ describe('.recordEvent(s) methods (browser)', () => {
     it('should not send events if KeenTracking.optedOut is set to \'true\'', () => {
       KeenTracking.optedOut = true;
       client.recordEvent('not-going', { test: 'data' }, mockFn1);
-      expect(mockFn1).toBeCalledWith(expect.any(String), null);
+      expect(mockFn1).not.toBeCalled();
       KeenTracking.optedOut = undefined;
     });
 
     it('should not send events if KeenTracking.doNotTrack is set to \'true\'', () => {
       KeenTracking.doNotTrack = true;
       client.recordEvent('not-going', { test: 'data' }, mockFn1);
-      expect(mockFn1).toBeCalledWith(expect.any(String), null);
+      expect(mockFn1).not.toBeCalled();
       KeenTracking.doNotTrack = undefined;
     });
 
@@ -131,14 +131,14 @@ describe('.recordEvent(s) methods (browser)', () => {
     it('should not send events if KeenTracking.optedOut is set to \'true\'', () => {
       KeenTracking.optedOut = true;
       client.recordEvents(batchData, mockFn1);
-      expect(mockFn1).toBeCalledWith(expect.any(String), null);
+      expect(mockFn1).not.toBeCalled();
       KeenTracking.optedOut = undefined;
     });
 
     it('should not send events if KeenTracking.doNotTrack is set to \'true\'', () => {
       KeenTracking.doNotTrack = true;
       client.recordEvents(batchData, mockFn1);
-      expect(mockFn1).toBeCalledWith(expect.any(String), null);
+      expect(mockFn1).not.toBeCalled();
       KeenTracking.doNotTrack = undefined;
     });
     
@@ -231,7 +231,7 @@ describe('.recordEvent(s) methods (browser) when optOut is set to true in config
   describe('.recordEvent', () => {
     it('should not send events if optOut is set to \'true\'', () => {
       client.recordEvent('not-going', { test: 'data' }, mockFn1);
-      expect(mockFn1).toBeCalledWith(expect.any(String), null);
+      expect(mockFn1).not.toBeCalled();
     });
 
   });
@@ -240,7 +240,7 @@ describe('.recordEvent(s) methods (browser) when optOut is set to true in config
 
     it('should not send events if optOut is set to \'true\'', () => {
       client.recordEvents(batchData, mockFn1);
-      expect(mockFn1).toBeCalledWith(expect.any(String), null);
+      expect(mockFn1).not.toBeCalled();
     });
 
   });
