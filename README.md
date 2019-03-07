@@ -524,6 +524,28 @@ Read more:
 - [How not to use Cassandra](https://opencredo.com/how-not-to-use-cassandra-like-an-rdbms-and-what-will-happen-if-you-do/)
 ---
 
+### Tracking
+
+It's easy to build tracking opt-out functionality. If opt-out is set to true no data is recorded.
+
+You can set up opt-out by defining client instance
+
+```javascript
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY',
+  optOut: true
+});
+```
+
+or by invoking `client.setOptOut(true)` method
+
+```javascript
+client.setOptOut(true);
+```
+
+---
+
 ### Contributing
 
 This is an open source project and we love involvement from the community! Hit us up with pull requests and issues.
