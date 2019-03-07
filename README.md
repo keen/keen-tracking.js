@@ -524,7 +524,7 @@ Read more:
 - [How not to use Cassandra](https://opencredo.com/how-not-to-use-cassandra-like-an-rdbms-and-what-will-happen-if-you-do/)
 ---
 
-### Tracking
+### Tracking Opt-Out
 
 It's easy to build tracking opt-out functionality. If opt-out is set to true no data is recorded.
 
@@ -542,6 +542,15 @@ or by invoking `client.setOptOut(true)` method
 
 ```javascript
 client.setOptOut(true);
+```
+
+**Note:** The user can block tracking in the browser by [doNotTrack](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/doNotTrack) setting. We can respect or overwrite this setting by defining client instance
+```javascript
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY',
+  respectDoNotTrack: false
+});
 ```
 
 ---
