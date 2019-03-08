@@ -549,7 +549,7 @@ client.setOptOut(true);
 const client = new KeenTracking({
   projectId: 'PROJECT_ID',
   writeKey: 'WRITE_KEY',
-  respectDoNotTrack: false
+  respectDoNotTrack: true // it's false by default
 });
 ```
 
