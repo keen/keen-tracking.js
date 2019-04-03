@@ -46,7 +46,8 @@ client.initAutoTracking({
   recordScrollState: true, // see how far people scrolled
 
   recordClicks: true, // record clicks on A links
-
+  recordClicksPositionPointer: false, // record pointer position for clicks
+  
   // FORMS
   recordFormSubmits: true,
   ignoreDisabledFormFields: false,
