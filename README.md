@@ -11,7 +11,8 @@ Install this package from NPM *Recommended*
 npm install keen-tracking --save
 ```
 
-Or load it from public CDN
+Public CDN
+[![](https://data.jsdelivr.com/v1/package/npm/keen-tracking/badge)](https://www.jsdelivr.com/package/npm/keen-tracking)
 
 ```html
 <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
