@@ -3,6 +3,14 @@
 A JavaScript tracking library for [Keen](https://keen.io).
 Track events, user actions, clicks, pageviews, conversions and more!
 
+<a href="https://keen.io/"><img src="https://img.shields.io/github/release/keen/keen-tracking.js.svg?style=flat-square&maxAge=600" alt=""></a>
+<a href="https://github.com/keen/keen-tracking.js/graphs/contributors" alt="Contributors"><img src="https://img.shields.io/github/contributors/keen/keen-tracking.js.svg" /></a>
+<a href="https://github.com/keen/keen-tracking.js/pulse" alt="Activity"><img src="https://img.shields.io/github/last-commit/keen/keen-tracking.js.svg" /></a>
+![](https://img.shields.io/github/license/keen/keen-tracking.js.svg)
+<a href="http://slack.keen.io/"><img src="https://img.shields.io/badge/slack-keen-orange.svg?style=flat-square&maxAge=3600" alt="Slack"></a>
+<a href="https://www.jsdelivr.com/package/npm/keen-tracking"><img src="https://data.jsdelivr.com/v1/package/npm/keen-tracking/badge" alt=""></a>
+<a href="https://www.npmjs.com/package/keen-tracking"><img src="https://img.shields.io/npm/dm/keen-tracking.svg" alt=""></a>
+
 ### Installation
 
 Install this package from NPM *Recommended*
@@ -12,8 +20,6 @@ npm install keen-tracking --save
 ```
 
 Public CDN
-
-[![](https://data.jsdelivr.com/v1/package/npm/keen-tracking/badge)](https://www.jsdelivr.com/package/npm/keen-tracking)
 
 ```html
 <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
