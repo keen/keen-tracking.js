@@ -12,6 +12,7 @@ npm install keen-tracking --save
 ```
 
 Public CDN
+
 [![](https://data.jsdelivr.com/v1/package/npm/keen-tracking/badge)](https://www.jsdelivr.com/package/npm/keen-tracking)
 
 ```html
