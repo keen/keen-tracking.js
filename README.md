@@ -523,6 +523,20 @@ client
 
 ---
 
+### Custom Host
+
+You can set a custom domain for requests
+
+```
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY',
+  host: 'somehost.com'
+});
+```
+
+---
+
 ### Recorded Event ID
 
 A successful response from our API does not contain the ID of the newly created event. We are using Cassandra Database (NoSQL), so there are no joins. Store all necessary data in each event you record.
