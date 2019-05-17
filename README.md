@@ -346,6 +346,185 @@ if(typeof IntersectionObserver !== 'undefined'){
 ```
 ---
 
+---
+
+### Track form fields
+
+Form fields values and validation results can be easily tracked. In the example each form field is tracked, saving informations about time spend on filling it and what value was typed. This event will also record specific attributes from the clicked element or its ancestor elements and pass them via the element property in the event object data.
+
+```javascript
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY'
+});
+const helpers = KeenTracking.helpers;
+
+const target = document.querySelectorAll(
+  'input, select, textarea'
+);
+let date = "";
+target.forEach(el => {
+  el.addEventListener(
+    "focus",
+    e => {
+      date = new Date();
+    },
+    true
+  );
+
+  el.addEventListener(
+    "blur",
+    e => {
+      const event = {
+        element: helpers.getDomNodeProfile(e.target),
+        time_on_field: getSecondsSinceDate(date),
+        time_on_field_ms: getMiliSecondsSinceDate(date),
+        value: e.target.value
+      };
+      if (options.catchError) {
+        return client
+          .recordEvent({
+            collection: 'form_fields',
+            event
+          })
+          .catch(err => {
+            options.catchError(err);
+          });
+      }
+
+      return client.recordEvent({
+        collection: 'form_fields',
+        event
+      });
+    },
+    true
+  );
+});
+
+function getSecondsSinceDate(date) {
+  return Math.round(getMiliSecondsSinceDate(date) / 1000);
+}
+
+function getMiliSecondsSinceDate(date) {
+  return new Date().getTime() - date.getTime();
+}
+```
+
+Below is an example of tracking form fields with validation for fields `first-name` and `email`. When field has wrong value, error can be saved in different collection.
+
+```javascript
+import KeenTracking from 'keen-tracking';
+
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY'
+});
+const helpers = KeenTracking.helpers;
+
+const target = document.querySelectorAll(
+  'input, select, textarea'
+);
+let date = "";
+target.forEach(el => {
+  el.addEventListener(
+    "focus",
+    e => {
+      date = new Date();
+    },
+    true
+  );
+
+  el.addEventListener(
+    "blur",
+    e => {
+      const {name, value} = e.target;
+      function validateEmail(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+      }
+      
+      if(name === 'first-name' && value === '') {
+        const event = {
+          element: helpers.getDomNodeProfile(e.target),
+          message: 'First name field cannot be empty.',
+          value,
+        }
+        if (options.catchError) {
+          return client
+            .recordEvent({
+              collection: 'form_fields_errors',
+              event
+            })
+            .catch(err => {
+              options.catchError(err);
+            });
+        }
+
+        return client.recordEvent({
+          collection: 'form_fields_errors',
+          event
+        });
+      }
+      if(name === 'email' && !validateEmail(value)) {
+        const event = {
+          element: helpers.getDomNodeProfile(e.target),
+          message: 'Email field not valid.',
+          value,
+        }
+        if (options.catchError) {
+          return client
+            .recordEvent({
+              collection: 'form_fields_errors',
+              event
+            })
+            .catch(err => {
+              options.catchError(err);
+            });
+        }
+
+        return client.recordEvent({
+          collection: 'form_fields_errors',
+          event
+        });
+      }
+      const event = {
+        element: helpers.getDomNodeProfile(e.target),
+        time_on_field: getSecondsSinceDate(date),
+        time_on_field_ms: getMiliSecondsSinceDate(date),
+        value: e.target.value
+      };
+      if (options.catchError) {
+        return client
+          .recordEvent({
+            collection: 'form_fields',
+            event
+          })
+          .catch(err => {
+            options.catchError(err);
+          });
+      }
+
+      return client.recordEvent({
+        collection: 'form_fields',
+        event
+      });
+    },
+    true
+  );
+});
+
+function getSecondsSinceDate(date) {
+  return Math.round(getMiliSecondsSinceDate(date) / 1000);
+}
+
+function getMiliSecondsSinceDate(date) {
+  return new Date().getTime() - date.getTime();
+}
+```
+---
+
 ### Block Bots and Improve Device Recognition
 
 Install [mobile-detect.js](https://github.com/hgoebl/mobile-detect.js) to identify basic device types and block noisy bots and crawlers.

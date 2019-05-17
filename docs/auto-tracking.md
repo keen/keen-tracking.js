@@ -52,6 +52,7 @@ client.initAutoTracking({
   recordFormSubmits: true,
   ignoreDisabledFormFields: false,
   ignoreFormFieldTypes: ['password'],
+  recordFormFields: false // track values and time spent on filling each field
 
   // GDPR related options
   collectIpAddress: true, // default
