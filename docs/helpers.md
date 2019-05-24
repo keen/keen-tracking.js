@@ -162,7 +162,7 @@ const windowProfile = KeenTracking.helpers.getWindowProfile();
 
 ### Browser profile
 
-`KeenTracking.helpers.getBrowserProfile()` returns a set of properties describing the current browser, like "useragent", "online" status, and "language", plus [screen](#screen-profile) and [window](#window-profile) profiles.
+`KeenTracking.helpers.getBrowserProfile()` returns a set of properties describing the current browser, like "useragent", "online" status, and "language", plus [screen](#screen-profile) and [window](#window-profile) profiles. We've added some new properties like [`battery`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getBattery) and [`mediaDevice`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/mediaDevices) so if the browser supports these features you'll get a Promise instead of a plain object.
 
 ```javascript
 import KeenTracking from 'keen-tracking';

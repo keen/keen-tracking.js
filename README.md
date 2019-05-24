@@ -577,6 +577,18 @@ const client = new KeenTracking({
 
 ---
 
+### Vibration
+
+If your device supports [Vibration API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate) you can turn on vibration once an event is recorded
+```javascript
+const client = new KeenTracking({
+  projectId: 'PROJECT_ID',
+  writeKey: 'WRITE_KEY',
+  vibration: true
+});
+```
+---
+
 ### Contributing
 
 This is an open source project and we love involvement from the community! Hit us up with pull requests and issues.
