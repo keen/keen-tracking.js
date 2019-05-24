@@ -7,7 +7,11 @@ global.IntersectionObserver.prototype.simulate = function(elements){
   this.callback(elements);
 };
 global.navigator = {
-  sendBeacon: jest.mock()
+  sendBeacon: jest.mock(),
+  mediaDevices: {
+    enumerateDevices: jest.mock(),
+  },
+  getBattery: jest.mock(),
 };
 const mockStorage = {};
 const localStorage = {
