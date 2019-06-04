@@ -1,4 +1,4 @@
-import { getBrowserProfile } from '../../../lib/helpers/getBrowserProfile';
+import { getBrowserProfile, getBrowserProfilePromise } from '../../../lib/helpers/getBrowserProfile';
 import { getDatetimeIndex } from '../../../lib/helpers/getDatetimeIndex';
 import { getDomainName } from '../../../lib/helpers/getDomainName';
 import { getDomNodePath } from '../../../lib/helpers/getDomNodePath';
@@ -75,6 +75,17 @@ describe('Keen.helpers', () => {
     });
     it('should return a child object of window properties', () => {
       expect(getBrowserProfile().window).toBeInstanceOf(Object);
+    });
+  });
+
+  describe('#getBrowserProfilePromise', () => {
+    it('should return a promise', () => {
+      expect(getBrowserProfilePromise()).toBeInstanceOf(Promise);
+    });
+    it('it should return an object from promise when resolved', () => {
+      getBrowserProfilePromise().then((data) => {
+        expect(data).toBeInstanceOf(Object);
+      });
     });
   });
 
