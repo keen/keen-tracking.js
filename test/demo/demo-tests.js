@@ -1,9 +1,29 @@
 const demoTests = (demoConfig, Keen) => {
 
-  //demoConfig.requestType = 'beaconAPI';
+  // demoConfig.requestType = 'beaconAPI';
 
   // Keen.debug = true;
   const client = new Keen(demoConfig);
+
+  client
+  .recordEvent('beacon_purchases', {
+    item: 'Avocado',
+    number_of_items: 10,
+    user: {
+      name: 'John Smith'
+    }
+  });
+  /*
+  .then((response) => {
+    console.log(response);
+    // handle successful responses
+  })
+  .catch(error => {
+    console.log(error);
+    // handle errors
+  });
+*/
+  return;
 
   client.recordEvent({
     collection: 'abc',
