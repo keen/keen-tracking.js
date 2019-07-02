@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("component-emitter"), require("keen-core")) : factory(root["component-emitter"], root["keen-core"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(global, function(__WEBPACK_EXTERNAL_MODULE__21__, __WEBPACK_EXTERNAL_MODULE__22__) {
+})(global, function(__WEBPACK_EXTERNAL_MODULE__22__, __WEBPACK_EXTERNAL_MODULE__23__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -76,7 +76,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 23);
+/******/ 	return __webpack_require__(__webpack_require__.s = 24);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -465,7 +465,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keenCore = __webpack_require__(22);
+var _keenCore = __webpack_require__(23);
 
 var _keenCore2 = _interopRequireDefault(_keenCore);
 
@@ -479,7 +479,7 @@ var _extend2 = _interopRequireDefault(_extend);
 
 var _queue = __webpack_require__(8);
 
-var _optOut = __webpack_require__(20);
+var _optOut = __webpack_require__(21);
 
 var _package = __webpack_require__(7);
 
@@ -644,7 +644,7 @@ function getExtendedEventBody(result, queue) {
 /* 7 */
 /***/ (function(module) {
 
-module.exports = {"name":"keen-tracking","version":"4.4.0","description":"Track events - custom user actions, clicks, pageviews, purchases.","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build:node && npm run test","version":"npm run build && git add .","postversion":"git push && git push --tags","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","homepage":"https://keen.io","keywords":["Tracking","Tracker","Event Tracker","Event tracking","Track events","Page tracking","User tracking","Analytics event tracking","Analytics events","Analytics tracking","Custom events","Analytics","Stats","Statistics","Monitoring","Metrics","Pageviews","Segmentation","Funnel","Conversion","Log","Logger","Logging","Javascript events","Universal tracking","Click analytics"],"contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)","Dariusz Łacheta <dariusz.lacheta@keen.io> (https://github.com/dariuszlacheta)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-core":"^6.26.3","babel-jest":"^23.0.1","babel-loader":"^7.1.5","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-polyfill":"^6.26.0","babel-preset-env":"^1.7.0","babel-preset-es2015":"^6.24.1","babel-preset-stage-0":"^6.24.1","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","merge":"^1.2.1","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","url-parse":"^1.4.3","webpack":"^4.5.0","webpack-bundle-analyzer":"^2.11.1","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.14","xhr-mock":"^2.3.2"}};
+module.exports = {"name":"keen-tracking","version":"4.4.1","description":"Track events - custom user actions, clicks, pageviews, purchases.","main":"dist/node/keen-tracking.js","browser":"dist/keen-tracking.js","repository":{"type":"git","url":"https://github.com/keen/keen-tracking.js.git"},"scripts":{"start":"NODE_ENV=development webpack-dev-server","test":"NODE_ENV=test jest && npm run test:node","test:node":"NODE_ENV=test TEST_ENV=node jest","test:watch":"NODE_ENV=test jest --watch","test:node:watch":"NODE_ENV=test TEST_ENV=node jest --watch","build":"NODE_ENV=production webpack -p && NODE_ENV=production OPTIMIZE_MINIMIZE=1 webpack -p && npm run build:node","build:node":"TARGET=node NODE_ENV=production webpack -p","profile":"webpack --profile --json > stats.json","analyze":"webpack-bundle-analyzer stats.json /dist","preversion":"npm run build:node && npm run test","version":"npm run build && git add .","postversion":"git push && git push --tags && npm publish","demo":"node ./test/demo/index.node.js"},"bugs":"https://github.com/keen/keen-tracking.js/issues","author":"Keen IO <team@keen.io> (https://keen.io/)","homepage":"https://keen.io","keywords":["Tracking","Tracker","Event Tracker","Event tracking","Track events","Page tracking","User tracking","Analytics event tracking","Analytics events","Analytics tracking","Custom events","Analytics","Stats","Statistics","Monitoring","Metrics","Pageviews","Segmentation","Funnel","Conversion","Log","Logger","Logging","Javascript events","Universal tracking","Click analytics"],"contributors":["Dustin Larimer <dustin@keen.io> (https://github.com/dustinlarimer)","Eric Anderson <eric@keen.io> (https://github.com/aroc)","Joe Wegner <joe@keen.io> (http://www.wegnerdesign.com)","Alex Kleissner <alex@keen.io> (https://github.com/hex337)","Adam Kasprowicz <adam.kasprowicz@keen.io> (https://github.com/adamkasprowicz)","Dariusz Łacheta <dariusz.lacheta@keen.io> (https://github.com/dariuszlacheta)"],"license":"MIT","dependencies":{"component-emitter":"^1.2.0","js-cookie":"2.1.0","keen-core":"^0.1.3","promise-polyfill":"^8.0.0","whatwg-fetch":"^2.0.4"},"devDependencies":{"babel-core":"^6.26.3","babel-jest":"^23.0.1","babel-loader":"^7.1.5","babel-plugin-transform-es2015-modules-commonjs":"^6.26.2","babel-plugin-transform-object-rest-spread":"^6.26.0","babel-polyfill":"^6.26.0","babel-preset-env":"^1.7.0","babel-preset-es2015":"^6.24.1","babel-preset-stage-0":"^6.24.1","eslint":"^4.19.1","eslint-config-airbnb":"^16.1.0","eslint-loader":"^2.0.0","eslint-plugin-import":"^2.11.0","eslint-plugin-jsx-a11y":"^6.0.3","html-loader":"^0.5.5","html-webpack-plugin":"^3.2.0","jest":"^22.4.3","jest-fetch-mock":"^1.6.5","merge":"^1.2.1","nock":"^9.2.6","regenerator-runtime":"^0.11.1","replace-in-file":"^3.4.0","url-parse":"^1.4.3","webpack":"^4.5.0","webpack-bundle-analyzer":"^3.3.2","webpack-cli":"^2.0.13","webpack-dev-server":"^3.1.14","xhr-mock":"^2.3.2"}};
 
 /***/ }),
 /* 8 */
@@ -661,7 +661,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.queue = queue;
 
-var _componentEmitter = __webpack_require__(21);
+var _componentEmitter = __webpack_require__(22);
 
 var _componentEmitter2 = _interopRequireDefault(_componentEmitter);
 
@@ -1427,9 +1427,37 @@ function sendEventData(path, eventData, callback) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+function lsTest() {
+    var test = 'test';
+    try {
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+var isLocalStorageAvailable = exports.isLocalStorageAvailable = lsTest();
+
+/***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 exports.setOptOut = setOptOut;
+
+var _localStorage = __webpack_require__(20);
+
 function setOptOut() {
     var optOut = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+    if (!_localStorage.isLocalStorageAvailable) return;
 
     if (optOut) {
         localStorage.setItem('optout', optOut);
@@ -1440,12 +1468,6 @@ function setOptOut() {
 };
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE__21__;
-
-/***/ }),
 /* 22 */
 /***/ (function(module, exports) {
 
@@ -1453,6 +1475,12 @@ module.exports = __WEBPACK_EXTERNAL_MODULE__22__;
 
 /***/ }),
 /* 23 */
+/***/ (function(module, exports) {
+
+module.exports = __WEBPACK_EXTERNAL_MODULE__23__;
+
+/***/ }),
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
