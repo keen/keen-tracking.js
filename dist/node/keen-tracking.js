@@ -1557,4 +1557,4 @@ module.exports = Keen;
 /***/ })
 /******/ ]);
 });
-//# sourceMappingURL=keen-tracking.js.map
+//# sourceMappingURL=/Users/arturpryka/SourceFiles/keen-tracking.js/dist/keen-tracking.js.map

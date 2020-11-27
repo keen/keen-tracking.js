@@ -65,14 +65,18 @@ module.exports = {
     minimize: !!process.env.OPTIMIZE_MINIMIZE,
   },
 
-  devtool: 'source-map',
+  devtool: false,
 
   context: __dirname,
 
   // stats: 'verbose',
 
   plugins: [
-    new webpack.DefinePlugin(definePluginVars)
+    new webpack.DefinePlugin(definePluginVars),
+    new webpack.SourceMapDevToolPlugin({
+      filename: '[file].map',
+      append: '\n//# sourceMappingURL=' + path.resolve(__dirname, 'dist') + '/[url]'
+    })
   ],
 
   mode: process.env.NODE_ENV,
