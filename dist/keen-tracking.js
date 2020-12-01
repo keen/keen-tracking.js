@@ -4782,4 +4782,4 @@ module.exports = __webpack_require__(44);
 /***/ })
 /******/ ]);
 });
-//# sourceMappingURL=keen-tracking.js.map
+//# sourceMappingURL=/Users/arturpryka/SourceFiles/keen-tracking.js/dist/keen-tracking.js.map
