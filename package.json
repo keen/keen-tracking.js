@@ -1,6 +1,6 @@
 {
   "name": "keen-tracking",
-  "version": "4.5.1",
+  "version": "4.5.2",
   "description": "Track events - custom user actions, clicks, pageviews, purchases.",
   "main": "dist/node/keen-tracking.js",
   "browser": "dist/keen-tracking.js",
