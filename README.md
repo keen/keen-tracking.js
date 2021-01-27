@@ -22,7 +22,7 @@ npm install keen-tracking --save
 Public CDN
 
 ```html
-<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4/dist/keen-tracking.min.js"></script>
 ```
 
 ### Project ID & API Keys
