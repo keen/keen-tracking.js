@@ -433,6 +433,45 @@ client
 
 ---
 
+###Cancel query
+```javascript
+const KeenTracking = require('keen-tracking');
+
+const client = new KeenTracking({
+    projectId: 'PROJECT_ID',
+    writeKey: 'WRITE_KEY'
+});
+
+const query = client
+  .recordEvent('purchases', {
+    item: 'Avocado',
+    number_of_items: 10,
+    user: {
+      name: 'John Promise'
+    }
+  })
+
+// cancel
+query.abort();
+
+// handling response and cancel
+query.then(res => {
+    // response
+}).catch((err) => {
+    if (err === 'QUERY_ABORTED') {
+        // request canceled
+    }
+});
+
+```
+
+In browser environment make sure to attach AbortController polyfill to support browsers which do not have that feature.
+You can do it by adding this script on your website:
+
+https://cdn.jsdelivr.net/npm/abortcontroller-polyfill@1.7.1/dist/umd-polyfill.min.js
+
+---
+
 ### Handling connection problems
 
 When KeenTracking encounters connection problems, it will retry to send the data.
