@@ -102,7 +102,8 @@ describe('.recordEvent(s) methods (browser)', () => {
         });
         expect(fetchOptions.body).toEqual(JSON.stringify(config.properties));
         expect(fetchUrl).toContain(config.collection + '_succeed');
-        expect(res).toEqual(dummyResponse);
+        expect(res).toHaveProperty('body');
+        expect(JSON.parse(res.body)).toEqual(dummyResponse);
       });
 
       it('should return a Promise', (done) => {
@@ -141,7 +142,7 @@ describe('.recordEvent(s) methods (browser)', () => {
       expect(mockFn1).not.toBeCalled();
       KeenTracking.doNotTrack = undefined;
     });
-    
+
     it('should return an error message if first argument is not an object', () => {
       client.recordEvents([], mockFn1);
       expect(mockFn1).toBeCalledWith(expect.any(String), null);
@@ -166,7 +167,8 @@ describe('.recordEvent(s) methods (browser)', () => {
           retry: undefined
         });
         expect(fetchOptions.body).toEqual(JSON.stringify(batchData));
-        expect(res).toEqual(dummyResponse);
+        expect(res).toHaveProperty('body');
+        expect(JSON.parse(res.body)).toEqual(dummyResponse);
       });
 
       it('should return a Promise', (done) => {
