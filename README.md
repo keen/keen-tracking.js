@@ -458,7 +458,7 @@ query.abort();
 query.then(res => {
     // response
 }).catch((err) => {
-    if (err === 'QUERY_ABORTED') {
+    if (err === 'REQUEST_ABORTED') {
         // request canceled
     }
 });
