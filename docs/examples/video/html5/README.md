@@ -10,7 +10,7 @@ Install the library synchronously and configure a new `client` instance to captu
 <html>
 <head>
   <meta charset="utf-8">
-  <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@4"></script>
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/keen-tracking@5"></script>
 </head>
 <body>
   !-- HTML5 Video Player -->
