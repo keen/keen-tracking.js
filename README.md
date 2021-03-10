@@ -433,7 +433,7 @@ client
 
 ---
 
-###Cancel query
+### Cancel query
 ```javascript
 const KeenTracking = require('keen-tracking');
 
