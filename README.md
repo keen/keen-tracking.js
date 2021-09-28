@@ -628,7 +628,6 @@ This is an open source project and we love involvement from the community! Hit u
 
 Need a hand with something? Shoot us an email at [team@keen.io](mailto:team@keen.io). We're always happy to help, or just hear what you're building! Here are a few other resources worth checking out:
 
-* [Feature requests](https://keen.canny.io/)
 * [API status](http://status.keen.io/)
 * [API reference](https://keen.io/docs/api)
 * [How-to guides](https://keen.io/guides)
