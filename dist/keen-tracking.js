@@ -2448,7 +2448,8 @@ function initAutoTrackingCore(lib) {
       collectIpAddress: true,
       collectUuid: true,
       recordElementViews: true,
-      catchError: undefined // optional, function(someError) - error handler
+      catchError: undefined, // optional, function(someError) - error handler
+      useSessionCookies: true
     }, obj);
 
     if (client.config.requestType === 'beaconAPI' && options.catchError) {
@@ -2495,7 +2496,9 @@ function initAutoTrackingCore(lib) {
       }
     }
 
-    var cookie = new utils.cookie('keen');
+    if (options.useSessionCookies) {
+      var _cookie = new utils.cookie('keen');
+    }
 
     var domainName = helpers.getDomainName(window.location.hostname);
     var cookieDomain = domainName && options.shareUuidAcrossDomains ? {
@@ -2503,7 +2506,7 @@ function initAutoTrackingCore(lib) {
     } : {};
 
     var uuid = void 0;
-    if (options.collectUuid) {
+    if (options.collectUuid && options.useSessionCookies) {
       uuid = cookie.get('uuid');
       if (!uuid) {
         uuid = helpers.getUniqueId();
@@ -2511,10 +2514,13 @@ function initAutoTrackingCore(lib) {
       }
     }
 
-    var initialReferrer = cookie.get('initialReferrer');
-    if (!initialReferrer) {
-      initialReferrer = document && document.referrer || undefined;
-      cookie.set('initialReferrer', initialReferrer, cookieDomain);
+    var initialReferrer = void 0;
+    if (options.useSessionCookies) {
+      initialReferrer = cookie.get('initialReferrer');
+      if (!initialReferrer) {
+        initialReferrer = document && document.referrer || undefined;
+        cookie.set('initialReferrer', initialReferrer, cookieDomain);
+      }
     }
 
     var scrollState = {};
