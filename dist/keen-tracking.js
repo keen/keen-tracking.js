@@ -2507,11 +2507,16 @@ function initAutoTrackingCore(lib) {
     } : {};
 
     var uuid = void 0;
-    if (options.collectUuid && !options.disableCookies) {
-      uuid = cookie.get('uuid');
+    if (options.collectUuid) {
+      if (!options.disableCookies) {
+        uuid = cookie.get('uuid');
+      }
       if (!uuid) {
         uuid = helpers.getUniqueId();
-        cookie.set('uuid', uuid, cookieDomain);
+        if (!options.disableCookies) {
+          // if cookies disabled, uuid will not persist across page reloads or subsequent visits
+          cookie.set('uuid', uuid, cookieDomain);
+        }
       }
     }
 
