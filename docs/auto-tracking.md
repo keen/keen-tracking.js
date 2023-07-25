@@ -65,9 +65,6 @@ client.initAutoTracking({
   //Track HTML elements views
   recordElementViews: true // see if an element was seen
 
-  // allow cookies to be placed on user's browser
-  useSessionCookies: true // default
-
   // prevent cookies from being added on the user's browser
   disableCookies: false // default
 });
