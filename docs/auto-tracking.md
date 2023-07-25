@@ -67,6 +67,9 @@ client.initAutoTracking({
 
   // allow cookies to be placed on user's browser
   useSessionCookies: true // default
+
+  // prevent cookies from being added on the user's browser
+  disableCookies: false // default
 });
 ```
 
