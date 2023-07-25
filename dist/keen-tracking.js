@@ -2449,7 +2449,7 @@ function initAutoTrackingCore(lib) {
       collectUuid: true,
       recordElementViews: true,
       catchError: undefined, // optional, function(someError) - error handler
-      useSessionCookies: true
+      disableCookies: false
     }, obj);
 
     if (client.config.requestType === 'beaconAPI' && options.catchError) {
@@ -2496,8 +2496,9 @@ function initAutoTrackingCore(lib) {
       }
     }
 
-    if (options.useSessionCookies) {
-      var _cookie = new utils.cookie('keen');
+    var cookie = void 0;
+    if (!options.disableCookies) {
+      cookie = new utils.cookie('keen');
     }
 
     var domainName = helpers.getDomainName(window.location.hostname);
@@ -2506,7 +2507,7 @@ function initAutoTrackingCore(lib) {
     } : {};
 
     var uuid = void 0;
-    if (options.collectUuid && options.useSessionCookies) {
+    if (options.collectUuid && !options.disableCookies) {
       uuid = cookie.get('uuid');
       if (!uuid) {
         uuid = helpers.getUniqueId();
@@ -2515,7 +2516,7 @@ function initAutoTrackingCore(lib) {
     }
 
     var initialReferrer = void 0;
-    if (options.useSessionCookies) {
+    if (!options.disableCookies) {
       initialReferrer = cookie.get('initialReferrer');
       if (!initialReferrer) {
         initialReferrer = document && document.referrer || undefined;
