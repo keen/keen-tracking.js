@@ -2518,8 +2518,10 @@ function initAutoTrackingCore(lib) {
     var initialReferrer = void 0;
     if (!options.disableCookies) {
       initialReferrer = cookie.get('initialReferrer');
-      if (!initialReferrer) {
-        initialReferrer = document && document.referrer || undefined;
+    }
+    if (!initialReferrer) {
+      initialReferrer = document && document.referrer || undefined;
+      if (!options.disableCookies) {
         cookie.set('initialReferrer', initialReferrer, cookieDomain);
       }
     }
