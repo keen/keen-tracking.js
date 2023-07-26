@@ -2448,7 +2448,8 @@ function initAutoTrackingCore(lib) {
       collectIpAddress: true,
       collectUuid: true,
       recordElementViews: true,
-      catchError: undefined // optional, function(someError) - error handler
+      catchError: undefined, // optional, function(someError) - error handler
+      disableCookies: false
     }, obj);
 
     if (client.config.requestType === 'beaconAPI' && options.catchError) {
@@ -2507,14 +2508,19 @@ function initAutoTrackingCore(lib) {
       uuid = cookie.get('uuid');
       if (!uuid) {
         uuid = helpers.getUniqueId();
-        cookie.set('uuid', uuid, cookieDomain);
+        if (!options.disableCookies) {
+          // if cookies disabled, uuid will not persist across page reloads or subsequent visits
+          cookie.set('uuid', uuid, cookieDomain);
+        }
       }
     }
 
     var initialReferrer = cookie.get('initialReferrer');
     if (!initialReferrer) {
       initialReferrer = document && document.referrer || undefined;
-      cookie.set('initialReferrer', initialReferrer, cookieDomain);
+      if (!options.disableCookies) {
+        cookie.set('initialReferrer', initialReferrer, cookieDomain);
+      }
     }
 
     var scrollState = {};
