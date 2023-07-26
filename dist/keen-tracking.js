@@ -2496,10 +2496,7 @@ function initAutoTrackingCore(lib) {
       }
     }
 
-    var cookie = void 0;
-    if (!options.disableCookies) {
-      cookie = new utils.cookie('keen');
-    }
+    var cookie = new utils.cookie('keen');
 
     var domainName = helpers.getDomainName(window.location.hostname);
     var cookieDomain = domainName && options.shareUuidAcrossDomains ? {
@@ -2508,9 +2505,7 @@ function initAutoTrackingCore(lib) {
 
     var uuid = void 0;
     if (options.collectUuid) {
-      if (!options.disableCookies) {
-        uuid = cookie.get('uuid');
-      }
+      uuid = cookie.get('uuid');
       if (!uuid) {
         uuid = helpers.getUniqueId();
         if (!options.disableCookies) {
@@ -2520,10 +2515,7 @@ function initAutoTrackingCore(lib) {
       }
     }
 
-    var initialReferrer = void 0;
-    if (!options.disableCookies) {
-      initialReferrer = cookie.get('initialReferrer');
-    }
+    var initialReferrer = cookie.get('initialReferrer');
     if (!initialReferrer) {
       initialReferrer = document && document.referrer || undefined;
       if (!options.disableCookies) {
